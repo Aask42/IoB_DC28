@@ -258,6 +258,9 @@ void loop() {
     else if(DoublePress_ACT == 2)
     {
       BatteryWifi = new boi_wifi(Battery, MessageHandler, boi_wifi::BusinessCardMode);
+    }else if(DoublePress_ACT == 3)
+    {
+      BatteryWifi = new boi_wifi(Battery, MessageHandler, boi_wifi::SafeModeWithNetworking);
     }
     else
     {

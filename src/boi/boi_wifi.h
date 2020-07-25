@@ -33,7 +33,8 @@ public:
         NormalMode = 1,
         BusinessCardMode = 2,
         RickMode = 3,
-        PartyMode = 4
+        PartyMode = 4,
+        SafeModeWithNetworking = 5
     } WifiModeEnum;
 
     boi_wifi(boi *boiData, Messages *message_handler, WifiModeEnum NewMode);
@@ -41,6 +42,7 @@ public:
 
     void handleRoot();
     void monitor_captive_portal();
+    void monitor_smwn();
     void RefreshSettings();
 
     private:
@@ -56,6 +58,9 @@ public:
         Preferences preferences;
 
         void setup_captive_portal(const OptionsStruct *Options);
+        void enter_safe_mode_with_networking(const OptionsStruct *Options);
+        void send_post_to_battery_internet(const uint8_t *message, unsigned int length);
+
         void Reconfigure(const OptionsStruct *Options);
         void DisableWiFi();
 
@@ -63,6 +68,7 @@ public:
         void ActivateRick();
         void ActivateParty();
         void ActivateNormal();
+        void ActivateSafeModeWithNetworking();
 };
 
 #endif
