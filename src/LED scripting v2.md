@@ -46,6 +46,10 @@ __AND__ __DEST__ _VALUE_ | Bit-wise AND of the __DEST__ by a value
 __OR__ __DEST__ _VALUE_ | Bit-wise OR of the __DEST__ by a value
 __XOR__ __DEST__ _VALUE_ | Bit-wise XOR of the __DEST__ by a value
 __NOT__ __DEST__ | Bit-wise NOT of the __DEST__
+__SHL__ __DEST__ _VALUE_ | Bit-wise shift left of the __DEST__ by a value
+__SHR__ __DEST__ _VALUE_ | Bit-wise shift right of the __DEST__ by a value
+__ROL__ __DEST__ _VALUE_ | Bit-wise rotate left of the __DEST__ by a value
+__ROR__ __DEST__ _VALUE_ | Bit-wise rotate right of the __DEST__ by a value
 
 If division or modulus would result in a divison by 0 then the result will be 0 to avoid any crashes of the led code.
 
@@ -121,6 +125,10 @@ Value of xxxx | Description
 0x08 | Logical OR
 0x09 | Logical XOR
 0x0A | Logical NOT
+0x0B | Shift Left
+0x0C | Shift Right
+0x0D | Rotate Left
+0x0E | Rotate Right
 
 Value of yy | Description
 -|-
@@ -128,6 +136,8 @@ Value of yy | Description
 0x01 | R portion of destination
 0x02 | G portion of destination
 0x03 | B portion of destination
+
+In version 1 designs only a yy of 0 is allowed.
 
 A byte follows each math operation with the following layout
 
@@ -151,6 +161,8 @@ All other options for zz have the following format for the following byte
 * yy - same as yy from command byte
 * xxxx - ID of the specified LED or variable
 
+In version 1 compiled code a physical value will be 3 bytes long with the specified value in the script multiplied by 1000, 2.55 in script will be a value of 2550.
+
 ### Move command
 The move command has an additional value along with time setting. The following structure follows the above parsed data for _move_ commands
 
@@ -164,6 +176,9 @@ Bits for byte after above parsing: zz00xxxx
 * xxxx - same layout and purpose as xxxx from above tables
 
 If a physical time follows then it is 2 bytes long representing the number of milliseconds
+
+## Shift and Rotate commands
+These commands follow the same format as all other commands with one exception, the physical value that follows will always be a single byte regardless of the destination size.
 
 ## Other commands
 
