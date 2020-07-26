@@ -3,7 +3,6 @@
 
 #include <Arduino.h>
 #include "DNSServer.h"                  // Patched lib
-#include "ESPAsyncWebServer.h"
 #include "boi.h"
 #include <pthread.h>
 #include "messages.h"
@@ -13,17 +12,8 @@ class boi;
 class Messages;
 struct OptionsStruct;
 
-class RequestHandler : public AsyncWebHandler {
-    public:
-        RequestHandler();
-        bool canHandle(AsyncWebServerRequest *request);
-        void handleRequest(AsyncWebServerRequest *request);
-        void GuestCounter();
-        int CurrentGuestCount;
-    private:
-        Preferences preferences;
-
-};
+typedef class AsyncWebServer AsyncWebServer;
+typedef class RequestHandler RequestHandler;
 
 class boi_wifi
 {
@@ -63,6 +53,8 @@ public:
 
         void Reconfigure(const OptionsStruct *Options);
         void DisableWiFi();
+        void SetupRequestServer();
+        void DeleteWebServer();
 
         void ActivateBusinessCard();
         void ActivateRick();
@@ -70,5 +62,7 @@ public:
         void ActivateNormal();
         void ActivateSafeModeWithNetworking();
 };
+
+extern boi_wifi::WifiModeEnum Mode;
 
 #endif
