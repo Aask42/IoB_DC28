@@ -21,6 +21,7 @@ boi_wifi::boi_wifi(boi *boiData, Messages *message_handler, WifiModeEnum NewMode
     this->_boi = boiData;
     this->message_handler = message_handler;
     this->ServerCheckThread = 0;
+    this->dnsServer = 0;
     Mode = NewMode;
 
     _globalBoiWifi = this;
@@ -90,6 +91,8 @@ void boi_wifi::DisableWiFi()
     this->ServerCheckThread = 0;
 
     WiFi.enableAP(false);
+    WiFi.softAPdisconnect(true);
+    WiFi.disconnect(true, true);
 
     //remove our global
     _globalBoiWifi = 0;
@@ -112,7 +115,8 @@ void boi_wifi::monitor_captive_portal(){
             break;
         }
 
-        this->dnsServer->processNextRequest();
+        if(this->dnsServer)
+            this->dnsServer->processNextRequest();
         yield();
         
         //increment our loop count
@@ -209,7 +213,7 @@ void boi_wifi::setup_captive_portal(const OptionsStruct *Options){
         delay(1000);
         yield();
     }
-
+    
     if(!WiFi.mode(WIFI_AP_STA))
         Serial.print("Error setting WiFi mode\n");
 
@@ -255,23 +259,39 @@ void boi_wifi::enter_safe_mode_with_networking(const OptionsStruct *Options){
         yield();
     }
 
+    esp_wifi_set_promiscuous(false);
+
     // Set up Wifi Connection Here
     // Fetch local network name from options
     // Fetch local wifi password from options
+    WiFi.enableSTA(true);
+    if(!WiFi.mode(WIFI_STA))
+    {
+        Serial.println("Failed to set wifi mode");
+    }
+
     WiFi.begin("Asgard","notaplace!");
 
     while (WiFi.status() != WL_CONNECTED) {
-        delay(500);
-        Serial.println("Connecting to WiFi Safe Mode with Networking...");
+        delay(1000);
+        Serial.printf("Connecting to WiFi Safe Mode with Networking... %d\n", WiFi.status());
+
+        if((WiFi.status() == WL_DISCONNECTED) || (WiFi.status() == WL_IDLE_STATUS)) {
+            WiFi.reconnect();
+        }
     }
  
     Serial.println("Connected to the WiFi for Safe Mode with Networking");
 
+    esp_wifi_set_promiscuous(true);
+
     // reply to all requests with same HTML
+    yield();
     this->SetupRequestServer();
 
     //setup the web socket
-    this->message_handler->RegisterWebsocket();
+    yield();
+    //this->message_handler->RegisterWebsocket();
 
     pthread_mutex_init(&lock, NULL);
     pthread_mutex_init(&lockDone, NULL);
