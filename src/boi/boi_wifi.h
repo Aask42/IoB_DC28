@@ -35,6 +35,7 @@ public:
     void monitor_smwn();
     void RefreshSettings();
 
+
     private:
         boi *_boi;
         char *HandleName;
@@ -49,13 +50,12 @@ public:
 
         void setup_captive_portal(const OptionsStruct *Options);
         void enter_safe_mode_with_networking(const OptionsStruct *Options);
-        void send_post_to_battery_internet(const uint8_t *message, unsigned int length);
 
         void Reconfigure(const OptionsStruct *Options);
         void DisableWiFi();
         void SetupRequestServer();
         void DeleteWebServer();
-
+        
         void ActivateBusinessCard();
         void ActivateRick();
         void ActivateParty();
@@ -64,5 +64,6 @@ public:
 };
 
 extern boi_wifi::WifiModeEnum Mode;
+void send_post_to_battery_internet(const char *message, unsigned int length);
 
 #endif

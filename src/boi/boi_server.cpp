@@ -64,7 +64,7 @@ void boi_wifi::SetupRequestServer()
 
     //start the server
     this->server->begin();
-    Serial.print("Successfully began broadcasting legacy-wifi InternetOfBatteries!!!\n\n");
+    Serial.print("Successfully began broadcasting wifi InternetOfBatteries!!!\n\n");
 }
 
 void boi_wifi::DeleteWebServer()

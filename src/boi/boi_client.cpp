@@ -1,7 +1,7 @@
 #include "boi_wifi.h"
 #include "esp_http_client.h"
 
-void boi_wifi::send_post_to_battery_internet(const uint8_t *message, unsigned int length){
+void send_post_to_battery_internet(const char *message, unsigned int length){
     const char* uri = "https://batteryinter.net";
     
     const char* CAcert = "-----BEGIN CERTIFICATE-----"\

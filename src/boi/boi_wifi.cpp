@@ -9,8 +9,7 @@ pthread_mutex_t lockDone;
 void *static_monitor_captive_portal(void *)
 {
     if(_globalBoiWifi)
-        _globalBoiWifi->monitor_captive_portal();
-
+        _globalBoiWifi->monitor_captive_portal();        
     return 0;
 }
 
@@ -150,37 +149,10 @@ void boi_wifi::monitor_smwn(){
 
     LoopCount = 0;
     LoopScanCount = 0;
-    while(1)
-    {
-        if(pthread_mutex_trylock(&lock))
-        {
-            Serial.println("Exiting thread");
-            break;
-        }
-
-        yield();
-        
-        //increment our loop count
-        LoopCount++;
-        LoopScanCount++;
-        if(LoopCount >= 5)
-        {
-            //read and send sensor data roughly every half a second
-            //not exact due to timing and other activities on the device but this does not have
-            //to be accurate
-            this->_boi->get_sensor_data(&SensorData);
-            yield();
-            this->message_handler->HandleSensorData(&SensorData);
-            yield();
-            // Monitor Itero for new messages
-            
-
-            LoopCount = 0;
-        }
-        pthread_mutex_unlock(&lock);
-
-        delay(100);
-    };
+    Serial.println("Local IP: "+WiFi.localIP());
+    // Send POST messages
+    // const char *message = "{'macAddrBat':'192.168.0.42';'publicIP':'255.255.255.24';'data':'BURNiNATINGAllTheHumans!!!'}";
+    // send_post_to_battery_internet(message,sizeof(message));
 
     pthread_mutex_unlock(&lockDone);
 }
@@ -270,14 +242,20 @@ void boi_wifi::enter_safe_mode_with_networking(const OptionsStruct *Options){
         Serial.println("Failed to set wifi mode");
     }
 
-    WiFi.begin("Asgard","notaplace!");
-
+    WiFi.begin("stupid_network","stupid_password");
+    int counter =0;
     while (WiFi.status() != WL_CONNECTED) {
         delay(1000);
         Serial.printf("Connecting to WiFi Safe Mode with Networking... %d\n", WiFi.status());
 
         if((WiFi.status() == WL_DISCONNECTED) || (WiFi.status() == WL_IDLE_STATUS)) {
             WiFi.reconnect();
+        }
+        if(counter > 10){
+            Serial.printf("Unable to connect to WiFi Safe Mode with Networking :(... %d\n", WiFi.status());
+            return;
+        } else {
+            counter++;
         }
     }
  

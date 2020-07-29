@@ -228,7 +228,7 @@ void loop() {
   unsigned long CurTime = esp_timer_get_time();
   if(((CurTime - LastSensorPrintTime) / 1000000ULL) >= 3) {
     LastSensorPrintTime = CurTime;
-    Battery->print_sensor_data();
+    //Battery->print_sensor_data();
   }
 
   // Check to see if a button was pressed or other event triggered
@@ -241,7 +241,6 @@ void loop() {
 
     LastButtonPressTime = CurTime;
   }
-
   //if ACTION button double pressed then swap the captive portal otherwise swap led options
   if(DoublePress_ACT && (CurTime - LastButtonPressTime) > 500000ULL)
   {
