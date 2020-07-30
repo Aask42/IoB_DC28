@@ -18,6 +18,7 @@ void static_BroadcastMessageReceived(const uint8_t *From_MAC, const uint8_t *Dat
 void static_DeviceConnected(const uint8_t *MAC, const char *Name, int Succeeded);
 void SerialPrintMAC(const uint8_t *mac);
 void static_handleWebSocket(AsyncWebSocket * server, AsyncWebSocketClient * client, AwsEventType type, void * arg, uint8_t *data, size_t len);
+void static_SendMessage(const uint8_t *Data, unsigned int DataLen);
 
 class MessagesInternal : public Messages
 {
