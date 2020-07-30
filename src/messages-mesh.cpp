@@ -446,6 +446,11 @@ void MessagesInternal::DeviceConnected(const uint8_t *MAC, const char *Name, int
     }
 }
 
+void static_SendMessage(const uint8_t *Data, unsigned int DataLen)
+{
+    //please fill in code here to do a POST when Itero attempts to post data
+}
+
 void static_SendToDeviceFailed(const uint8_t *MAC)
 {
     if(_globalMessages)

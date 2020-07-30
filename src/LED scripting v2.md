@@ -88,9 +88,11 @@ __If the script gets to the end of it's commands without a STOP at the end then 
 - Any _VALUE_ value is from _0_ to _255_ in version 2 and _0.00_ to _100.00_ in version 1.
 - A __*__ in place of a _VALUE_ uses the value the referenced __LED__ should be at the time the line started to be executed. The is useful when multiple scripts are running on top of each other to use the value the __LED__ would be if no other scripts had been running.
 - Similar to __*__, a __@__ uses the value the __LED__ actually is at when the line started being executed. This is the true actual __LED__ value even when multiple scripts are running on top of each other and attempting to alter the value.
-- If _VALUE_ is __RAND__ then 2 more parameters will follow indicating a min/max range with which to generate a random value.  
+- If _VALUE_ is __RAND__ then 2 more parameters will follow indicating a min/max range with which to generate a random value.
+    - _VALUE_ can not be __RAND__ for _IF_ or _WAIT_
     - In version 1 the min/max is capped between _0.00_ and _100.0_ inclusive if.
     - In version 2 the min/max is capped between _0_ and _255_ inclusive if the destination is .R, .G, or .B otherwise it is capped between 0 and 0xFFFFFF inclusive.
+    - Parameters to __RAND__ can be another LED, global, or local variable to use
 - _TIME_ is in milliseconds
 - Any line with no spaces and ending with a __colon (:)__ is a label
 - Any _VALUE_ can be decimal or start with 0x to indicate hexadecimal
@@ -147,6 +149,8 @@ zz00xxxx | LED used for destination, xxxx is the LED ID
 zz01xxxx | Global variable used for destination, xxxx is the ID
 zz10xxxx | Local variable used for destination, xxxx is the ID
 
+zz defines what the following Value data will be after the described destination
+
 zz | Description
 -|-
 00 | Physical value follows
@@ -157,11 +161,51 @@ zz | Description
 If zz indicates a physical value follows then the next number of bytes is either 1 or 3 bytes depending on the yy value found in the original command byte.
 All other options for zz have the following format for the following byte
 
-00yyxxxx
-* yy - same as yy from command byte
+wwyyxxxx
+* yy - see yy description from command byte
 * xxxx - ID of the specified LED or variable
 
-In version 1 compiled code a physical value will be 3 bytes long with the specified value in the script multiplied by 1000, 2.55 in script will be a value of 2550.
+ww must be 0 unless a LED ID is specified for zz
+
+ww | Description
+-|-
+00 | Use the specified LED ID in xxxx
+01 | Use the current expected destination LED value
+10 | Use the current actual destination LED value
+11 | Special case, random flag with more data follows
+
+If ww is 11 then it is a flag that the variable is to be random at which point the xxxx for the LED ID indiates the following
+
+xxxx only for Random
+xxxx | Description
+-|-
+0x00 | 2 led IDs follow
+0x01 | a LED ID and a global variable follow
+0x02 | a LED ID and a local variable follow
+0x03 | a LED ID and a random value follow
+0x04 | a global variable and a led ID follow
+0x05 | 2 global variables follow
+0x06 | a global variable and a local variable follow
+0x07 | a global variable and a random value follow
+0x08 | a local variable and a led ID follow
+0x09 | a local variable and a global variable follow
+0x0a | 2 local variables follow
+0x0b | a local variable and a random value follow
+0x0c | a random value and a led ID follow
+0x0d | a random value and a global variable follow
+0x0e | a random value and a local variable follow
+0x0f | 2 random values follow
+
+If the xxxx value does not have a random value as part of the parameters then a byte per value is specified with the following format
+zzyyxxxx
+* zz - see the zz description from above to determine what the xxxx ID is, 00 is invalid
+* yy - see yy description from command byte
+* xxxx - ID of the specified LED or variable
+
+In version 2 data, each random value specified will be 1 or 3 following bytes indicating the random value. The size is dictated by the destination yy value indicator.
+In version 1 data, each random value will be 2 bytes with the floating point value multiplied by 100.
+
+In version 1 compiled code a physical value will be 3 bytes long with the specified value in the script multiplied by 100, 2.55 in script will be a value of 255.
 
 ### Move command
 The move command has an additional value along with time setting. The following structure follows the above parsed data for _move_ commands
@@ -169,13 +213,13 @@ The move command has an additional value along with time setting. The following 
 Bits for next byte: zzyyxxxx
 * zz - same layout and purpose as zz from above
 * yy - same layout and purpose as yy from the above tables
-* xxxx - same layout and purpose as xxxx from the above tables
+* xxxx - ID based on the value of zz
 
 Bits for byte after above parsing: zz00xxxx
 * zz - same layout as above except 01 is invalid
 * xxxx - same layout and purpose as xxxx from above tables
 
-If a physical time follows then it is 2 bytes long representing the number of milliseconds
+If a physical time follows then it is 2 bytes long representing the number of milliseconds. If a global or local variable is specified then the current value at the time of instruction execution is used, updating the global or local after the instruction will not alter the time.
 
 ## Shift and Rotate commands
 These commands follow the same format as all other commands with one exception, the physical value that follows will always be a single byte regardless of the destination size.
@@ -205,11 +249,12 @@ Value of yyyy | Description
 Value of yyyy | Description
 -|-
 0x00 | Physical value follows
-0x01 | Invalid
+0x01 | A random value follows
 0x02 | Global variable follows
 0x03 | Local variable follows
 
 If a physical value follows then the next 2 bytes indicate the time in milliseconds.
+If a random value follows then the above described random byte layout follows with the exception that LED IDs can not be used
 If a global or local variable follows then the next byte indicates the ID.
 
 ### If and Wait
