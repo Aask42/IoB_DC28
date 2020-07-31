@@ -14,6 +14,10 @@
 #include "messages.h"
 #include "leds.h"
 
+#if BOI_VERSION == 2
+#include "boi/spi_parser.h"
+#endif
+
 // Operating frequency of ESP32 set to 80MHz from default 240Hz in platformio.ini
 
 // Initialize Global variables
@@ -73,17 +77,29 @@ void LEDCallback(const uint16_t ID, bool Finished)
 void setup(void) {
   uint8_t WifiState;
   float BatteryPower;
+  bool DoSafeBoot;
+  bool DoFactoryReset;
 
   // init system debug output
   Serial.begin(115200);
   Serial.println("Beginning BoI Setup!");
 
-  BatteryPower = safeboot_voltage();
+#if BOI_VERSION == 2
+  SPIHandler = new SPIParser();
+  SPIHandler->Communicate(&SPIData);
+#endif
 
   //if the action pin is held then go into safe mode
+#if BOI_VERSION == 1
+  BatteryPower = safeboot_voltage();
   pinMode(BTN_ACT_PIN, INPUT_PULLUP);
   pinMode(BTN_PWR_PIN, INPUT_PULLUP);
-  if((digitalRead(BTN_ACT_PIN) == 0) || (BatteryPower < 3.7))
+  DoSafeBoot = (digitalRead(BTN_ACT_PIN) == 0);
+#elif BOI_VERSION == 2
+  BatteryPower = SPIData.BatteryVoltage;
+  DoSafeBoot = SPIData.Btn0Pressed;
+#endif
+  if(DoSafeBoot || (BatteryPower < 3.7))
   {
     SafeBoot = 1;
     LEDHandler = NewLEDs(LEDCallback, true);
@@ -94,7 +110,12 @@ void setup(void) {
 
     //action button is held, check and see if power button is held
     //if so then we want to do a factory reset
-    if(digitalRead(BTN_PWR_PIN) == 0)
+#if BOI_VERSION == 1
+  DoFactoryReset = (digitalRead(BTN_PWR_PIN) == 0);
+#elif BOI_VERSION == 2
+  DoFactoryReset = SPIData.SliderPressed;
+#endif
+    if(DoFactoryReset)
     {
       //cycle LED_100 every second indicating we are getting ready to do a factory reset
       for(int i = 5; i > 0; i--)
@@ -158,9 +179,12 @@ void setup(void) {
   }
 }
 
+#if BOI_VERSION == 1
 float safeboot_voltage()
 {
   esp_adc_cal_characteristics_t adc_chars;
+
+  return 0.0;
 
   //Configure ADC
   adc1_config_width(ADC_WIDTH_BIT_12);
@@ -185,6 +209,7 @@ float safeboot_voltage()
 
   return v_source;
 }
+#endif
 
 void loop() {
   SensorDataStruct SensorData;
@@ -193,9 +218,12 @@ void loop() {
 
   if(SafeBoot)
   {
-    Serial.printf("In safeboot - battery voltage: %fV\n", safeboot_voltage());
+    Serial.printf("In safeboot - battery voltage: %fV\n", 0.0);
+    delay(100);
+
     esp_sleep_enable_timer_wakeup(2000000);
     esp_light_sleep_start();
+
     return;
   }
 

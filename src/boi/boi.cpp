@@ -9,6 +9,9 @@
 #include <string>
 #include <Wire.h>
 
+#if BOI_VERSION == 2
+#include "SPI.h"
+#endif
 
 // Initialize ledc variables
 int backpower_status = 1;
@@ -22,6 +25,7 @@ bool charged = 0;
 pthread_mutex_t status_lock;
 u_long last_tick_time = esp_timer_get_time();
 
+#if BOI_VERSION == 1
 float boi::adc_vref_vbat(){  
     //Configure ADC
     if (this->unit == ADC_UNIT_1) {
@@ -92,6 +96,7 @@ float boi::adc_vref_vgat(){
 
     return v_source;
 }
+#endif
 
 void boi::get_joules(float *total_joules, float *average_joules, float watts){
     // J = W * s
@@ -168,9 +173,9 @@ boi::boi(){
 
     pthread_mutex_init(&status_lock, NULL);
 
+#if BOI_VERSION == 1
     this->ina219.begin();
     this->ina219.setCalibration_16V_500mA();
-    this->initPreferences();
 
     // Button assignment
     this->set_button_pin(boi::BTN_PWR, BTN_PWR_PIN);
@@ -178,19 +183,25 @@ boi::boi(){
     this->set_button_pin(boi::BTN_BONUS, BTN_BONUS_PIN);
 
     pinMode(BACKPOWER_OUT_PIN, OUTPUT); // Set up BACKPOWER_OUT_PIN, defaults to "on"
-    
-    this->toggle_backpower();        // Toggle backpower off
 
     pinMode(VGAT_DIV_PIN,INPUT_PULLUP);        
     pinMode(VBAT_DIV_PIN,INPUT_PULLUP);
+#endif
+
     pinMode(RDY_4056_PIN,INPUT);
     pinMode(CHRG_4056_PIN,INPUT);
+
+    this->toggle_backpower();        // Toggle backpower off
+    this->initPreferences();
 }
 
 int boi::read_current(){
-
+#if BOI_VERSION == 1
     int current = ina219.getCurrent_mA();
-    
+#elif BOI_VERSION == 2
+    int current = SPIData.GATCurrent;
+#endif
+
     if(prev_curr != curr_curr){
         prev_curr = curr_curr;
         curr_curr = current;
@@ -222,20 +233,30 @@ void boi::get_sensor_data(SensorDataStruct *Sensor){
     this->LastSensorDataUpdate = esp_timer_get_time();
 
     //go get our values
+#if BOI_VERSION == 1
     Sensor->bat_voltage_detected = this->adc_vref_vbat();
-    this->calibrate_capacity_measure(Sensor->bat_voltage_detected);
     Sensor->gat_voltage_detected = this->adc_vref_vgat();
+#elif BOI_VERSION == 2
+    SPIHandler->Communicate(&SPIData);
+    Sensor->bat_voltage_detected = SPIData.BatteryVoltage;
+    Sensor->gat_voltage_detected = SPIData.GATVoltage;
+#endif
+    this->calibrate_capacity_measure(Sensor->bat_voltage_detected);
     yield();
 
-    Sensor->ready_pin_detected = digitalRead(RDY_4056_PIN);
-    Sensor->charge_pin_detected = digitalRead(CHRG_4056_PIN);
+    Sensor->ready_pin_detected = this->doDigitalRead(RDY_4056_PIN);
+    Sensor->charge_pin_detected = this->doDigitalRead(CHRG_4056_PIN);
     this->get_charging_status(Sensor);
 
     Sensor->current = this->read_current();
     
     this->get_joules(&Sensor->joules, &Sensor->joules_average, Sensor->current);
 
+#if BOI_VERSION == 1
     Sensor->shunt_voltage = ina219.getShuntVoltage_mV()/20.0;
+#elif BOI_VERSION == 2
+    Sensor->shunt_voltage = SPIData.GATVoltage;
+#endif
     if((Sensor->shunt_voltage < -0.25) && backpower_status){
         Serial.print("Power detected going the wrong way! Disbling Backpower!!!");
         this->toggle_backpower();
@@ -247,7 +268,11 @@ void boi::get_sensor_data(SensorDataStruct *Sensor){
         backpower_status_auto_off = 0;
     }
     yield();
+#if BOI_VERSION == 1
     Sensor->bus_voltage = ina219.getBusVoltage_V();
+#elif BOI_VERSION == 2
+    Sensor->bus_voltage = 0;
+#endif
 
     Sensor->vbat_max = this->vbat_max_mv;
     Sensor->vbat_min = this->vbat_min_mv;
@@ -285,8 +310,10 @@ void boi::print_sensor_data()
 
 // Check for current across VCC and ground pins, set switch
 void boi::toggle_backpower(){
-    
-    int current_detected = ina219.getCurrent_mA();
+     int current_detected;
+#if BOI_VERSION == 1
+    current_detected = ina219.getCurrent_mA();
+#endif
 
     // Check current power-draw through INA219, print if above zero
     if(current_detected > 5.00){
@@ -298,8 +325,13 @@ void boi::toggle_backpower(){
 
     switch(backpower_status){
         case 0:
+#if BOI_VERSION == 1
             digitalWrite(BACKPOWER_OUT_PIN, 0);
-            Serial.println("BACKPOWER_OUT_PIN is now engaged!: "+ String(digitalRead(BACKPOWER_OUT_PIN)));
+#elif BOI_VERSION == 2
+            SPIHandler->SetGATPower(true);
+            SPIHandler->Communicate(&SPIData);
+#endif
+            Serial.println("BACKPOWER_OUT_PIN is now engaged!: 1");
             Serial.println("-. ..- -- -... . .-. _/̄ˉ ..... _/̄ˉ .. ... _/̄ˉ .- .-.. .. ...- . -.-.-- -.-.--");
             backpower_status = 1;
 
@@ -311,8 +343,13 @@ void boi::toggle_backpower(){
         case 1:
             Serial.println("Disabling backpower on pin "+String(BACKPOWER_OUT_PIN)+"!");     
             Serial.println("-. --- _/̄ˉ -.. .. ... .- ... ... . -- -... .-.. . -.-.-- -.-.-- -.-.--");
+#if BOI_VERSION == 1
             digitalWrite(BACKPOWER_OUT_PIN, 1);
-            Serial.println("BACKPOWER_OUT_PIN has been disengaged! : "+ String(digitalRead(BACKPOWER_OUT_PIN)));
+#elif BOI_VERSION == 2
+            SPIHandler->SetGATPower(false);
+            SPIHandler->Communicate(&SPIData);
+#endif
+            Serial.println("BACKPOWER_OUT_PIN has been disengaged! : 0");
             backpower_status = 0;
 
             // Disble backpower ON LED
@@ -327,7 +364,7 @@ bool boi::button_pressed(Buttons button)
 {
     bool ret;
     int btnState;
-    btnState = !digitalRead(this->ButtonPins[button]);
+    btnState = !this->doDigitalRead(this->ButtonPins[button]);
 
     //if the button is not held and was held in the past then indicate it was pressed
     //we go based off a 5ms cycle to avoid situations where power glitches cause the button to randomly trip
@@ -353,7 +390,7 @@ uint32_t boi::button_held(Buttons button)
 {
     uint32_t ret;
     int btnState;
-    btnState = !digitalRead(this->ButtonPins[button]);
+    btnState = !this->doDigitalRead(this->ButtonPins[button]);
 
     //if the button is held and was held in the past then indicate how long
     unsigned long CurTime = esp_timer_get_time();
@@ -375,7 +412,9 @@ uint32_t boi::button_held(Buttons button)
 void boi::set_button_pin(Buttons button, uint8_t pin)
 {
     this->ButtonPins[button] = pin;
+#if BOI_VERSION == 1
     pinMode(pin, INPUT_PULLUP);
+#endif
 }
 
 void boi::set_chg_pin(CHGPinEnum input, uint8_t pin)
@@ -433,4 +472,24 @@ void boi::get_charging_status(SensorDataStruct *Data){
             charging = 0;
         }
     }
+}
+
+int boi::doDigitalRead(uint8_t pin)
+{
+#if BOI_VERSION == 1
+    return digitalRead(pin);
+#elif BOI_VERSION == 2
+    //figure out which return to give
+    switch(pin)
+    {
+        case BTN_PWR:
+            return SPIData.Btn0Pressed;
+
+        case BTN_ACT:
+            return SPIData.Btn1Pressed;
+
+        default:
+            return 0;
+    };
+#endif
 }

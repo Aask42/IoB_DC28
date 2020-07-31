@@ -1,0 +1,36 @@
+#ifndef __spi_parser_h
+#define __spi_parser_h
+
+#if BOI_VERSION == 2
+
+#include <Arduino.h>
+#include "SPI.h"
+
+class SPIParser
+{
+    public:
+        typedef struct SPIDataStruct
+        {
+            bool GATPowerEnabled;
+            bool SliderPressed;
+            bool Btn0Pressed;
+            bool Btn1Pressed;
+            uint8_t SliderPos;
+            float BatteryVoltage;
+            float GATVoltage;
+            short GATCurrent;
+        } SPIDataStruct;
+
+        SPIParser();
+        void Communicate(SPIDataStruct *Data);
+        void SetRGBLed(uint8_t LEDNum, uint32_t RGB);
+        void SetGATPower(bool Enable);
+
+    private:
+        void GenerateSPIDataStruct(SPIDataStruct *Data, uint8_t *InData);
+        uint8_t OutSPIBuffer[31];
+};
+
+#endif
+
+#endif
