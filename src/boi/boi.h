@@ -27,8 +27,13 @@
 #define VGAT_DIV_PIN 39
 #define VBAT_DIV_PIN 36
 
+#if BOI_VERSION == 1
 #define RDY_4056_PIN 34
 #define CHRG_4056_PIN 35
+#elif BOI_VERSION == 2
+#define RDY_4056_PIN 36
+#define CHRG_4056_PIN 33
+#endif
 
 // Initialize VREF variables
 #define DEFAULT_VREF    1100        //Use adc2_vref_to_gpio() to obtain a better estimate
@@ -96,8 +101,11 @@ class boi // Battery of Internet class
     int get_chg_status();
     void set_charging_status();
 
+#if BOI_VERSION == 1
     float adc_vref_vbat();
     float adc_vref_vgat();
+#endif
+
     void calibrate_capacity_measure(float vbat);
 
     unsigned int fetchResetCounter();
@@ -107,7 +115,9 @@ class boi // Battery of Internet class
 
   // private:
   private:
+#if BOI_VERSION == 1
     Adafruit_INA219 ina219;
+#endif
 
     float vbat_max_mv;
     float vbat_min_mv;
@@ -119,12 +129,14 @@ class boi // Battery of Internet class
     unsigned long ButtonState[BTN_Count];
     uint8_t CHGPins[CHG_Count];
     short full_vbat_mv = 1100;
+#if BOI_VERSION == 1
     esp_adc_cal_characteristics_t adc_chars;
     esp_adc_cal_characteristics_t adc_chars_gat;
     const adc_channel_t channel = ADC_CHANNEL_0;     //GPIO34 if ADC1, GPIO14 if ADC2
     const adc_channel_t channel_gat = ADC_CHANNEL_3;     //GPIO34 if ADC1, GPIO14 if ADC2
     const adc_atten_t atten = ADC_ATTEN_DB_0;
     const adc_unit_t unit = ADC_UNIT_1;
+#endif
     Preferences preferences;
     int boot_count;
     SensorDataStruct LastSensorData;
@@ -136,6 +148,7 @@ class boi // Battery of Internet class
     void set_chg_pin(CHGPinEnum input, uint8_t pin);
 
     void initPreferences();
+    int doDigitalRead(uint8_t pin);
 };
 
 #endif
