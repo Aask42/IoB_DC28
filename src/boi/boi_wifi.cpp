@@ -161,7 +161,8 @@ void boi_wifi::Reconfigure(const OptionsStruct *Options)
 {
     char WifiName[20 + 1 + 10];
     // uint8_t BatterySymbol[] = " \xF0\x9F\x94\x8B ";
-    uint8_t BatterySymbol[] = " \xF0\x9F\x8E\x83 "; // SPOOKY EDITION OOOOOOOOOoOOOoOooooooooo.............
+    // uint8_t BatterySymbol[] = " \xF0\x9F\x8E\x83 "; // SPOOKY EDITION OOOOOOOOOoOOOoOooooooooo.............
+    uint8_t BatterySymbol[] = " \xF0\x9F\x98\xB7 ";
 
     memcpy(WifiName, &BatterySymbol[1], 5);
 
