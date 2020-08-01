@@ -24,6 +24,8 @@ typedef struct OptionsStruct
     char WifiName[20 + 1];
     char OriginalWifiName[20 + 1];
     char WifiPassword[20 + 1];
+    char SafeModeWifiName[20 + 1];
+    char SafeModeWifiPassword[20 + 1];
     short WifiTimeout;
     uint8_t BrightnessValue;
     bool Configured;

@@ -189,6 +189,33 @@ bool MessagesInternal::handleWebSocketData(uint8_t *data, size_t len)
 
             memcpy(NewOptions.WifiPassword, CurPos, CharCount);
             NewOptions.WifiPassword[sizeof(OptionsStruct::WifiPassword) - 1] = 0;
+            
+            //copy the string
+            CharCount = DividingChar - CurPos;
+            if(!CharCount || (CharCount > sizeof(this->Options.SafeModeWifiName) - 1))
+            {
+                ErrorMsg = "eSafeModeWifi name must be between 1 and 20 characters";
+                if(CharCount)
+                    CharCount = sizeof(this->Options.SafeModeWifiName) - 1;
+            }
+
+            memcpy(NewOptions.SafeModeWifiName, CurPos, CharCount);
+            NewOptions.SafeModeWifiName[sizeof(OptionsStruct::SafeModeWifiName) - 1] = 0;
+
+            //step ahead
+            CurPos = DividingChar + 1;
+
+            //copy the string at the end of the buffer
+            CharCount = (char *)&data[len] - CurPos;
+            if((CharCount < 8) || (CharCount > sizeof(this->Options.SafeModeWifiPassword) - 1))
+            {
+                ErrorMsg = "eSafeModeWifi password must be between 8 and 20 characters";
+                if(CharCount)
+                    CharCount = sizeof(this->Options.SafeModeWifiPassword) - 1;
+            }
+
+            memcpy(NewOptions.SafeModeWifiPassword, CurPos, CharCount);
+            NewOptions.SafeModeWifiPassword[sizeof(OptionsStruct::SafeModeWifiPassword) - 1] = 0;
 
             //if any errors then report them and don't save
             if(ErrorMsg)

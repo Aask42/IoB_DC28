@@ -12,6 +12,9 @@ boi_wifi::WifiModeEnum Mode;
 RequestHandler::RequestHandler() {}
 
 bool RequestHandler::canHandle(AsyncWebServerRequest *request){
+    
+    // TODO: Update to pull the IP address from preferences
+    
     if(request->host() == "1.1.1.1")
     {
         request->addInterestingHeader("Cache-Control: no-cache, no-store, must-revalidate");

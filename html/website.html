@@ -159,19 +159,27 @@
                                 <td class=optioncell><input type=text name=nickname size=25></td>
                             </tr>
                             <tr>
-                                <td class=optioncell>Wifi name</td>
+                                <td class=optioncell>Safe Mode Wifi name</td>
+                                <td class=optioncell><input type=text name=safe_mode_wifi_name size=25></td>
+                            </tr>
+                            <tr>
+                                <td class=optioncell>Safe Mode Wifi password</td>
+                                <td class=optioncell><input type=password name=safe_mode_wifi_password size=25></td>
+                            </tr>
+                            <tr>
+                                <td class=optioncell>Captive Arcade Mode Wifi name</td>
                                 <td class=optioncell><input type=text name=wifi_name size=25></td>
                             </tr>
                             <tr>
-                                <td class=optioncell>Wifi password</td>
+                                <td class=optioncell>Captive Arcade Wifi password</td>
                                 <td class=optioncell><input type=password name=wifi_password size=25></td>
                             </tr>
                             <tr>
                                 <td class=optioncell></td>
-                                <td class=optioncell>New Wifi will use WPA2</td>
+                                <td class=optioncell>Captive Arcade Wifi will use WPA2</td>
                             </tr>
                             <tr>
-                                <td class=optioncell>Wifi timeout (seconds)<br>
+                                <td class=optioncell>Captive Arcade Auto timeout (seconds)<br>
                                 Double click button 1 to turn back on</td>
                                 <td class=optioncell><input type=number min=-1 max=300 name=timeout size=3 value=-1></td>
                             </tr>
@@ -840,6 +848,8 @@
         getN("wifi_name").value = Data[3];
         getI("wifi_name_status").innerHTML = StripHTML(Data[3]);
         getN("wifi_password").value = Data[4];
+        getN("safe_mode_wifi_name").value = Data[5];
+        getN("safe_mode_wifi_password").value = Data[6];
     }
 
     function ProcessDeviceStatus(Data)
@@ -1201,7 +1211,11 @@
         Data += getN("wifi_name").value;
         Data += String.fromCharCode(0x01)
         Data += getN("wifi_password").value;
-
+        Data += String.fromCharCode(0x01)
+        Data += getN("safe_mode_wifi_name").value;
+        Data += String.fromCharCode(0x01)
+        Data += getN("safe_mode_wifi_password").value;
+        
         getI("nickname_status").innerHTML = StripHTML(getN("nickname").value);
         getI("wifi_name_status").innerHTML = StripHTML(getN("wifi_name").value);
 
@@ -1212,6 +1226,9 @@
     //DisplaySection("startup");
 
     //enable the websocket now that things are mostly initialized
+    
+    //TODO: Update to have dynamic IP pulled from preferences
+    
     var ws = new WebSocket("ws://1.1.1.1:81/ws", ['arduino']);
     ws.binaryType = 'arraybuffer';
     ws.onmessage = HandleWSMessage;
