@@ -114,7 +114,7 @@ class MessagesInternal : public Messages
         bool connected;
         OptionsStruct Options;
         Preferences preferences;
-        unsigned long LastAccessTime;
+        uint64_t LastAccessTime;
         uint8_t PingCount;
 };
 #endif

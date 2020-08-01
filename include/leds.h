@@ -15,7 +15,7 @@ typedef enum LEDEnum
     LED_S_BATT,
     LED_STAT,
     LED_POUT,
-    LED_STAT2,  
+    LED_STAT2,
     LED_Count
 } LEDEnum;
 

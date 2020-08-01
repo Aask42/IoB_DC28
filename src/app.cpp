@@ -49,14 +49,14 @@ Messages *MessageHandler;
 LEDs *LEDHandler;
 Preferences *Prefs;
 
-unsigned long LastTouchCheckTime = 0;
-unsigned long LastTouchSetTime = 0;
-unsigned long LastSensorPrintTime = 0;
-unsigned long LastButtonPressTime = 0;
-unsigned int LastButtonPwrHeldTime = 0;
-unsigned int LastButtonActHeldTime = 0;
-unsigned int LastButtonBonusHeldTime = 0;
-unsigned long LastScanTime = 0;
+uint64_t LastTouchCheckTime = 0;
+uint64_t LastTouchSetTime = 0;
+uint64_t LastSensorPrintTime = 0;
+uint64_t LastButtonPressTime = 0;
+uint64_t LastButtonPwrHeldTime = 0;
+uint64_t LastButtonActHeldTime = 0;
+uint64_t LastButtonBonusHeldTime = 0;
+uint64_t LastScanTime = 0;
 uint8_t CurrentLEDCap = 0;
 
 void SwitchMode();
@@ -86,6 +86,9 @@ void setup(void) {
 
 #if BOI_VERSION == 2
   SPIHandler = new SPIParser();
+
+  // make sure the other board inits
+  delay(500);
   SPIHandler->Communicate(&SPIData);
 #endif
 
@@ -184,8 +187,6 @@ float safeboot_voltage()
 {
   esp_adc_cal_characteristics_t adc_chars;
 
-  return 0.0;
-
   //Configure ADC
   adc1_config_width(ADC_WIDTH_BIT_12);
   adc1_config_channel_atten((adc1_channel_t)ADC_CHANNEL_0, ADC_ATTEN_DB_0);
@@ -209,6 +210,12 @@ float safeboot_voltage()
 
   return v_source;
 }
+#elif BOI_VERSION == 2
+float safeboot_voltage()
+{
+  SPIHandler->Communicate(&SPIData);
+  return SPIData.BatteryVoltage;
+}
 #endif
 
 void loop() {
@@ -218,7 +225,7 @@ void loop() {
 
   if(SafeBoot)
   {
-    Serial.printf("In safeboot - battery voltage: %fV\n", 0.0);
+    Serial.printf("In safeboot - battery voltage: %fV\n", safeboot_voltage());
     delay(100);
 
     esp_sleep_enable_timer_wakeup(2000000);
@@ -253,7 +260,7 @@ void loop() {
   }
     
   // print sensor data every 3 seconds
-  unsigned long CurTime = esp_timer_get_time();
+  uint64_t CurTime = esp_timer_get_time();
   if(((CurTime - LastSensorPrintTime) / 1000000ULL) >= 3) {
     LastSensorPrintTime = CurTime;
     //Battery->print_sensor_data();

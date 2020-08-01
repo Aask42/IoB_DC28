@@ -23,7 +23,7 @@ float bright_duty_percent;
 bool charging = 0;
 bool charged = 0;
 pthread_mutex_t status_lock;
-u_long last_tick_time = esp_timer_get_time();
+uint64_t last_tick_time = esp_timer_get_time();
 
 #if BOI_VERSION == 1
 float boi::adc_vref_vbat(){  
@@ -101,7 +101,7 @@ float boi::adc_vref_vgat(){
 void boi::get_joules(float *total_joules, float *average_joules, float watts){
     // J = W * s
     float joules_consumed_in_ms_since_update;
-    u_long current_tick_time = esp_timer_get_time();
+    uint64_t current_tick_time = esp_timer_get_time();
 
     //get milliseconds passed
     u_long ms_passed = (current_tick_time - last_tick_time) / 1000;
@@ -244,8 +244,8 @@ void boi::get_sensor_data(SensorDataStruct *Sensor){
     this->calibrate_capacity_measure(Sensor->bat_voltage_detected);
     yield();
 
-    Sensor->ready_pin_detected = this->doDigitalRead(RDY_4056_PIN);
-    Sensor->charge_pin_detected = this->doDigitalRead(CHRG_4056_PIN);
+    Sensor->ready_pin_detected = this->doDigitalRead(RDY_4056_PIN, false);
+    Sensor->charge_pin_detected = this->doDigitalRead(CHRG_4056_PIN, false);
     this->get_charging_status(Sensor);
 
     Sensor->current = this->read_current();
@@ -364,12 +364,12 @@ bool boi::button_pressed(Buttons button)
 {
     bool ret;
     int btnState;
-    btnState = !this->doDigitalRead(this->ButtonPins[button]);
+    btnState = this->doDigitalRead(this->ButtonPins[button], true);
 
     //if the button is not held and was held in the past then indicate it was pressed
     //we go based off a 5ms cycle to avoid situations where power glitches cause the button to randomly trip
     //we also limit to half a second so that pressed never reports if held is being triggered
-    unsigned long CurTime = esp_timer_get_time();
+    uint64_t CurTime = esp_timer_get_time();
     if(!btnState && this->ButtonState[button] && ((CurTime - this->ButtonState[button]) > 5000) && ((CurTime - this->ButtonState[button]) < 500000))
         ret = true;
     else
@@ -386,14 +386,14 @@ bool boi::button_pressed(Buttons button)
 }
 
 //indicate how many milliseconds a button is held
-uint32_t boi::button_held(Buttons button)
+uint64_t boi::button_held(Buttons button)
 {
     uint32_t ret;
     int btnState;
-    btnState = !this->doDigitalRead(this->ButtonPins[button]);
+    btnState = this->doDigitalRead(this->ButtonPins[button], true);
 
     //if the button is held and was held in the past then indicate how long
-    unsigned long CurTime = esp_timer_get_time();
+    uint64_t CurTime = esp_timer_get_time();
     if(btnState && this->ButtonState[button] && ((CurTime - this->ButtonState[button]) >= 500000))
         ret = (CurTime - this->ButtonState[button]) / 1000ULL;
     else
@@ -474,9 +474,12 @@ void boi::get_charging_status(SensorDataStruct *Data){
     }
 }
 
-int boi::doDigitalRead(uint8_t pin)
+int boi::doDigitalRead(uint8_t pin, bool Button)
 {
 #if BOI_VERSION == 1
+    if(Button)
+        return !digitalRead(pin);
+
     return digitalRead(pin);
 #elif BOI_VERSION == 2
     //figure out which return to give
@@ -487,6 +490,10 @@ int boi::doDigitalRead(uint8_t pin)
 
         case BTN_ACT:
             return SPIData.Btn1Pressed;
+
+        case RDY_4056_PIN:
+        case CHRG_4056_PIN:
+            return digitalRead(pin);
 
         default:
             return 0;

@@ -21,8 +21,8 @@ void *static_run_messages(void *)
 void MessagesInternal::Run()
 {
     MessageEntryStruct *CurMessage;
-    unsigned long LastPingTime = 0;
-    unsigned long LastScanTime = 0;
+    uint64_t LastPingTime = 0;
+    uint64_t LastScanTime = 0;
 
     Serial.println("Message thread running\n");
     while(1)

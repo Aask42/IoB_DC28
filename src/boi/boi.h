@@ -7,10 +7,14 @@
 #define __boi_h__
 
 #include <Arduino.h>
+
+#if BOI_VERSION == 1
 #include <Adafruit_INA219.h>
 #include <driver/gpio.h>
 #include <driver/adc.h>
 #include <esp_adc_cal.h>
+#endif
+
 #include <Preferences.h>
 
 #include "app.h"
@@ -96,7 +100,7 @@ class boi // Battery of Internet class
 
     // Check to see if we need to change our mode from button press, trigger on previous data
     bool button_pressed(Buttons button);
-    uint32_t button_held(Buttons button);
+    uint64_t button_held(Buttons button);
 
     int get_chg_status();
     void set_charging_status();
@@ -126,7 +130,7 @@ class boi // Battery of Internet class
     uint32_t TotalMSForAverageJoules;
 
     uint8_t ButtonPins[BTN_Count];
-    unsigned long ButtonState[BTN_Count];
+    uint64_t ButtonState[BTN_Count];
     uint8_t CHGPins[CHG_Count];
     short full_vbat_mv = 1100;
 #if BOI_VERSION == 1
@@ -140,15 +144,15 @@ class boi // Battery of Internet class
     Preferences preferences;
     int boot_count;
     SensorDataStruct LastSensorData;
-    unsigned long LastSensorDataUpdate;
-    unsigned long LastJoulesSaveTime;
+    uint64_t LastSensorDataUpdate;
+    uint64_t LastJoulesSaveTime;
 
     void get_charging_status(SensorDataStruct *Data);
     void set_button_pin(Buttons button, uint8_t pin);
     void set_chg_pin(CHGPinEnum input, uint8_t pin);
 
     void initPreferences();
-    int doDigitalRead(uint8_t pin);
+    int doDigitalRead(uint8_t pin, bool Button);
 };
 
 #endif

@@ -13,8 +13,14 @@ v2 LED Name | LED Notes
 LED9 |  Top LED of the battery
 LED2 - LED8 |
 LED1 | Bottom LED of the battery
+LED_TL | Top left LED when facing the battery
+LED_TR | Top right LED when facing the battery
+LED_BL | Bottom left LED when facing the battery
+LED_BR | Bottom right LED when facing the battery
 
 In version 2 each __LED__ can have .R, .G, or .B appended to the led name to access the red, green, or blue value. These values have a range of 0 to 255 and will roll over. If none of these values are specified then the full RGB value will be used in the checks, under this scenario any overflow will impact the other color channels as the math operation is not done per channel. Example, a LED value of 0xDDEEFF is 0xDD red, 0xEE green, and 0xFF blue, adding +2 would result in blue looping to 0x01 and the overflow would impact green causing it to become 0xEF.
+
+LED_T* and LED_B* entries in version 2 take a 0x00 to 0xFF value for brightness, they do not have any color settings. Attempts to read a channel for these will all give the same value for the current LED.
 
 You can also use the version 1 naming scheme when in version 1 mode which only gives acess to a _0.00_ to _100.0_ range for the LED value.
 
@@ -299,3 +305,6 @@ During compilation any internal name references are mapped to the appropriate va
 
 ### Goto
 The 2 bytes following the command are the byte location inside of the script data to jump to
+
+## Extra details
+The very first 2 bytes of the binary format is a mask of what leds the lightshow makes use of before actual commands start

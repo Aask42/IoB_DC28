@@ -40,7 +40,7 @@ class LEDsInternal : public LEDs
         {
             uint16_t Channel;
             uint16_t OverrideValue;
-            unsigned long OverrideTime;
+            uint64_t OverrideTime;
             uint16_t CurrentVal;
             bool Enabled;
         } LEDInfoStruct;
@@ -51,7 +51,7 @@ class LEDsInternal : public LEDs
             uint16_t CurrentVal;
             uint16_t EndVal;
             uint16_t Time;              //how long the animation should take
-            unsigned long StartTime;
+            uint64_t StartTime;
         } ScriptLEDInfoStruct;
 
         typedef struct ScriptInfoStruct
@@ -60,7 +60,7 @@ class LEDsInternal : public LEDs
             const uint8_t *data;
             uint16_t len;
             uint16_t active_pos;
-            unsigned long DelayEndTime;
+            uint64_t DelayEndTime;
             uint8_t StopSet;
             bool active;
             bool TempOverride;
@@ -73,7 +73,9 @@ class LEDsInternal : public LEDs
             ScriptInfoStruct *next;
         } ScriptInfoStruct;
 
+#if BOI_VERSION == 1
         void set_led_pin(LEDEnum led, uint8_t pin, uint8_t ledChannel);
+#endif
         uint16_t GetLevel(ScriptInfoStruct *cur_script, uint8_t Command);
         void SetLED(ScriptInfoStruct *cur_script, uint8_t entry);
         void ReadAmbientSensor();
@@ -87,7 +89,7 @@ class LEDsInternal : public LEDs
         uint16_t GlobalVariables[16];
         LEDCallbackFunc Callback;
         uint16_t AmbientSensorValue;
-        unsigned long LastAmbientReading;
+        uint64_t LastAmbientReading;
         uint16_t MaxBrightness;
         float MaxBrightnessPercent;
         uint8_t LEDCap;

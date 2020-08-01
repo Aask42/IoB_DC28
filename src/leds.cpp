@@ -1,5 +1,10 @@
 #include "leds_internal.h"
 #include <Preferences.h>
+#include "app.h"
+
+#if BOI_VERSION == 2
+#include "boi/spi_parser.h"
+#endif
 
 LEDsInternal *_globalLEDs;
 pthread_mutex_t led_lock;
@@ -33,6 +38,7 @@ LEDsInternal::LEDsInternal(LEDCallbackFunc Callback, bool DisableThread)
     memset(this->leds, 0, sizeof(this->leds));
 
     // LED assignment of pin and ledChannel
+#if BOI_VERSION == 1
     this->set_led_pin(LED_LEV20, LED_LEV20_PIN, 0);
     this->set_led_pin(LED_LEV40, LED_LEV40_PIN, 1);
     this->set_led_pin(LED_LEV60, LED_LEV60_PIN, 2);
@@ -43,13 +49,22 @@ LEDsInternal::LEDsInternal(LEDCallbackFunc Callback, bool DisableThread)
     this->set_led_pin(LED_POUT, LED_POUT_PIN, 7);
     this->set_led_pin(LED_STAT, LED_STAT_PIN, 8);
     this->set_led_pin(LED_STAT2, LED_STAT2_PIN, 9);
+#elif BOI_VERSION == 2
+    for(int i = 0; i < LED_Count; i++)
+    {
+        this->leds[i].Channel = i;
+        this->leds[i].Enabled = 1;
+    }
+#endif
 
     //allocate a default led setup
     script = (ScriptInfoStruct *)malloc(sizeof(ScriptInfoStruct));
     memset(script, 0, sizeof(ScriptInfoStruct));
 
+#if BOI_VERSION == 1
     //setup LED_STAT2 pin so that we can use STAT properly
     ledcWrite(this->leds[LED_STAT2].Channel, MAX_RESOLUTION); // - 1000);
+#endif
 
     //set a default ID and assign to the script list
     script->ID = 0xff;
@@ -81,7 +96,7 @@ LEDsInternal::LEDsInternal(LEDCallbackFunc Callback, bool DisableThread)
         return;
     }
 }
-
+#if BOI_VERSION == 1
 void LEDsInternal::set_led_pin(LEDEnum led, uint8_t pin, uint8_t ledChannel)
 {
     this->leds[led].Channel = ledChannel;
@@ -94,6 +109,7 @@ void LEDsInternal::set_led_pin(LEDEnum led, uint8_t pin, uint8_t ledChannel)
     //turn the LED off, MAX results in full off, 0 is full bright
     ledcWrite(this->leds[led].Channel, MAX_RESOLUTION);
 }
+#endif
 
 uint16_t LEDsInternal::GetLevel(ScriptInfoStruct *cur_script, uint8_t Command)
 {
@@ -432,8 +448,8 @@ void LEDsInternal::Run()
         {
             float Gap;
             float PerStepIncrement;
-            unsigned long CurrentTime = esp_timer_get_time() / 1000;
-            unsigned long LapsedTime;
+            uint64_t CurrentTime = esp_timer_get_time() / 1000;
+            uint64_t LapsedTime;
 
             //see if we need to adjust over time
             if(this->leds[i].OverrideTime)
@@ -485,7 +501,7 @@ void LEDsInternal::Run()
             if(i == LED_STAT)
             {
                 //it is stat, see if the current value is low enough to turn off briefly
-                unsigned long CurTime = esp_timer_get_time();
+                uint64_t CurTime = esp_timer_get_time();
 
                 //5 seconds since last read and light is 5% or lower, go read
                 if(((this->LastAmbientReading + 5000000ULL) <= CurTime) && (cur_script->leds[i].CurrentVal <= 500))
@@ -495,6 +511,11 @@ void LEDsInternal::Run()
             }
             */
         }
+
+#if BOI_VERSION == 2
+        //update the LEDs
+        SPIHandler->Communicate();
+#endif
 
         yield();
         delay(10);
@@ -563,7 +584,11 @@ void LEDsInternal::SetLED(ScriptInfoStruct *cur_script, uint8_t entry)
         (cur_script && cur_script->TempOverride && (cur_script->LEDMask & (1 << entry))))
     {
         this->leds[entry].CurrentVal = TempNewBrightness;
+#if BOI_VERSION == 1
         ledcWrite(this->leds[entry].Channel, FinalBrightness);
+#elif BOI_VERSION == 2
+    SPIHandler->SetRGBLed(this->leds[entry].Channel, FinalBrightness);
+#endif
     }
 }
 
@@ -659,6 +684,11 @@ void LEDsInternal::StopScript(uint16_t ID)
         }
 
         pthread_mutex_unlock(&led_lock);
+
+#if BOI_VERSION == 2
+        //update the LEDs
+        SPIHandler->Communicate();
+#endif
     }
 }
 
@@ -846,6 +876,10 @@ void LEDsInternal::SetLEDValue(LEDEnum LED, float Value, uint32_t LengthMS)
     else
         this->leds[LED].OverrideTime = (esp_timer_get_time() / 1000) + LengthMS;
     this->SetLED(0, LED);
+
+#if BOI_VERSION == 2
+    SPIHandler->Communicate();
+#endif
 }
 
 uint16_t LEDsInternal::GetAmbientSensor()
@@ -880,6 +914,11 @@ void LEDsInternal::SetLEDBrightness(float BrightnessPercent)
     //force all LEDs to set their brightness accordingly
     for(i = 0; i < LEDEnum::LED_Count; i++)
         this->SetLED(this->FindScriptForLED(i), i);
+
+#if BOI_VERSION == 2
+    //update the LEDs
+    SPIHandler->Communicate();
+#endif
 }
 
 float LEDsInternal::GetLEDBrightness()
@@ -909,6 +948,11 @@ void LEDsInternal::SetLEDCap(uint8_t Count)
     //force all refreshed
     for(i = LED_LEV20; i <= LED_LEV100; i++)
         this->SetLED(this->FindScriptForLED(i), i);
+
+#if BOI_VERSION == 2
+    //update the LEDs
+    SPIHandler->Communicate();
+#endif
 
     pthread_mutex_unlock(&led_lock);
 }
