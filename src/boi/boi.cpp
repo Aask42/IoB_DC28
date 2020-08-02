@@ -486,10 +486,10 @@ int boi::doDigitalRead(uint8_t pin, bool Button)
     switch(pin)
     {
         case BTN_PWR:
-            return SPIData.Btn0Pressed;
+            return SPIData.Btn1Pressed;
 
         case BTN_ACT:
-            return SPIData.Btn1Pressed;
+            return SPIData.Btn0Pressed;
 
         case RDY_4056_PIN:
         case CHRG_4056_PIN:

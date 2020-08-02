@@ -178,6 +178,8 @@ void boi_wifi::Reconfigure(const OptionsStruct *Options)
 
 void boi_wifi::setup_captive_portal(const OptionsStruct *Options){
     const byte        DNS_PORT = 53;          // Capture DNS requests on port 53
+    // TODO: Update to internal ip address
+    // WiFi.localIP();
     IPAddress         apIP(1, 1, 1, 1);    // Private network for server
 
     if(this->ServerCheckThread)
@@ -242,8 +244,8 @@ void boi_wifi::enter_safe_mode_with_networking(const OptionsStruct *Options){
     {
         Serial.println("Failed to set wifi mode");
     }
-
-    WiFi.begin("stupid_network","stupid_password");
+    
+    WiFi.begin(Options->SafeModeWifiName,Options->SafeModeWifiPassword);
     int counter =0;
     while (WiFi.status() != WL_CONNECTED) {
         delay(1000);
