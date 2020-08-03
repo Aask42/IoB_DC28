@@ -12,10 +12,11 @@ boi_wifi::WifiModeEnum Mode;
 RequestHandler::RequestHandler() {}
 
 bool RequestHandler::canHandle(AsyncWebServerRequest *request){
-    
-    // TODO: Update to pull the IP address from preferences
-    
-    if(request->host() == "1.1.1.1")
+    //TODO add switch to check if Captive Portal, to do this, else continue using cloudflare dns 1.1.1.1
+    IPAddress ip_address = WiFi.localIP();
+    String address_string = String(ip_address[0]) + String(".") +  String(ip_address[1]) + String(".") +  String(ip_address[2]) + String(".") +  String(ip_address[3]);
+
+    if(request->host() == address_string)
     {
         request->addInterestingHeader("Cache-Control: no-cache, no-store, must-revalidate");
         request->addInterestingHeader("Pragma: no-cache");
