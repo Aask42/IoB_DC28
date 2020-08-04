@@ -58,7 +58,6 @@ void send_post_to_battery_internet(const char *message, unsigned int length){
                 esp_http_client_get_status_code(client),
                 esp_http_client_get_content_length(client));
     }
-
     esp_http_client_cleanup(client);
 
 }

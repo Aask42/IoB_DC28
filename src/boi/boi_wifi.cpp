@@ -177,12 +177,10 @@ void boi_wifi::Reconfigure(const OptionsStruct *Options)
 }
 
 void boi_wifi::setup_captive_portal(const OptionsStruct *Options){
-    const byte DNS_PORT = 53; // Capture DNS requests on port 53
-    //TODO: Identify if ip_address && apIP are totally redundant, IPAddress 
-        // has multiple constructors that accept ip data, doubt there is a difference in 
-        // features available based on constructor used
-    IPAddress ip_address = WiFi.localIP(); //captive portal uses self ip
-    IPAddress apIP(ip_address[0], ip_address[1], ip_address[2], ip_address[3]); // Private network for server
+    const byte        DNS_PORT = 53;          // Capture DNS requests on port 53
+    // TODO: Update to internal ip address
+    // WiFi.localIP();
+    IPAddress apIP(1, 1, 1, 1);    // Private network for server
 
     if(this->ServerCheckThread)
     {

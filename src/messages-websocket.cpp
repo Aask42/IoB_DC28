@@ -177,9 +177,12 @@ bool MessagesInternal::handleWebSocketData(uint8_t *data, size_t len)
 
             //step ahead
             CurPos = DividingChar + 1;
+            DividingChar = strchr(CurPos, '\x01');
+            if(!DividingChar)
+                break;
 
             //copy the string at the end of the buffer
-            CharCount = (char *)&data[len] - CurPos;
+            CharCount = DividingChar - CurPos;
             if((CharCount < 8) || (CharCount > sizeof(this->Options.WifiPassword) - 1))
             {
                 ErrorMsg = "eWifi password must be between 8 and 20 characters";
@@ -189,6 +192,12 @@ bool MessagesInternal::handleWebSocketData(uint8_t *data, size_t len)
 
             memcpy(NewOptions.WifiPassword, CurPos, CharCount);
             NewOptions.WifiPassword[sizeof(OptionsStruct::WifiPassword) - 1] = 0;
+
+            //step ahead
+            CurPos = DividingChar + 1;
+            DividingChar = strchr(CurPos, '\x01');
+            if(!DividingChar)
+                break;
             
             //copy the string
             CharCount = DividingChar - CurPos;
