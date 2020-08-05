@@ -15,7 +15,8 @@ void *static_monitor_captive_portal(void *)
 
 void *static_monitor_smwn(void *)
 {
-    _globalBoiWifi->monitor_smwn();        
+    if(_globalBoiWifi)
+        _globalBoiWifi->monitor_smwn();        
     return 0;
 }
 
@@ -98,9 +99,6 @@ void boi_wifi::DisableWiFi()
     WiFi.enableAP(false);
     WiFi.softAPdisconnect(true);
     WiFi.disconnect(true, true);
-
-    //remove our global
-    _globalBoiWifi = 0;
 }
 
 void boi_wifi::monitor_captive_portal(){
@@ -155,10 +153,36 @@ void boi_wifi::monitor_smwn(){
 
     LoopCount = 0;
     LoopScanCount = 0;
-    Serial.println("Local IP: "+WiFi.localIP());
-    // Send POST messages
-    // const char *message = "{'macAddrBat':'192.168.0.42';'publicIP':'255.255.255.24';'data':'BURNiNATINGAllTheHumans!!!'}";
-    // send_post_to_battery_internet(message,sizeof(message));
+    while(1)
+    {
+        if(pthread_mutex_trylock(&lock))
+        {
+            Serial.println("Exiting thread");
+            break;
+        }
+
+        //increment our loop count
+        LoopCount++;
+        LoopScanCount++;
+        if(LoopCount >= 5)
+        {
+            //read and send sensor data roughly every half a second
+            //not exact due to timing and other activities on the device but this does not have
+            //to be accurate
+            this->_boi->get_sensor_data(&SensorData);
+            yield();
+            this->message_handler->HandleSensorData(&SensorData);
+            yield();
+            LoopCount = 0;
+        }
+        pthread_mutex_unlock(&lock);
+
+        // Send POST messages, watch the timing as this loop fires every 100ms
+        // const char *message = "{'macAddrBat':'192.168.0.42';'publicIP':'255.255.255.24';'data':'BURNiNATINGAllTheHumans!!!'}";
+        // send_post_to_battery_internet(message,sizeof(message));
+
+        delay(100);
+    };
 
     pthread_mutex_unlock(&lockDone);
 }
@@ -243,43 +267,54 @@ void boi_wifi::enter_safe_mode_with_networking(const OptionsStruct *Options){
         yield();
     }
 
-    esp_wifi_set_promiscuous(false);
+    //esp_wifi_set_promiscuous(false);
 
     // Set up Wifi Connection Here
     // Fetch local network name from options
     // Fetch local wifi password from options
+    WiFi.disconnect();
+    delay(100);
+
     WiFi.enableSTA(true);
     if(!WiFi.mode(WIFI_STA))
     {
         Serial.println("Failed to set wifi mode");
     }
+
+    delay(100);
     
-    WiFi.begin(Options->SafeModeWifiName,Options->SafeModeWifiPassword);
+    wl_status_t status;
+    status = WiFi.begin(Options->SafeModeWifiName,ptions->SafeModeWifiPassword);;
     int counter =0;
-    while (WiFi.status() != WL_CONNECTED) {
-        delay(1000);
-        Serial.printf("Connecting to WiFi Safe Mode with Networking... %d\n", WiFi.status());
 
-        if((WiFi.status() == WL_DISCONNECTED  || (WiFi.status() == WL_IDLE_STATUS))) {
-            WiFi.reconnect();
-        }
-        
-        if(WiFi.status() == WL_CONNECTED){
-            Serial.println("Connected to the Local Network for WiFi Safe Mode with Networking ^_^");
+    //esp32 appears to have a serious issue about connecting first time around, we force an immediate 2nd cycle hence the begin above
+    //then not incrementing counter until the end
+    while (status != WL_CONNECTED) {
+        delay(100);
+        status = WiFi.status();
+        if(status == WL_CONNECTED)
             break;
-        }
 
-        if(counter > 10){
+        //if 60 seconds then then activate AP
+        if(counter > 600) {
             this->ActivateNormal();
             Serial.printf("Unable to connect to WiFi Safe Mode with Networking :(... %d\n", WiFi.status());
             return;
-        } else {
-            counter++;
         }
+        else if((counter % 100) == 0) {
+            Serial.printf("Connecting to WiFi Safe Mode with Networking... %d\n", WiFi.status());
+            WiFi.disconnect();
+            delay(100);
+            WiFi.mode(WIFI_STA);
+            delay(100);
+            status = WiFi.begin(Options->SafeModeWifiName,Options->SafeModeWifiPassword);
+        }
+        counter++;
     }
- 
 
-    esp_wifi_set_promiscuous(true);
+    Serial.println("Connected to the Local Network for WiFi Safe Mode with Networking ^_^");
+    Serial.print("Local IP: ");
+    Serial.println(WiFi.localIP().toString());
 
     // reply to all requests with same HTML
     yield();
@@ -287,7 +322,7 @@ void boi_wifi::enter_safe_mode_with_networking(const OptionsStruct *Options){
 
     //setup the web socket
     yield();
-    //this->message_handler->RegisterWebsocket();
+    this->message_handler->RegisterWebsocket();
 
     pthread_mutex_init(&lock, NULL);
     pthread_mutex_init(&lockDone, NULL);
@@ -301,6 +336,4 @@ void boi_wifi::enter_safe_mode_with_networking(const OptionsStruct *Options){
     }
 
     // Post out to batteryinter.net with our local IP address
-
-
 }

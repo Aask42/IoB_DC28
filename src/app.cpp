@@ -156,7 +156,7 @@ void setup(void) {
   //setup params
   Prefs->begin("options");
   Prefs->getBytes("lightshows", ModeSelectedLED, sizeof(ModeSelectedLED));
-  WifiState = Prefs->getUChar("wifi", boi_wifi::NormalMode);
+  WifiState = boi_wifi::SafeModeWithNetworking; //Prefs->getUChar("wifi", boi_wifi::NormalMode);
   Prefs->end();
 
   // initialize boi
