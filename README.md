@@ -1,5 +1,5 @@
 # Internet of Batteries: DEF CON 28 - On a mission from RNG
-__BoI | Definition: Noun, Battery of Internets__
+__BoI | Definition: Noun, Battery of Internets__ (Because you always wanted to connect a battery to the internet)
 
 Welcome to the Internet of Batteries: DEF CON 28 Edition! We're back for our 2nd year after being told that the SAO standard "doesn't support" a battery back-powering the circuit on the VCC. Last year we successfully brought you a badge/add-on hybrid to support powering devices through both FEMALE and MALE headers, and this year we've iterated on that concept to bring you an updated model including a Cypress PSOC5, RGB, MORE LEDs, MORE colors, MORE  capacity, MORE CLOUD, and an updated version of our WiFi mesh network to enable Safe Mode w/ Networking.
 
@@ -19,6 +19,29 @@ To view power usage statistics users connect to the __Captive Arcade<sup>TM</sup
 5. Solder headers (make sure to orient to VCC on the SQUARE pad)
 6. Show off in #linecon (discord.gg/DEFCON)
 7. See you @ DEFCON 29!
+
+## Features
+
+### Tech Specs:
+
+- ESP32 WiFi Battery Processor
+- PSoC5 LP analog / lightshow / comms controller
+- INA199 current sense, capable of 750mA peak sense
+- Very rushed hardware and firmware engineered by total hacks
+
+### What does it all do?
+
+- This is a badge...or is it an add-on?
+- In badge mode, measures total current of add-ons and logs power consumption
+- In add-on mode, measures its own current
+- Is capable of back-powering a badge through the add-on header**
+- RGB lights show useful information or fun light shows
+- Touch sensors to activate battery gauge, light show, and backpower enabling modes
+- Other indicator lights show power enable status and low battery*
+- For 2020 we're in Safe Mode with Networking. The old WiFi mesh, Itero, has been upgraded to be more global... the IoB is IoT!
+
+* Low battery indicator / shutoff mode not yet implemented. Will require MCU FW update to enable.
+** ALL RISKS OF BACKPOWERING ARE TAKEN BY YOU. NOT LIABLE FOR ANY FIRES, DAMAGE, INTERNET WORMS, BLACK HOLES, OR ANYTHING ELSE GOOD OR BAD AS A RESULT OF USING THIS FEATURE
 
 ## Better Instructions
 
