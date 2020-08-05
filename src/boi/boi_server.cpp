@@ -46,6 +46,10 @@ void RequestHandler::handleRequest(AsyncWebServerRequest *request) {
                 request->send(200, "text/html", HTMLWebsiteData);
                 break;
 
+            case boi_wifi::SafeModeWithNetworking:
+                request->send(200, "text/html", HTMLWebsiteData);
+                break;
+
             case boi_wifi::PartyMode:
                 request->send(200, "text/html", HTMLPartyData);
                 break;

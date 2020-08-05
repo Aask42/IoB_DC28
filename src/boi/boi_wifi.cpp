@@ -13,6 +13,12 @@ void *static_monitor_captive_portal(void *)
     return 0;
 }
 
+void *static_monitor_smwn(void *)
+{
+    _globalBoiWifi->monitor_smwn();        
+    return 0;
+}
+
 
 boi_wifi::boi_wifi(boi *boiData, Messages *message_handler, WifiModeEnum NewMode)
 {
@@ -180,7 +186,10 @@ void boi_wifi::setup_captive_portal(const OptionsStruct *Options){
     const byte        DNS_PORT = 53;          // Capture DNS requests on port 53
     // TODO: Update to internal ip address
     // WiFi.localIP();
-    IPAddress apIP(1, 1, 1, 1);    // Private network for server
+    IPAddress ip_address = WiFi.localIP(); //captive portal uses self ip
+
+    //IPAddress apIP(ip_address[0], ip_address[1], ip_address[2], ip_address[3]); // Private network for server
+    IPAddress apIP(1,1,1,1); // Private network for server
 
     if(this->ServerCheckThread)
     {
@@ -251,9 +260,15 @@ void boi_wifi::enter_safe_mode_with_networking(const OptionsStruct *Options){
         delay(1000);
         Serial.printf("Connecting to WiFi Safe Mode with Networking... %d\n", WiFi.status());
 
-        if((WiFi.status() == WL_DISCONNECTED) || (WiFi.status() == WL_IDLE_STATUS)) {
+        if((WiFi.status() == WL_DISCONNECTED  || (WiFi.status() == WL_IDLE_STATUS))) {
             WiFi.reconnect();
         }
+        
+        if(WiFi.status() == WL_CONNECTED){
+            Serial.println("Connected to the Local Network for WiFi Safe Mode with Networking ^_^");
+            break;
+        }
+
         if(counter > 10){
             Serial.printf("Unable to connect to WiFi Safe Mode with Networking :(... %d\n", WiFi.status());
             return;
@@ -262,7 +277,6 @@ void boi_wifi::enter_safe_mode_with_networking(const OptionsStruct *Options){
         }
     }
  
-    Serial.println("Connected to the WiFi for Safe Mode with Networking");
 
     esp_wifi_set_promiscuous(true);
 
@@ -278,7 +292,7 @@ void boi_wifi::enter_safe_mode_with_networking(const OptionsStruct *Options){
     pthread_mutex_init(&lockDone, NULL);
 
     //setup our thread that will re-send messages that haven't been ack'data
-    if(pthread_create(&this->ServerCheckThread, NULL, static_monitor_captive_portal, 0))
+    if(pthread_create(&this->ServerCheckThread, NULL, static_monitor_smwn, 0))
     {
         //failed
         Serial.println("Failed to setup ServerCheck thread");
