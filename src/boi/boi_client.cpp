@@ -1,9 +1,18 @@
 #include "boi_wifi.h"
-#include "esp_http_client.h"
+#include <WiFiMulti.h>
+#include <HTTPClient.h>
+#include <WiFiClientSecure.h>
+//#include "esp_http_client.h"
+
 
 void send_post_to_battery_internet(const char *message, unsigned int length){
-    const char* uri = "https://batteryinter.net";
+
+    // Create our HTTP client with which we will be making REST calls
+    HTTPClient http;   
     
+    // Set the endpoint we're looking for, in this case, batteryinter.net
+    const char* uri = "https://batteryinter.net";
+
     const char* CAcert = "-----BEGIN CERTIFICATE-----"\
 "MIIFPjCCBCagAwIBAgIQJ3fuKjxlyakKAAAAAEuOjDANBgkqhkiG9w0BAQsFADBC"\
 "MQswCQYDVQQGEwJVUzEeMBwGA1UEChMVR29vZ2xlIFRydXN0IFNlcnZpY2VzMRMw"\
@@ -35,17 +44,55 @@ void send_post_to_battery_internet(const char *message, unsigned int length){
 "uIPNal/5Snl4vC+JIJGXfQvxWcQukTlBPHBwTPJsx5SL9nPLn8akD2+TFhQcOAbm"\
 "Q+s="\
 "-----END CERTIFICATE-----";
-    esp_http_client_config_t config;
-    
-    memset(&config, 0, sizeof(config));
-    config.url = uri;
-    config.cert_pem = CAcert;
-    config.method = HTTP_METHOD_POST;
+    Serial.println("Beginning to build HTTP object up");
+    // Build up our HTTP object
 
-    String data; 
-    data = "[{'data'='"; 
-    data += (char *)message; 
-    data += "'}]";
+    http.setConnectTimeout(15000);
+    http.begin(uri,CAcert);  //Specify destination for HTTP request
+    sleep(15);
+    if( http.connected() == false ) {
+        Serial.println("http.begin() failed!"); //debug
+
+        Serial.println(http.getString().c_str());
+        http.end();
+
+        return;
+    }
+    
+    Serial.println("Adding header to the HTTP obj");
+
+    http.addHeader("Content-Type", "text/plain");   
+//
+    Serial.println("Attempting to GET, wish me luck!");
+    //int httpCode = http.POST("POSTING from ESP32, hoping this freaking works");   //Send the actual POST request
+    int httpCode = http.GET();   //Send the actual POST request
+    //
+    //httpCode will be negative on error
+    if(httpCode > 0) {
+        // HTTP header has been send and Server response header has been handled
+        // file found at server
+        if(httpCode == HTTP_CODE_OK) {
+            String payload = http.getString();
+            Serial.println(payload);
+        }
+    } else {
+        Serial.printf("[HTTP] POST to %s... failed\n", uri);
+        Serial.printf("Error: %s\n", http.errorToString(httpCode).c_str());
+    }
+
+    Serial.println("Stopping HTTP client");
+    http.end();
+    //esp_http_client_config_t config;
+    
+    //memset(&config, 0, sizeof(config));
+    //config.url = uri;
+    //config.cert_pem = CAcert;
+    //config.method = HTTP_METHOD_POST;
+//
+    //String data; 
+    //data = "[{'data'='"; 
+    //data += (char *)message; 
+    //data += "'}]";
 
     //esp_http_client_handle_t client = esp_http_client_init(&config);
     //esp_http_client_set_post_field(client, data.c_str(),(int) data.length());

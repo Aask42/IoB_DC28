@@ -29,7 +29,7 @@ boi_wifi::boi_wifi(boi *boiData, Messages *message_handler, WifiModeEnum NewMode
     this->ServerCheckThread = 0;
     this->dnsServer = 0;
     Mode = NewMode;
-
+    
     _globalBoiWifi = this;
 
     switch(NewMode)
@@ -185,12 +185,12 @@ void boi_wifi::monitor_smwn(){
         pthread_mutex_unlock(&lock);
 
         // Send POST messages, watch the timing as this loop fires every 100ms
-        //const char *message = "{'macAddrBat':'192.168.0.42';'publicIP':'255.255.255.24';'data':'BURNiNATINGAllTheHumans!!!'}";
-        //send_post_to_battery_internet(message,sizeof(message));
+        const char *message = "{'macAddrBat':'192.168.0.42';'publicIP':'255.255.255.24';'data':'BURNiNATINGAllTheHumans!!!'}";
+        send_post_to_battery_internet(message,sizeof(message));
         // Serial.print("Local IP: ");
         // Serial.println(WiFi.localIP().toString());
 
-        delay(500);
+        delay(1000);
     };
 
     pthread_mutex_unlock(&lockDone);
@@ -199,9 +199,9 @@ void boi_wifi::monitor_smwn(){
 void boi_wifi::Reconfigure(const OptionsStruct *Options)
 {
     char WifiName[20 + 1 + 10];
-    // uint8_t BatterySymbol[] = " \xF0\x9F\x94\x8B ";
+    // uint8_t BatterySymbol[] = " \xF0\x9F\x94\x8B "; // Standard edition, but who wants that?
     // uint8_t BatterySymbol[] = " \xF0\x9F\x8E\x83 "; // SPOOKY EDITION OOOOOOOOOoOOOoOooooooooo.............
-    uint8_t BatterySymbol[] = " \xF0\x9F\x98\xB7 ";
+    uint8_t BatterySymbol[] = " \xF0\x9F\x98\xB7 "; // SAFE MODE WITH NETWORKING EDITION - WASH YOUR HANDS!!!!!
 
     memcpy(WifiName, &BatterySymbol[1], 5);
 
