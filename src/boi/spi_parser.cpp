@@ -79,8 +79,8 @@ void SPIParser::SetGATPower(bool Enable)
 void SPIParser::GenerateSPIDataStruct(SPIDataStruct *Data)
 {
     //fill everything in
-    Data->Btn0Pressed = (this->InSPIBuffer[1] & 0x01);
-    Data->Btn1Pressed = (this->InSPIBuffer[1] & 0x02);
+    Data->BtnPressed[0] = (this->InSPIBuffer[1] & 0x01);
+    Data->BtnPressed[1] = (this->InSPIBuffer[1] & 0x02);
     Data->SliderPressed = (this->InSPIBuffer[1] & 0x04);
     Data->GATPowerEnabled = (this->InSPIBuffer[1] & 0x80);
     Data->SliderPos = this->InSPIBuffer[2];

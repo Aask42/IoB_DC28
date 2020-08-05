@@ -270,6 +270,7 @@ void boi_wifi::enter_safe_mode_with_networking(const OptionsStruct *Options){
         }
 
         if(counter > 10){
+            this->ActivateNormal();
             Serial.printf("Unable to connect to WiFi Safe Mode with Networking :(... %d\n", WiFi.status());
             return;
         } else {

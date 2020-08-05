@@ -13,8 +13,7 @@ class SPIParser
         {
             bool GATPowerEnabled;
             bool SliderPressed;
-            bool Btn0Pressed;
-            bool Btn1Pressed;
+            bool BtnPressed[2];
             uint8_t SliderPos;
             float BatteryVoltage;
             float GATVoltage;
