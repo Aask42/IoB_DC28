@@ -100,7 +100,7 @@ void setup(void) {
   DoSafeBoot = (digitalRead(BTN_ACT_PIN) == 0);
 #elif BOI_VERSION == 2
   BatteryPower = SPIData.BatteryVoltage;
-  DoSafeBoot = SPIData.Btn0Pressed;
+  DoSafeBoot = SPIData.BtnPressed[0];
 #endif
   if(DoSafeBoot || (BatteryPower < 3.7))
   {
@@ -325,6 +325,7 @@ void loop() {
     // Attempt to toggle backpower
     Battery->toggle_backpower();
   }
+#if BOI_VERSION == 1
   else if(Battery->button_pressed(boi::BTN_BONUS))
   {
     // Only trigger on the first time around
@@ -476,6 +477,7 @@ void loop() {
       }
     }
   }
+#endif
 
   //if we are in nodecount or wifi is active then do a scan every 30 seconds
   if((CurrentMode == NodeCountMode) || BatteryWifi)

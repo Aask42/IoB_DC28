@@ -186,6 +186,10 @@ boi::boi(){
 
     pinMode(VGAT_DIV_PIN,INPUT_PULLUP);        
     pinMode(VBAT_DIV_PIN,INPUT_PULLUP);
+#elif BOI_VERSION == 2
+    // Button assignment
+    this->set_button_pin(boi::BTN_PWR, 1);
+    this->set_button_pin(boi::BTN_ACT, 0);
 #endif
 
     pinMode(RDY_4056_PIN,INPUT);
@@ -313,6 +317,8 @@ void boi::toggle_backpower(){
      int current_detected;
 #if BOI_VERSION == 1
     current_detected = ina219.getCurrent_mA();
+#elif BOI_VERSION == 2
+    current_detected = SPIData.GATCurrent;
 #endif
 
     // Check current power-draw through INA219, print if above zero
@@ -485,11 +491,9 @@ int boi::doDigitalRead(uint8_t pin, bool Button)
     //figure out which return to give
     switch(pin)
     {
-        case BTN_PWR:
-            return SPIData.Btn1Pressed;
-
-        case BTN_ACT:
-            return SPIData.Btn0Pressed;
+        case 0:
+        case 1:
+            return SPIData.BtnPressed[pin];
 
         case RDY_4056_PIN:
         case CHRG_4056_PIN:
