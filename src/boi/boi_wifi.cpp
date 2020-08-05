@@ -47,7 +47,14 @@ boi_wifi::boi_wifi(boi *boiData, Messages *message_handler, WifiModeEnum NewMode
             return;
 
         case boi_wifi::SafeModeWithNetworking:
-            this->ActivateSafeModeWithNetworking();
+            if(Mode == boi_wifi::SafeModeWithNetworking)
+            {
+                this->ActivateSafeModeWithNetworking();
+            }
+            else
+            {
+                this->ActivateNormal();
+            }
             return;
 
         default:
@@ -178,10 +185,12 @@ void boi_wifi::monitor_smwn(){
         pthread_mutex_unlock(&lock);
 
         // Send POST messages, watch the timing as this loop fires every 100ms
-        // const char *message = "{'macAddrBat':'192.168.0.42';'publicIP':'255.255.255.24';'data':'BURNiNATINGAllTheHumans!!!'}";
-        // send_post_to_battery_internet(message,sizeof(message));
+        //const char *message = "{'macAddrBat':'192.168.0.42';'publicIP':'255.255.255.24';'data':'BURNiNATINGAllTheHumans!!!'}";
+        //send_post_to_battery_internet(message,sizeof(message));
+        // Serial.print("Local IP: ");
+        // Serial.println(WiFi.localIP().toString());
 
-        delay(100);
+        delay(500);
     };
 
     pthread_mutex_unlock(&lockDone);
@@ -284,7 +293,7 @@ void boi_wifi::enter_safe_mode_with_networking(const OptionsStruct *Options){
     delay(100);
     
     wl_status_t status;
-    status = WiFi.begin(Options->SafeModeWifiName,ptions->SafeModeWifiPassword);;
+    status = WiFi.begin(Options->SafeModeWifiName,Options->SafeModeWifiPassword);;
     int counter =0;
 
     //esp32 appears to have a serious issue about connecting first time around, we force an immediate 2nd cycle hence the begin above
@@ -296,7 +305,7 @@ void boi_wifi::enter_safe_mode_with_networking(const OptionsStruct *Options){
             break;
 
         //if 60 seconds then then activate AP
-        if(counter > 600) {
+        if(counter > 100) {
             this->ActivateNormal();
             Serial.printf("Unable to connect to WiFi Safe Mode with Networking :(... %d\n", WiFi.status());
             return;
