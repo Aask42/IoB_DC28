@@ -46,16 +46,16 @@ boi_wifi::boi_wifi(boi *boiData, Messages *message_handler, WifiModeEnum NewMode
             this->ActivateRick();
             return;
 
-        case boi_wifi::SafeModeWithNetworking:
-            if(Mode == boi_wifi::SafeModeWithNetworking)
-            {
-                this->ActivateSafeModeWithNetworking();
-            }
-            else
-            {
-                this->ActivateNormal();
-            }
-            return;
+        //case boi_wifi::SafeModeWithNetworking:
+        //    if(Mode == boi_wifi::SafeModeWithNetworking)
+        //    {
+        //        this->ActivateSafeModeWithNetworking();
+        //    }
+        //    else
+        //    {
+        //        this->ActivateNormal();
+        //    }
+        //    return;
 
         default:
             this->ActivateNormal();

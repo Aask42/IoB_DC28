@@ -289,17 +289,17 @@ void loop() {
       Prefs->putBool("wifi", false);
       Prefs->end();
     }
-    else if(DoublePress_ACT == 3)
+    // else if(DoublePress_ACT == 3)
+    // {
+    //   BatteryWifi = new boi_wifi(Battery, MessageHandler, boi_wifi::SafeModeWithNetworking);
+    // }
+    else if(DoublePress_ACT == 2)
     {
       BatteryWifi = new boi_wifi(Battery, MessageHandler, boi_wifi::BusinessCardMode);
     }
-    else if(DoublePress_ACT == 2)
-    {
-      BatteryWifi = new boi_wifi(Battery, MessageHandler, boi_wifi::NormalMode);
-    }
     else
     {
-      BatteryWifi = new boi_wifi(Battery, MessageHandler, boi_wifi::SafeModeWithNetworking);
+      BatteryWifi = new boi_wifi(Battery, MessageHandler, boi_wifi::NormalMode);
     }
     LastButtonPressTime = 0;
     DoublePress_ACT = 0;

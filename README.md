@@ -54,8 +54,8 @@ Button | Description | Actions
 -|-|-
 RESET | This button is located on the BACK of the DEF CELL, at the top to the RIGHT of the ESP32 | This resets the Boi
 PROG | This button is located on the BACK of the DEF CELL, at the top to the RIGHT of the ESP32 | This is only used when programming the Cypress PSOC5
-DEF | Cycle mode, 2x toggles between __Safe Mode__ & __Captive Arcade<sup>TM</sup>__| Touch DEF 1x : Capacity -> Node Count -> Party!!! <br/><br/>Touch DEF 2x : Toggle Captive Arcade/Safe Mode with Networking
-CELL | Toggles backpower on SAO rail on/off | Auto-off if voltage is detected going the wrong way across the SHUNT resistor
+DEF | Cycle mode, 2x toggles between  __Captive Arcade<sup>TM</sup>__| Touch DEF 1x : Capacity -> Node Count -> Party!!! <br/><br/>Touch DEF 2x : Toggle Captive Arcade
+CELL | Toggles backpower on Add-on rail on/off | Auto-off if voltage is detected going the wrong way across the SHUNT resistor
 SLIDER | Not yet implemented | Not yet implemented
 
 ## Boot Order

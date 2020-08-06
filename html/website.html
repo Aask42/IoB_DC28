@@ -1435,7 +1435,7 @@
 
         //TODO: Update to have dynamic IP pulled from preferences
         var ip = getLocalAddr();
-        var ws = new WebSocket("ws://192.168.43.161/ws", ['arduino']);
+        var ws = new WebSocket("ws://1.1.1.1/ws", ['arduino']);
         
         ws.binaryType = 'arraybuffer';
         ws.onmessage = HandleWSMessage;
