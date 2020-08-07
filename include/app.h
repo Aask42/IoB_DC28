@@ -26,7 +26,7 @@ extern LEDs *LEDHandler;
 extern Messages *MessageHandler;
 
 #if BOI_VERSION == 2
-#include "boi/spi_parser.h"
+#include "spi_parser.h"
 class SPIParser;
 extern SPIParser *SPIHandler;
 extern SPIParser::SPIDataStruct SPIData;

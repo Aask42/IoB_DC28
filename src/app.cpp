@@ -14,10 +14,6 @@
 #include "messages.h"
 #include "leds.h"
 
-#if BOI_VERSION == 2
-#include "boi/spi_parser.h"
-#endif
-
 // Operating frequency of ESP32 set to 80MHz from default 240Hz in platformio.ini
 
 // Initialize Global variables
@@ -49,14 +45,14 @@ Messages *MessageHandler;
 LEDs *LEDHandler;
 Preferences *Prefs;
 
-uint64_t LastTouchCheckTime = 0;
-uint64_t LastTouchSetTime = 0;
-uint64_t LastSensorPrintTime = 0;
-uint64_t LastButtonPressTime = 0;
-uint64_t LastButtonPwrHeldTime = 0;
-uint64_t LastButtonActHeldTime = 0;
-uint64_t LastButtonBonusHeldTime = 0;
-uint64_t LastScanTime = 0;
+int64_t LastTouchCheckTime = 0;
+int64_t LastTouchSetTime = 0;
+int64_t LastSensorPrintTime = 0;
+int64_t LastButtonPressTime = 0;
+int64_t LastButtonPwrHeldTime = 0;
+int64_t LastButtonActHeldTime = 0;
+int64_t LastButtonBonusHeldTime = 0;
+int64_t LastScanTime = 0;
 uint8_t CurrentLEDCap = 0;
 
 void SwitchMode();
@@ -147,7 +143,7 @@ void setup(void) {
   Prefs = new Preferences();
 
   LEDHandler = NewLEDs(LEDCallback, false);
-  LEDCap = 5;
+  LEDCap = LED_Count_Battery;
   LEDHandler->SetLEDCap(LEDCap);
 
   //this is on purpose as it calls the AddScript function for us
@@ -244,9 +240,9 @@ void loop() {
     float VoltagePerStep = (3.9 - 3.6) / 5;
 
     //calculate it
-    NewLEDCap = 5 - ((3.9 - SensorData.bat_voltage_detected) / VoltagePerStep);
-    if(NewLEDCap > 5)
-      NewLEDCap = 5; 
+    NewLEDCap = LED_Count_Battery - ((3.9 - SensorData.bat_voltage_detected) / VoltagePerStep);
+    if(NewLEDCap > LED_Count_Battery)
+      NewLEDCap = LED_Count_Battery; 
     else if(NewLEDCap < 0)
       NewLEDCap = 0;
 
@@ -260,7 +256,7 @@ void loop() {
   }
     
   // print sensor data every 3 seconds
-  uint64_t CurTime = esp_timer_get_time();
+  int64_t CurTime = esp_timer_get_time();
   if(((CurTime - LastSensorPrintTime) / 1000000ULL) >= 3) {
     LastSensorPrintTime = CurTime;
     //Battery->print_sensor_data();
@@ -431,7 +427,7 @@ void loop() {
         if(!SelectingLED)
         {
           SelectingLED = 1;
-          LEDHandler->SetLEDCap(5);
+          LEDHandler->SetLEDCap(LED_Count_Battery);
           PrevModeSelectedLED = ModeSelectedLED[CurrentMode];
         }
       }
@@ -495,8 +491,8 @@ void loop() {
     if(LastNodeCount != CurNodeCount)
     {
       LastNodeCount = CurNodeCount;
-      if(CurNodeCount > 5)
-        CurNodeCount = 5;
+      if(CurNodeCount > LED_Count_Battery)
+        CurNodeCount = LED_Count_Battery;
 
       //set cap then update if not selecting a lightshow
       LEDCap = CurNodeCount;
@@ -561,7 +557,7 @@ void SwitchMode()
       LEDHandler->StartScript(LED_PARTY_MODE, 1);
 
       //set the cap to 5 for party mode
-      LEDCap = 5;
+      LEDCap = LED_Count_Battery;
       LEDHandler->SetLEDCap(LEDCap);
 
       break;

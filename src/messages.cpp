@@ -21,8 +21,8 @@ void *static_run_messages(void *)
 void MessagesInternal::Run()
 {
     MessageEntryStruct *CurMessage;
-    uint64_t LastPingTime = 0;
-    uint64_t LastScanTime = 0;
+    int64_t LastPingTime = 0;
+    int64_t LastScanTime = 0;
 
     Serial.println("Message thread running\n");
     while(1)
@@ -346,16 +346,20 @@ MessagesInternal::MessagesInternal()
         this->Options.DisplaySplash = 1;
         memcpy(this->Options.Nickname, this->Options.WifiName, MAX_NICKNAME_LEN);
         this->Options.WifiTimeout = -1;
+#if BOI_VERSION == 1
         if(!this->Options.BrightnessValue)
             this->Options.BrightnessValue = LEDHandler->GetLEDBrightness() * 200;   //get whatever the default is
         else
             LEDHandler->SetLEDBrightness((float)this->Options.BrightnessValue / 200.0);
+#endif
 
         //indicate they need to pay attention to the wifi
         this->NewMeshMessages = 1;
     }
+#if BOI_VERSION == 1
     else
         this->SetBrightness(this->Options.BrightnessValue);
+#endif
 
     //load up our stored information
     //we really should pull this from mesh but I don't have time to sync them so cross our fingers we don't desync
@@ -438,6 +442,7 @@ void MessagesInternal::MACToStr(char *OutBuf, const uint8_t MAC[MAC_SIZE])
     yield();
 }
 
+#if BOI_VERSION == 1
 void MessagesInternal::SetBrightness(uint8_t BrightnessValue)
 {
     float NewBrightness;
@@ -446,3 +451,4 @@ void MessagesInternal::SetBrightness(uint8_t BrightnessValue)
     NewBrightness = (float)BrightnessValue / 200.0;
     LEDHandler->SetLEDBrightness(NewBrightness);
 }
+#endif

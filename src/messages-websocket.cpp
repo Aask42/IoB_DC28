@@ -248,9 +248,11 @@ bool MessagesInternal::handleWebSocketData(uint8_t *data, size_t len)
             if(!this->Options.Configured || strcmp(this->Options.WifiName, NewOptions.WifiName) || strcmp(this->Options.WifiPassword, NewOptions.WifiPassword))
                 Reload = 1;
 
+#if BOI_VERSION == 1
             //update brightness if required
             if(NewOptions.BrightnessValue != this->Options.BrightnessValue)
                 this->SetBrightness(NewOptions.BrightnessValue);
+#endif
 
             //set new values
             memcpy(&this->Options, &NewOptions, sizeof(NewOptions));
@@ -291,7 +293,9 @@ bool MessagesInternal::handleWebSocketData(uint8_t *data, size_t len)
             break;
 
         case 'l':
+#if BOI_VERSION == 1
             this->SetBrightness(data[1]);
+#endif
             break;
 
         case 's':

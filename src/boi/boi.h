@@ -100,7 +100,7 @@ class boi // Battery of Internet class
 
     // Check to see if we need to change our mode from button press, trigger on previous data
     bool button_pressed(Buttons button);
-    uint64_t button_held(Buttons button);
+    int64_t button_held(Buttons button);
 
     int get_chg_status();
     void set_charging_status();
@@ -130,7 +130,7 @@ class boi // Battery of Internet class
     uint32_t TotalMSForAverageJoules;
 
     uint8_t ButtonPins[BTN_Count];
-    uint64_t ButtonState[BTN_Count];
+    int64_t ButtonState[BTN_Count];
     uint8_t CHGPins[CHG_Count];
     short full_vbat_mv = 1100;
 #if BOI_VERSION == 1
@@ -144,8 +144,8 @@ class boi // Battery of Internet class
     Preferences preferences;
     int boot_count;
     SensorDataStruct LastSensorData;
-    uint64_t LastSensorDataUpdate;
-    uint64_t LastJoulesSaveTime;
+    int64_t LastSensorDataUpdate;
+    int64_t LastJoulesSaveTime;
 
     void get_charging_status(SensorDataStruct *Data);
     void set_button_pin(Buttons button, uint8_t pin);

@@ -10,9 +10,9 @@ Any commands with __DEST__ allows one of the following names to indicate the LED
 
 v2 LED Name | LED Notes
 -|-
-LED9 |  Top LED of the battery
-LED2 - LED8 |
-LED1 | Bottom LED of the battery
+LED8 |  Top LED of the battery
+LED2 - LED7 |
+LED0 | Bottom LED of the battery
 LED_TL | Top left LED when facing the battery
 LED_TR | Top right LED when facing the battery
 LED_BL | Bottom left LED when facing the battery
@@ -109,7 +109,8 @@ __If the script gets to the end of it's commands without a STOP at the end then 
 - Calling StopScript with LED_ALL will stop all LED scripts otherwise the individual script specified will be stopped
 - The SetLEDValue function does allow for a value greater than 100% allowing for brighter than max of any script running
 - The two functions SetGlobalVariable and SetLocalVariable set variables accordingly. Local variables are only known to a specific script and globals are common to all
-- To use a variable name instead of a number pass in the variable name in upper case: **LEDHandler->SetLocalVariable(LED_TEST_FAST, MYVAR, 100);**
+- To use a variable name pass in the variable name in upper case appended to the script name: **LEDHandler->SetLocalVariable(LED_TEST_FAST_MYVAR, 0xaabbcc);**
+- To use a global variable name pass in the variable name in upper case appended to LED_GLOBAL_:**LEDHandler->SetGlobalVariable(LED_GLOBAL_MYVAR, 0xaabbcc);**
 
 # Binary format of LED v2 data
 Below are details on the actual binary format used for LED v2 data
@@ -185,26 +186,25 @@ If ww is 11 then it is a flag that the variable is to be random at which point t
 xxxx only for Random
 xxxx | Description
 -|-
-0x00 | 2 led IDs follow
-0x01 | a LED ID and a global variable follow
-0x02 | a LED ID and a local variable follow
-0x03 | a LED ID and a random value follow
-0x04 | a global variable and a led ID follow
-0x05 | 2 global variables follow
-0x06 | a global variable and a local variable follow
-0x07 | a global variable and a random value follow
-0x08 | a local variable and a led ID follow
-0x09 | a local variable and a global variable follow
-0x0a | 2 local variables follow
-0x0b | a local variable and a random value follow
-0x0c | a random value and a led ID follow
-0x0d | a random value and a global variable follow
-0x0e | a random value and a local variable follow
-0x0f | 2 random values follow
+0x00 | 2 random values follow
+0x01 | a random value and a led ID follow
+0x02 | a random value and a global variable follow
+0x03 | a random value and a local variable follow
+0x04 | a LED ID and a random value follow
+0x05 | 2 LED IDs follow
+0x06 | a LED ID and a global variable follow
+0x07 | a LED ID and a local variable follow
+0x08 | a global variable and a random value follow
+0x09 | a global variable and a led ID follow
+0x0a | 2 global variables follow
+0x0b | a global variable and a local variable follow
+0x0c | a local variable and a random value follow
+0x0d | a local variable and a led ID follow
+0x0e | a local variable and a global variable follow
+0x0f | 2 local variables follow
 
 If the xxxx value does not have a random value as part of the parameters then a byte per value is specified with the following format
-zzyyxxxx
-* zz - see the zz description from above to determine what the xxxx ID is, 00 is invalid
+00yyxxxx
 * yy - see yy description from command byte
 * xxxx - ID of the specified LED or variable
 
@@ -216,48 +216,37 @@ In version 1 compiled code a physical value will be 3 bytes long with the specif
 ### Move command
 The move command has an additional value along with time setting. The following structure follows the above parsed data for _move_ commands
 
-Bits for next byte: zzyyxxxx
+Bits for next byte: zz000000
 * zz - same layout and purpose as zz from above
-* yy - same layout and purpose as yy from the above tables
-* xxxx - ID based on the value of zz
 
-Bits for byte after above parsing: zz00xxxx
-* zz - same layout as above except 01 is invalid
-* xxxx - same layout and purpose as xxxx from above tables
+If zz does not indicate a physical value follows then the next byte follows the wwyyxxxx format
 
-If a physical time follows then it is 2 bytes long representing the number of milliseconds. If a global or local variable is specified then the current value at the time of instruction execution is used, updating the global or local after the instruction will not alter the time.
+Bits for byte after above parsing for the time variable: zz000000
+* zz - same layout as above except 01 is invalid unless random is selected
+
+If a physical time follows then it is 2 bytes long representing the number of milliseconds.
+
+If a global or local variable is specified then the wwyyxxxxx format follows. The current value at the time of instruction execution is used, updating the global or local after the instruction will not alter the time.
+
+It is possible to mix different move commands for the same _LED_ to allow changing R, G, and B at different rates.
 
 ## Shift and Rotate commands
 These commands follow the same format as all other commands with one exception, the physical value that follows will always be a single byte regardless of the destination size.
 
 ## Other commands
 
-Value of xxxx | Description
+Value of xxx | Description
 -|-
-0x00 | Version
-0x01 | Delay
-0x02 | Stop
-0x03 | If
-0x04 | Wait
-0x05 | Goto
-0x06 | Set persist flag on local variable
-0x07 | Clear persist flag on local variable
-
-### Version
-
-Value of yyyy | Description
--|-
-0x00 | Version 1
-0x01 | Version 1
-0x02 | Version 2
+0x00 | Delay
+0x01 | Stop
+0x02 | If
+0x03 | Wait
+0x04 | Goto
+0x05 | Set persist flag on local variable
+0x06 | Clear persist flag on local variable
 
 ### Delay and Stop
-Value of yyyy | Description
--|-
-0x00 | Physical value follows
-0x01 | A random value follows
-0x02 | Global variable follows
-0x03 | Local variable follows
+yyyy in Delay and Stop follow the same pattern as zz on normal instructions. The byte that follows then follows the established wwyyxxxx format. The exception is a yyyy value of 0x0f on stop which indicates no value and a hard stop to the script.
 
 If a physical value follows then the next 2 bytes indicate the time in milliseconds.
 If a random value follows then the above described random byte layout follows with the exception that LED IDs can not be used
@@ -267,34 +256,26 @@ If a global or local variable follows then the next byte indicates the ID.
 
 Value of yyyy | Description
 -|-
-0x01 | Greater than
-0x02 | Lesser than
-0x03 | Equal
-0x04 | Greater than or equal
-0x05 | Lesser than or equal
-0x06 | Not equal
+0x00 | Greater than
+0x01 | Lesser than
+0x02 | Equal
+0x03 | Greater than or equal
+0x04 | Lesser than or equal
+0x05 | Not equal
 
-A byte follows each if and wait operation with the following layout
+2 bytes follow each if and wait operation with the following layout
 
-Bits | Description
+000000yy zz??xxxx
+* yy - same layout and purpose as yy for destination byte
+
+Bits zz??xxxx | Description
 -|-
 zz00xxxx | LED used for destination comparison, xxxx is the LED ID
 zz01xxxx | Global variable used for destination comparison, xxxx is the ID
 zz10xxxx | Local variable used for destination comparison, xxxx is the ID
+* zz - same layout and purpose as zz from above
 
-zz | Description
--|-
-0x00 | Full RGB value of destination
-0x01 | R portion of destination
-0x02 | G portion of destination
-0x03 | B portion of destination
-
-After the above byte is a byte with the following layout
-
-Bits for next byte: zzyyxxxx
-* zz - See zz from math operations
-* yy - See yy from math operations
-* xxxx - See xxx from math operations
+After the above byte is a byte with the wwyyxxxx layout
 
 If the command is an _if_ command then 2 bytes follow the above data parsing indicating the location inside of the script data to jump to
 
@@ -307,4 +288,12 @@ During compilation any internal name references are mapped to the appropriate va
 The 2 bytes following the command are the byte location inside of the script data to jump to
 
 ## Extra details
-The very first 2 bytes of the binary format is a mask of what leds the lightshow makes use of before actual commands start
+The very first 3 bytes of the binary format is a version id and mask of what leds the lightshow makes use of before actual commands start.
+
+### Version
+
+Value of version byte | Description
+-|-
+0x00 | Version 1
+0x01 | Version 1
+0x02 | Version 2
