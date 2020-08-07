@@ -31,7 +31,7 @@ void SPIParser::Communicate(SPIDataStruct *Data)
     uint8_t Buffer[sizeof(SPIParser::OutSPIBuffer)];
 
     //if we talked recently then just return the original data avoid excessive hitting
-    if((this->LastSensorDataUpdate + 5000ULL) > esp_timer_get_time())
+    if((this->LastSensorDataUpdate + 3000ULL) > esp_timer_get_time())
     {
         if(Data)
             this->GenerateSPIDataStruct(Data);
@@ -47,9 +47,9 @@ void SPIParser::Communicate(SPIDataStruct *Data)
         return;
     }
 
-    pthread_mutex_lock(&spi_data_lock);
+    //pthread_mutex_lock(&spi_data_lock);
     memcpy(Buffer, this->OutSPIBuffer, sizeof(Buffer));
-    pthread_mutex_unlock(&spi_data_lock);
+    //pthread_mutex_unlock(&spi_data_lock);
 
     SPI.beginTransaction(SPISettings(1000000, MSBFIRST, SPI_MODE0));
     digitalWrite(SS, LOW);

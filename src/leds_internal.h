@@ -15,10 +15,10 @@
 #define LED_STAT_PIN 2
 #define LED_STAT2_PIN 4
 #elif BOI_VERSION == 2
-#define LED_TL_PIN 27
-#define LED_TR_PIN 28
-#define LED_BL_PIN 12
-#define LED_BR_PIN 11
+#define LED_TL_PIN 16
+#define LED_TR_PIN 27
+#define LED_BL_PIN 17
+#define LED_BR_PIN 26
 #endif
 
 class LEDsInternal : public LEDs
@@ -26,7 +26,7 @@ class LEDsInternal : public LEDs
     public:
         LEDsInternal(LEDCallbackFunc Callback, bool DisableThread);
 
-        void AddScript(uint8_t ID, const uint8_t *data, uint16_t len);
+        void AddScript(uint8_t ID, const char *name, const uint8_t *data, uint16_t len);
         void StartScript(uint16_t ID, bool TempOverride);
         void StopScript(uint16_t ID);
 
@@ -38,6 +38,7 @@ class LEDsInternal : public LEDs
         void SetLEDValue(LEDEnum LED, double Value, uint32_t LengthMS);
         void SetLEDValue(LEDEnum LED, uint32_t Value, uint32_t LengthMS);
         uint16_t GetAmbientSensor();
+        const char *LEDScriptIDToStr(uint8_t ID);
 
 #if BOI_VERSION == 1
         void SetLEDBrightness(float BrightnessPercent);

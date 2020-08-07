@@ -6,7 +6,6 @@ LEDVersion = 1
 
 LocalVariables = dict()
 GlobalVariables = dict()
-ScriptNames = []
 
 CurLine = 0
 linenum = 0
@@ -66,7 +65,11 @@ def GetLED(LEDName):
     global LEDVersion
 
     if(LEDVersion == 1):
-        LEDNamesv1 = ["led_20", "led_40", "led_60", "led_80", "led_100", "node", "batt", "stat", "pout"]
+        #if v2 battery then we are going to remap some of these entries to the outside lights
+        if env["PIOENV"][-2:] == "v2":
+            LEDNamesv1 = ["led_20", "led_40", "led_60", "led_80", "led_100", "5", "6", "7", "8", "node", "batt", "stat", "pout"]
+        else:
+            LEDNamesv1 = ["led_20", "led_40", "led_60", "led_80", "led_100", "node", "batt", "stat", "pout"]
         if LEDName in LEDNamesv1:
             return {"id": LEDNamesv1.index(LEDName), "sub": 0}
 
@@ -227,7 +230,7 @@ def GetTime(value):
     ReportError("Unknown time %s" % (value))
 
 def ParseLED(directory, filename, entrycount, initfile):
-    global linenum, LEDVersion, ScriptNames
+    global linenum, LEDVersion
 
     print("Parsing %s" % (filename))
 
@@ -443,18 +446,14 @@ def ParseLED(directory, filename, entrycount, initfile):
     outfiledata += "#define led_%s_len %d\n" % (filename_noext.lower(), len(outdata))
     outfiledata += "#define LED_%s %d\n" % (filename_noext.upper(), entrycount)
 
-    ScriptNames.append("LED_" + filename_noext.upper())
-
     for i in LocalVariables.keys():
         outfiledata += "#define LED_%s_%s %d\n" % (filename_noext.upper(), i.upper(), LocalVariables[i])
 
-    initfile.write(("LEDHandler->AddScript(LED_%s, led_%s, led_%s_len);\n" % (filename_noext.upper(), filename_noext.lower(), filename_noext.lower())).encode("utf-8"))
+    initfile.write(("LEDHandler->AddScript(LED_%s, \"%s\", led_%s, led_%s_len);\n" % (filename_noext.upper(), "LED_" + filename_noext.upper(), filename_noext.lower(), filename_noext.lower())).encode("utf-8"))
 
     return outfiledata.encode("utf-8")
 
 def main():
-    global ScriptNames
-
     try:
         import configparser
     except ImportError:
@@ -475,7 +474,6 @@ def main():
     #convert led scripts over to a binary format included into the C code for being parsed
     f = open("src/leds-data.h", "wb")
     f2 = open("src/leds-setup.h", "wb")
-    f3 = open("src/leds-names.h", "wb")
 
     f.write("#ifndef __leds_data_h\n#define __leds_data_h\n\n#define LED_ALL 0xffff\n\n".encode("utf-8"))
 
@@ -504,10 +502,7 @@ def main():
         f.write(("#define LED_GLOBAL_%s %d\n" % (i.upper(), GlobalVariables[i])).encode("utf-8"))
 
     f.write("\n#endif\n".encode("utf-8"))
-    f3.write(("const char *LEDScriptNames[] = {\"%s\"};\n" % ("\",\"".join(ScriptNames))).encode("utf-8"))
-    f.write("#define LEDIDToStr(x) LEDScriptNames[x]\n".encode("utf-8"))
     f.close()
-    f2.close()
     f2.close()
 
 main()

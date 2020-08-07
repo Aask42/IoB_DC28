@@ -502,7 +502,7 @@ void loop() {
   }
 
   yield();
-  delay(10);
+  delay(50);
 }
 
 void SwitchMode()

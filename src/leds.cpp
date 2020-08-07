@@ -1,7 +1,8 @@
 #include "leds_internal.h"
 #include <Preferences.h>
 #include "app.h"
-#include "leds-names.h"
+
+const char *LEDScriptNames[LED_TOTAL_SCRIPT_COUNT];
 
 LEDsInternal *_globalLEDs;
 pthread_mutex_t led_lock;
@@ -49,12 +50,11 @@ LEDsInternal::LEDsInternal(LEDCallbackFunc Callback, bool DisableThread)
 #elif BOI_VERSION == 2
     for(int i = 0; i < LED_Count; i++)
         this->leds[i].Enabled = 1;
-/*
+
     this->set_led_pin(LED_TL, LED_TL_PIN, 0);
     this->set_led_pin(LED_TR, LED_TR_PIN, 1);
     this->set_led_pin(LED_BL, LED_BL_PIN, 2);
     this->set_led_pin(LED_BR, LED_BR_PIN, 3);
-*/
 #endif
 
     //allocate a default led setup
@@ -108,8 +108,13 @@ void LEDsInternal::set_led_pin(LEDEnum led, uint8_t pin, uint8_t ledChannel)
     ledcAttachPin(pin, this->leds[led].Channel);
     this->leds[led].Enabled = 1;
 
+#if BOI_VERSION == 1
     //turn the LED off, MAX results in full off, 0 is full bright
     ledcWrite(this->leds[led].Channel, MAX_RESOLUTION);
+#elif BOI_VERSION == 2
+    //for an unknown reason the new badge has 0 as off and MAX is full bright
+    ledcWrite(this->leds[led].Channel, 0);
+#endif
 }
 
 uint32_t LEDsInternal::GetValue(ScriptInfoStruct *cur_script, uint8_t Command, uint8_t destdata, uint8_t yy)
@@ -859,7 +864,6 @@ void LEDsInternal::Run()
         SPIHandler->Communicate(&SPIData);
 #endif
 
-        yield();
         delay(10);
     };
 }
@@ -990,10 +994,8 @@ void LEDsInternal::SetLED(ScriptInfoStruct *cur_script, uint8_t entry)
 
         if(entry >= LED_Count_Battery)
         {
-            //subtract new value from MAX_RESOLUTION to get the actual value to send
-            uint32_t NewBrightness = int(pow(pow(MAX_RESOLUTION, POWER_LAW_A) * ((float)FinalBrightness / 255.0), 1/POWER_LAW_A) + 0.5);
-            FinalBrightness = MAX_RESOLUTION - NewBrightness;
-
+            //scale MAX_RESOLUTION to the value we want
+            FinalBrightness = (MAX_RESOLUTION / 255) * FinalBrightness;
             ledcWrite(this->leds[entry].Channel, FinalBrightness);
         }
         else
@@ -1002,9 +1004,18 @@ void LEDsInternal::SetLED(ScriptInfoStruct *cur_script, uint8_t entry)
 }
 #endif
 
-void LEDsInternal::AddScript(uint8_t ID, const uint8_t *data, uint16_t len)
+const char *LEDsInternal::LEDScriptIDToStr(uint8_t ID)
 {
-    Serial.printf("Adding script %d - %s\n", ID, LEDIDToStr(ID));
+    if(ID < LED_TOTAL_SCRIPT_COUNT)
+        return LEDScriptNames[ID];
+
+    return "UNKNOWN";
+}
+
+void LEDsInternal::AddScript(uint8_t ID, const char *name, const uint8_t *data, uint16_t len)
+{
+    Serial.printf("Adding script %d - %s\n", ID, name);
+    LEDScriptNames[ID] = name;
 
     ScriptInfoStruct *new_script = (ScriptInfoStruct *)malloc(sizeof(ScriptInfoStruct));
     memset(new_script, 0, sizeof(ScriptInfoStruct));
@@ -1028,8 +1039,6 @@ void LEDsInternal::StartScript(uint16_t ID, bool TempOverride)
     //swap out the script being ran
     ScriptInfoStruct *cur_script;
 
-    ID = LED_CHARGING;
-
     cur_script = this->scripts;
     while(cur_script && (cur_script->ID != ID))
         cur_script = cur_script->next;
@@ -1037,7 +1046,8 @@ void LEDsInternal::StartScript(uint16_t ID, bool TempOverride)
     if(!cur_script)
         return;
 
-    Serial.printf("activating script %s\n", LEDIDToStr(cur_script->ID));
+    Serial.printf("activating script %s\n", this->LEDScriptIDToStr(cur_script->ID));
+
     //start the script
     pthread_mutex_lock(&led_lock);
     cur_script->StopSet = 0;
@@ -1063,8 +1073,6 @@ void LEDsInternal::StopScript(uint16_t ID)
     ScriptInfoStruct *active_script;
     int i;
 
-    return;
-
     cur_script = this->scripts;
     if(ID == LED_ALL)
     {
@@ -1084,7 +1092,7 @@ void LEDsInternal::StopScript(uint16_t ID)
     } 
     else
     {
-        Serial.printf("Stopping LED script %s\n", LEDIDToStr(ID));
+        Serial.printf("Stopping LED script %s\n", this->LEDScriptIDToStr(ID));
         while(cur_script && (cur_script->ID != ID))
             cur_script = cur_script->next;
 

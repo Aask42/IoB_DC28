@@ -62,7 +62,7 @@ typedef void (*LEDCallbackFunc)(const uint16_t ID, bool Finished);
 class LEDs
 {
     public:
-        virtual void AddScript(uint8_t ID, const uint8_t *data, uint16_t len);
+        virtual void AddScript(uint8_t ID, const char *name, const uint8_t *data, uint16_t len);
         virtual void StartScript(uint16_t ID, bool TempOverride);
         virtual void StopScript(uint16_t ID);
         virtual void SetGlobalVariable(uint8_t ID, double Value);
@@ -72,7 +72,9 @@ class LEDs
         virtual uint32_t GetLEDValue(LEDEnum LED);
         virtual void SetLEDValue(LEDEnum LED, double Value, uint32_t LengthMS);
         virtual void SetLEDValue(LEDEnum LED, uint32_t Value, uint32_t LengthMS);
-        virtual uint16_t GetAmbientSensor();
+        virtual uint16_t GetAmbientSensor();;
+        virtual const char *LEDScriptIDToStr(uint8_t ID);
+
 #if BOI_VERSION == 1
         virtual void SetLEDBrightness(float BrightnessPercent);
 #endif
