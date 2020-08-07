@@ -145,7 +145,4 @@ Bitcoin Cash is pretty sweet:
 
 Bitcoin is cool too: 
     1GrnYwUCAsQY3oejdu8CRutnG55Wi7bXHz  
-
-1 DOGE == 1 DOGE: 
-    DNsRM5gPEA5MrGByi1MyWfbLWyuksvK5fC    
 ```
