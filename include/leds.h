@@ -34,9 +34,10 @@ typedef enum LEDEnum
     LED_6,
     LED_7,
     LED_8,
-    LED_S_NODE,
-    LED_S_BATT,
-    LED_POUT,
+    LED_TL,
+    LED_TR,
+    LED_BL,
+    LED_BR,
     LED_Count
 } LEDEnum;
 
@@ -47,6 +48,9 @@ typedef enum LEDEnum
 #define LED_LEV60 LED_2
 #define LED_LEV40 LED_3
 #define LED_LEV20 LED_4
+#define LED_S_NODE LED_TL
+#define LED_S_BATT LED_TR
+#define LED_POUT LED_BL
 #endif
 
 #define LED_OVERRIDE_INFINITE 0xffffffff

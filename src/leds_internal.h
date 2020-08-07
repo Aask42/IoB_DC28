@@ -3,6 +3,7 @@
 
 #include "leds.h"
 
+#if BOI_VERSION == 1
 #define LED_LEV20_PIN 25
 #define LED_LEV40_PIN 26
 #define LED_LEV60_PIN 27
@@ -13,6 +14,12 @@
 #define LED_POUT_PIN 18
 #define LED_STAT_PIN 2
 #define LED_STAT2_PIN 4
+#elif BOI_VERSION == 2
+#define LED_TL_PIN 27
+#define LED_TR_PIN 28
+#define LED_BL_PIN 12
+#define LED_BR_PIN 11
+#endif
 
 class LEDsInternal : public LEDs
 {
@@ -43,9 +50,7 @@ class LEDsInternal : public LEDs
     private:
         typedef struct LEDInfoStruct
         {
-#if BOI_VERSION == 1
             uint16_t Channel;
-#endif
             uint32_t OverrideValue;
             int64_t OverrideTime;
             uint32_t CurrentVal;
@@ -87,9 +92,7 @@ class LEDsInternal : public LEDs
             ScriptInfoStruct *next;
         } ScriptInfoStruct;
 
-#if BOI_VERSION == 1
         void set_led_pin(LEDEnum led, uint8_t pin, uint8_t ledChannel);
-#endif
         uint32_t *GetDestination(ScriptInfoStruct *script, uint32_t **CurValPtr, uint8_t *destdata);
         uint32_t GetValue(ScriptInfoStruct *cur_script, uint8_t Command, uint8_t destdata, uint8_t yy);
         void SetLED(ScriptInfoStruct *cur_script, uint8_t entry);

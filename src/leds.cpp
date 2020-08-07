@@ -49,6 +49,12 @@ LEDsInternal::LEDsInternal(LEDCallbackFunc Callback, bool DisableThread)
 #elif BOI_VERSION == 2
     for(int i = 0; i < LED_Count; i++)
         this->leds[i].Enabled = 1;
+/*
+    this->set_led_pin(LED_TL, LED_TL_PIN, 0);
+    this->set_led_pin(LED_TR, LED_TR_PIN, 1);
+    this->set_led_pin(LED_BL, LED_BL_PIN, 2);
+    this->set_led_pin(LED_BR, LED_BR_PIN, 3);
+*/
 #endif
 
     //allocate a default led setup
@@ -92,7 +98,7 @@ LEDsInternal::LEDsInternal(LEDCallbackFunc Callback, bool DisableThread)
         return;
     }
 }
-#if BOI_VERSION == 1
+
 void LEDsInternal::set_led_pin(LEDEnum led, uint8_t pin, uint8_t ledChannel)
 {
     this->leds[led].Channel = ledChannel;
@@ -105,7 +111,6 @@ void LEDsInternal::set_led_pin(LEDEnum led, uint8_t pin, uint8_t ledChannel)
     //turn the LED off, MAX results in full off, 0 is full bright
     ledcWrite(this->leds[led].Channel, MAX_RESOLUTION);
 }
-#endif
 
 uint32_t LEDsInternal::GetValue(ScriptInfoStruct *cur_script, uint8_t Command, uint8_t destdata, uint8_t yy)
 {
@@ -982,7 +987,17 @@ void LEDsInternal::SetLED(ScriptInfoStruct *cur_script, uint8_t entry)
         (cur_script && cur_script->TempOverride && (cur_script->LEDMask & (1 << entry))))
     {
         this->leds[entry].CurrentVal = TempNewBrightness;
-        SPIHandler->SetRGBLed(entry, r, g, b);
+
+        if(entry >= LED_Count_Battery)
+        {
+            //subtract new value from MAX_RESOLUTION to get the actual value to send
+            uint32_t NewBrightness = int(pow(pow(MAX_RESOLUTION, POWER_LAW_A) * ((float)FinalBrightness / 255.0), 1/POWER_LAW_A) + 0.5);
+            FinalBrightness = MAX_RESOLUTION - NewBrightness;
+
+            ledcWrite(this->leds[entry].Channel, FinalBrightness);
+        }
+        else
+            SPIHandler->SetRGBLed(entry, r, g, b);
     }
 }
 #endif
@@ -1012,6 +1027,8 @@ void LEDsInternal::StartScript(uint16_t ID, bool TempOverride)
 {
     //swap out the script being ran
     ScriptInfoStruct *cur_script;
+
+    ID = LED_CHARGING;
 
     cur_script = this->scripts;
     while(cur_script && (cur_script->ID != ID))
@@ -1046,6 +1063,8 @@ void LEDsInternal::StopScript(uint16_t ID)
     ScriptInfoStruct *active_script;
     int i;
 
+    return;
+
     cur_script = this->scripts;
     if(ID == LED_ALL)
     {
@@ -1068,6 +1087,9 @@ void LEDsInternal::StopScript(uint16_t ID)
         Serial.printf("Stopping LED script %s\n", LEDIDToStr(ID));
         while(cur_script && (cur_script->ID != ID))
             cur_script = cur_script->next;
+
+        if(!cur_script)
+            return;
 
         pthread_mutex_lock(&led_lock);
         cur_script->active = 0;
