@@ -78,33 +78,48 @@ TODO: This needs to be updated for QUANTUM batteries
 Front:
 
 ```txt
-      _____
- ____|ESP32|____ ---
-|USB |     |PWR | |   
-|STFF|_____|STFF| |   
-|    SAO SAO    | |	
-|USB            | | 
-|    Battery    |~6.5cm
-|    Goes       | |   
-|    Here       | |  
-|         INA219| |
-|SAO_SWITCH__SAO| |
-|_______________|---
-|-----~3.5cm----|
+Back: (NOW WITH 100% MORE BEEEEEF COURTESY OF BOBO)
+        _____
+ ______| ESP |______ ---
+| O    |     |    O | |
+|      |_____|      | |
+|   SAO        SAO  | |
+|                   | |
+|                 U | | ~
+|                 S | | 7
+|                 B | | . 
+|                   | | 5
+|      Battery      | | c
+|       Goes        | | m
+|       Here        | |
+|                   | |
+|       SHUNT       | |
+|_SAO____-_-____SAO_| |
+                  ---
+|--------~4.5cm--------|
 
-Back: 
-      _____
- ____|_____|____
-|               |
-| DEF CON XXIIV |
-|    SAO SAO  D |
-| BTN1 LED    E |
-| L L  LED    F |
-| E E  LED    C |
-| D D  LED    E |
-| BTN2 LED    L |
-|     SHUNT   L |
-|SAO_________SAO|
+DC28 dimensions
+7.5 cm
+4.5cm wide
+8.0cm with anode
+
+Front: 
+        ______
+ ______|______|______
+| O               O  |
+|   DEF CON XXIIIV   |
+|   SAO   Q    SAO   |
+|    LED  U  B LED   |
+|    LED  A  T D     |
+|    LED  N  N E     |
+|    LED  T  1 F     |
+|    LED  U    C     |
+|    LED  M  B E     |
+|    LED     T L     |
+|    LED     N L     |
+|    LED     2       |
+|       SHUNT        |
+|_SAO____-_-_____SAO_|
 ```
 
 ## How to flash new firmware
