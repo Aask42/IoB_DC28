@@ -92,19 +92,31 @@
 </ol>
 <h2 id="board-layout">Board Layout</h2>
 <p>Front:</p>
-<pre><code class="language-txt"><div>      _____
- ____|ESP32|____ ---
-|USB |     |PWR | |   
-|STFF|_____|STFF| |   
-|    SAO SAO    | |	
-|USB            | | 
-|    Battery    |~6.5cm
-|    Goes       | |   
-|    Here       | |  
-|         INA219| |
-|SAO_SWITCH__SAO| |
-|_______________|---
-|-----~3.5cm----|
+<pre><code class="language-txt"><div>
+Back:
+        _____
+ ______| ESP |______ ---
+| O    |     |    O | |
+|      |_____|      | |
+|   SAO        SAO  | |
+|                   | |
+|                 U | | ~
+|                 S | | 7
+|                 B | | . 
+|                   | | 5
+|      Battery      | | c
+|       Goes        | | m
+|       Here        | |
+|                   | |
+|       SHUNT       | |
+|_SAO____-_-____SAO_| |
+                  ---
+|--------~4.5cm--------|
+
+DC28 dimensions
+7.5 cm
+4.5cm wide
+8.0cm with anode
 
 Front: 
         ______
