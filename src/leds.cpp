@@ -87,7 +87,7 @@ LEDsInternal::LEDsInternal(LEDCallbackFunc Callback, bool DisableThread)
     //if we are to disable threads then exit
     if(DisableThread)
         return;
-/*
+
     //setup our thread that will run the LEDs themselves
     pthread_mutex_init(&led_lock, NULL);
     if(pthread_create(&this->LEDThread, NULL, static_run_leds, 0))
@@ -97,7 +97,6 @@ LEDsInternal::LEDsInternal(LEDCallbackFunc Callback, bool DisableThread)
         _globalLEDs = 0;
         return;
     }
-*/
 }
 
 void LEDsInternal::set_led_pin(LEDEnum led, uint8_t pin, uint8_t ledChannel)
