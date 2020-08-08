@@ -53,7 +53,7 @@ void MessagesInternal::Run()
 
                 //yield and delay a couple seconds then continue so that everything should be updated
                 yield();
-                delay(2000);
+                //delay(2000);
                 continue;
             }
 
