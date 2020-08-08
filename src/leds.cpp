@@ -965,25 +965,37 @@ void LEDsInternal::SetLED(ScriptInfoStruct *cur_script, uint8_t entry)
         //we need to scale NewBrightness per Stevens' power law, a should be between 0.33 and 0.5
         FinalBrightness = int(pow(pow((float)SPIData.SliderPos * 2.55, POWER_LAW_A) * NewBrightness, 1/POWER_LAW_A) + 0.5);
 
+        if(FinalBrightness > 255)
+            FinalBrightness = 255;
+
         //we now have a final brightness, set r/g/b to be the same allowing a scaling of white
-        r = FinalBrightness & 0xff;
-        g = r;
-        b = r;
+        r = FinalBrightness;
+        g = FinalBrightness;
+        b = FinalBrightness;
     }
     else
     {
         //rgb, scale each accordingly
         NewBrightness = (float)((TempNewBrightness >> 16) & 0xff) / 255.0;
         FinalBrightness = int(pow(pow((float)SPIData.SliderPos * 2.55, POWER_LAW_A) * NewBrightness, 1/POWER_LAW_A) + 0.5);
-        r = FinalBrightness & 0xff;
+        if(FinalBrightness > 255)
+            r = 255;
+        else
+            r = FinalBrightness;
 
         NewBrightness = (float)((TempNewBrightness >> 8) & 0xff) / 255.0;
         FinalBrightness = int(pow(pow((float)SPIData.SliderPos * 2.55, POWER_LAW_A) * NewBrightness, 1/POWER_LAW_A) + 0.5);
-        g = FinalBrightness & 0xff;
+        if(FinalBrightness > 255)
+            g = 255;
+        else
+            g = FinalBrightness;
 
         NewBrightness = (float)(TempNewBrightness & 0xff) / 255.0;
         FinalBrightness = int(pow(pow((float)SPIData.SliderPos * 2.55, POWER_LAW_A) * NewBrightness, 1/POWER_LAW_A) + 0.5);
-        b = FinalBrightness & 0xff;
+        if(FinalBrightness > 255)
+            b = 255;
+        else
+            b = FinalBrightness;
     }
 
     //if enabled or override time is set then set the actual led
