@@ -58,7 +58,7 @@ boi_wifi::boi_wifi(boi *boiData, Messages *message_handler, WifiModeEnum NewMode
         //    return;
 
         default:
-            this->ActivateNormal();
+            this->ActivateParty();
             return;
     }
     

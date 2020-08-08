@@ -13,9 +13,9 @@ To view power usage statistics users connect to the __Captive Arcade<sup>TM</sup
 
 0. WASH YOUR HANDS (ya filthy animal)
 1. Power switch ON (Does NOT need to be on to charge this year)
-2. If LEDs flash on boot, boi is in low voltage mode, charge it
-3. Hold "DEF" capsense button on boot = force low voltage mode - faster charge
-4. "DEF" + "CON" capsense buttons on boot = factory reset
+2. If LEDs flash RGB on boot, boi is in low voltage mode, charge it
+3. Hold "DEF" capsense button on boot = force low voltage mode = faster charge
+4. Hold "TOUCH SLIDER" capsense button area on boot = factory reset
 5. Solder headers (make sure to orient to VCC on the SQUARE pad)
 6. Show off in #linecon (discord.gg/DEFCON)
 7. See you @ DEFCON 29!
@@ -56,7 +56,7 @@ RESET | This button is located on the BACK of the DEF CELL, at the top to the RI
 PROG | This button is located on the BACK of the DEF CELL, at the top to the RIGHT of the ESP32 | This is only used when programming the Cypress PSOC5
 DEF | Cycle mode, 2x toggles between  __Captive Arcade<sup>TM</sup>__| Touch DEF 1x : Capacity -> Node Count -> Party!!! <br/><br/>Touch DEF 2x : Toggle Captive Arcade
 CELL | Toggles backpower on Add-on rail on/off | Auto-off if voltage is detected going the wrong way across the SHUNT resistor
-SLIDER | Not yet implemented | Not yet implemented
+SLIDER | Adjusts Brightness | Slide up or down to set your desired brightness
 
 ## Boot Order
 
@@ -64,17 +64,16 @@ This is very important and will help to minimize blowing up like an innocent vir
 
 0. Detect power on rails: If voltage on LiPoly is too low, __FLASH LEDS ONCE__ and boot in to "Safe Mode"
 1. Button assignment
-1. LED assignment
-1. DNS setup
-2. WiFi setup
-3. Enable __Safe Mode w/ Networking__ if local wifi config is set
-3. Enable __Captive Arcade<sup>TM</sup>__ if Safe Mode w/ Networking fails to connect
-4. React to user input
-5. If voltage across shunt changes direction, and BACKPOWER is ON, force power state to NO_BACKPOWER
-6. POST WiFi Header-frames to "batteryinter.net" (Work in progress)
+2. LED assignment
+3. DNS setup
+4. WiFi setup
+5. Enable __Safe Mode w/ Networking__ if local wifi config is set - Work In Progress
+6. Enable __Captive Arcade<sup>TM</sup>__ if Safe Mode w/ Networking fails to connect
+7. React to user input
+8. If voltage across shunt changes direction, and BACKPOWER is ON, force power state to NO_BACKPOWER
+9. POST WiFi Header-frames to "batteryinter.net" (Work in progress)
 
 ## Board Layout
-TODO: This needs to be updated for QUANTUM batteries
 Front:
 
 ```txt
@@ -124,18 +123,15 @@ Front:
 
 ## How to flash new firmware
 
-1. Install VS Code 
-2. Install PlatformIO Extension
-3. Install Python 3.7+
-3. Clone this repository and open in VS Code
-4. Plug Boi in to USB and identify the correct COM port if necessary (if only one COM device, should auto-select)
-5. Test build code with PlatformIO (CTRL+SHIFT+B)
-6. Open PIO tab and expand the appropriate version of the code for your device (V1 or V2)
-7. Upload code with PlatformIO (Click "Upload")
+### Windows Instructions:
+1. Download defcell_quantum_0.2.0.zip from batteryinter.net
+2. Unzip File
+3. Run "flash.bat"
+4. Party
 
 Video of flashing steps: WORK IN PROGRESS
 
-__Note:__ There are preferences stored in flash which persist even when flashing updated code. To reset ALL data on the device you must perform a full flash reset from PlatformIO, then flash the desired version of the firmware to the now empty device.
+__Note:__ There are preferences stored in flash which persist even when flashing updated code. To reset ALL data on the device you must perform a full flash reset esptool.exe, then flash the desired version of the firmware to the now empty device.
 
 ## Donations
 
