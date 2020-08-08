@@ -23,7 +23,7 @@ float bright_duty_percent;
 bool charging = 0;
 bool charged = 0;
 pthread_mutex_t status_lock;
-uint64_t last_tick_time = esp_timer_get_time();
+int64_t last_tick_time = esp_timer_get_time();
 
 #if BOI_VERSION == 1
 float boi::adc_vref_vbat(){  
@@ -101,7 +101,7 @@ float boi::adc_vref_vgat(){
 void boi::get_joules(float *total_joules, float *average_joules, float watts){
     // J = W * s
     float joules_consumed_in_ms_since_update;
-    uint64_t current_tick_time = esp_timer_get_time();
+    int64_t current_tick_time = esp_timer_get_time();
 
     //get milliseconds passed
     u_long ms_passed = (current_tick_time - last_tick_time) / 1000;
@@ -375,7 +375,7 @@ bool boi::button_pressed(Buttons button)
     //if the button is not held and was held in the past then indicate it was pressed
     //we go based off a 5ms cycle to avoid situations where power glitches cause the button to randomly trip
     //we also limit to half a second so that pressed never reports if held is being triggered
-    uint64_t CurTime = esp_timer_get_time();
+    int64_t CurTime = esp_timer_get_time();
     if(!btnState && this->ButtonState[button] && ((CurTime - this->ButtonState[button]) > 5000) && ((CurTime - this->ButtonState[button]) < 500000))
         ret = true;
     else
@@ -392,14 +392,14 @@ bool boi::button_pressed(Buttons button)
 }
 
 //indicate how many milliseconds a button is held
-uint64_t boi::button_held(Buttons button)
+int64_t boi::button_held(Buttons button)
 {
     uint32_t ret;
     int btnState;
     btnState = this->doDigitalRead(this->ButtonPins[button], true);
 
     //if the button is held and was held in the past then indicate how long
-    uint64_t CurTime = esp_timer_get_time();
+    int64_t CurTime = esp_timer_get_time();
     if(btnState && this->ButtonState[button] && ((CurTime - this->ButtonState[button]) >= 500000))
         ret = (CurTime - this->ButtonState[button]) / 1000ULL;
     else

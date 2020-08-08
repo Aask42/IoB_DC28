@@ -301,20 +301,20 @@ def main():
     f.write("#ifndef __leds_data_h\n#define __leds_data_h\n\n#define LED_ALL 0xffff\n\n".encode("utf-8"))
 
     count = 0
-    for file in os.listdir("leds/."):
+    for file in os.listdir("leds v1/."):
         if file[-4:] == ".led":
             #have a file to parse
-            f.write(ParseLED("leds", file, count, f2))
+            f.write(ParseLED("leds v1", file, count, f2))
             count += 1
 
     f.write(("#define LED_SCRIPT_COUNT %d\n" % (count)).encode("utf-8"))
     f.write(("#define LED_SYSTEM_SCRIPT_START %d\n" % (count)).encode("utf-8"))
 
     systemcount = 0
-    for file in os.listdir("leds - system/."):
+    for file in os.listdir("leds - system v1/."):
         if file[-4:] == ".led":
             #have a file to parse
-            f.write(ParseLED("leds - system", file, count, f2))
+            f.write(ParseLED("leds - system v1", file, count, f2))
             count += 1
             systemcount += 1
 

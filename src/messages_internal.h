@@ -94,7 +94,9 @@ class MessagesInternal : public Messages
         void MACToStr(char *OutBuf, const uint8_t MAC[MAC_SIZE]);
         void FactoryReset();
 
+#if BOI_VERSION == 1
         void SetBrightness(uint8_t BrightnessValue);
+#endif
 
         //data storage when the websocket isn't connected
         DirectConnectStruct *DirectConnections[MAX_DIRECT_CONNECTS];
@@ -114,7 +116,7 @@ class MessagesInternal : public Messages
         bool connected;
         OptionsStruct Options;
         Preferences preferences;
-        uint64_t LastAccessTime;
+        int64_t LastAccessTime;
         uint8_t PingCount;
 };
 #endif
