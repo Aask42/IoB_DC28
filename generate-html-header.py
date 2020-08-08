@@ -1,5 +1,6 @@
 import sys, os
 import binascii
+import  gzip
 
 def ParseHTML(ID):
     try:
@@ -35,11 +36,12 @@ def ParseHTML(ID):
  
     #open("html/%s-test.html" % (ID.lower()), "wb").write(finalhtmldata.encode("utf-8"))
 
-    bindata = binascii.b2a_hex(finalhtmldata.encode("utf-8")).decode("utf-8")
+    finalhtmldata = gzip.compress(finalhtmldata.encode("utf-8"))
+    bindata = binascii.b2a_hex(finalhtmldata).decode("utf-8")
 
     c_array  = "#ifndef __html_%s_header\n" % (ID)
     c_array += "#define __html_%s_header\n\n" % (ID)
-    c_array += "const char HTML%sData[] = {\n" % (ID)
+    c_array += "const uint8_t HTML%sData[] PROGMEM = {\n" % (ID)
 
     hexdata = ""
     for i in range(0, len(bindata), 2):

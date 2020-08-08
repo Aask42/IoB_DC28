@@ -275,6 +275,7 @@ void loop() {
   //if ACTION button double pressed then swap the captive portal otherwise swap led options
   if(DoublePress_ACT && (CurTime - LastButtonPressTime) > 500000ULL)
   {
+    printf("DoublePress: %d\n", DoublePress_ACT);
     if(BatteryWifi)
     {
       delete BatteryWifi;
@@ -285,10 +286,10 @@ void loop() {
       Prefs->putBool("wifi", false);
       Prefs->end();
     }
-    // else if(DoublePress_ACT == 3)
-    // {
-    //   BatteryWifi = new boi_wifi(Battery, MessageHandler, boi_wifi::SafeModeWithNetworking);
-    // }
+    else if(DoublePress_ACT == 3)
+    {
+      BatteryWifi = new boi_wifi(Battery, MessageHandler, boi_wifi::SafeModeWithNetworking);
+    }
     else if(DoublePress_ACT == 2)
     {
       BatteryWifi = new boi_wifi(Battery, MessageHandler, boi_wifi::BusinessCardMode);

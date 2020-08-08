@@ -6,6 +6,8 @@
 
 
 void send_post_to_battery_internet(const char *message, unsigned int length){
+    return;
+
     WiFiMulti WiFiMulti;
 
     WiFiMulti.addAP("stupid_network", "stupid_password");

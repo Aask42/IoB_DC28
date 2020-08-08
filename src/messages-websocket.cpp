@@ -14,6 +14,9 @@ void MessagesInternal::RegisterWebsocket()
 
 void MessagesInternal::DeregisterWebSocket()
 {
+    if(!this->server)
+        return;
+
     //remove the socket_server, this will force data to start queuing
     this->server->removeHandler(this->socket_server);
     this->server->end();
@@ -263,6 +266,7 @@ bool MessagesInternal::handleWebSocketData(uint8_t *data, size_t len)
                 this->socket_server->binaryAll("eSaved - Rebooting", 18);
 
                 //give the websocket 3 seconds to transmit and nvs to flush out
+                yield();
                 delay(3000);
                 esp_restart();
             }

@@ -46,16 +46,9 @@ boi_wifi::boi_wifi(boi *boiData, Messages *message_handler, WifiModeEnum NewMode
             this->ActivateRick();
             return;
 
-        //case boi_wifi::SafeModeWithNetworking:
-        //    if(Mode == boi_wifi::SafeModeWithNetworking)
-        //    {
-        //        this->ActivateSafeModeWithNetworking();
-        //    }
-        //    else
-        //    {
-        //        this->ActivateNormal();
-        //    }
-        //    return;
+        case boi_wifi::SafeModeWithNetworking:
+            this->ActivateSafeModeWithNetworking();
+            return;
 
         default:
             this->ActivateParty();
@@ -88,14 +81,18 @@ void boi_wifi::DisableWiFi()
     Serial.println("Wifi disabled");
 
     //now turn off the dns and captive portal
-    this->message_handler->DeregisterWebSocket();
+    if(this->message_handler)
+        this->message_handler->DeregisterWebSocket();
 
     //remove and delete the request handler
     this->DeleteWebServer();
-    this->dnsServer->stop();
 
     //delete the dns memory
-    delete this->dnsServer;
+    if(this->dnsServer)
+    {
+        this->dnsServer->stop();
+        delete this->dnsServer;
+    }
 
     //wipe out the variables
     this->dnsServer = 0;
@@ -144,7 +141,7 @@ void boi_wifi::monitor_captive_portal(){
             LoopCount = 0;
         }
         pthread_mutex_unlock(&lock);
-
+        yield();
         delay(100);
     };
 
@@ -189,8 +186,8 @@ void boi_wifi::monitor_smwn(){
         send_post_to_battery_internet(message,sizeof(message));
         // Serial.print("Local IP: ");
         // Serial.println(WiFi.localIP().toString());
-
-        delay(1000);
+        yield();
+        delay(100);
     };
 
     pthread_mutex_unlock(&lockDone);
@@ -227,8 +224,8 @@ void boi_wifi::setup_captive_portal(const OptionsStruct *Options){
     if(this->ServerCheckThread)
     {
         this->DisableWiFi();
-        delay(1000);
         yield();
+        delay(1000);
     }
     
     if(!WiFi.mode(WIFI_AP_STA))
@@ -272,8 +269,8 @@ void boi_wifi::enter_safe_mode_with_networking(const OptionsStruct *Options){
     if(this->ServerCheckThread)
     {
         this->DisableWiFi();
-        delay(1000);
         yield();
+        delay(1000);
     }
 
     //esp_wifi_set_promiscuous(false);
@@ -282,6 +279,7 @@ void boi_wifi::enter_safe_mode_with_networking(const OptionsStruct *Options){
     // Fetch local network name from options
     // Fetch local wifi password from options
     WiFi.disconnect();
+    yield();
     delay(100);
 
     WiFi.enableSTA(true);
@@ -290,10 +288,11 @@ void boi_wifi::enter_safe_mode_with_networking(const OptionsStruct *Options){
         Serial.println("Failed to set wifi mode");
     }
 
+    yield();
     delay(100);
     
     wl_status_t status;
-    status = WiFi.begin(Options->SafeModeWifiName,Options->SafeModeWifiPassword);;
+    status = WiFi.begin(Options->SafeModeWifiName,Options->SafeModeWifiPassword);
     int counter =0;
 
     //esp32 appears to have a serious issue about connecting first time around, we force an immediate 2nd cycle hence the begin above
@@ -305,16 +304,18 @@ void boi_wifi::enter_safe_mode_with_networking(const OptionsStruct *Options){
             break;
 
         //if 60 seconds then then activate AP
-        if(counter > 100) {
-            this->ActivateNormal();
+        if(counter > 300) {
             Serial.printf("Unable to connect to WiFi Safe Mode with Networking :(... %d\n", WiFi.status());
+            this->ActivateNormal();
             return;
         }
         else if((counter % 100) == 0) {
             Serial.printf("Connecting to WiFi Safe Mode with Networking... %d\n", WiFi.status());
             WiFi.disconnect();
+            yield();
             delay(100);
             WiFi.mode(WIFI_STA);
+            yield();
             delay(100);
             status = WiFi.begin(Options->SafeModeWifiName,Options->SafeModeWifiPassword);
         }

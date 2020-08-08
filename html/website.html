@@ -1411,17 +1411,17 @@
                 Data += "0";
 
             Data += String(getN("timeout").value);
-            Data += String.fromCharCode(0x01)
+            Data += String.fromCharCode(0x01);
             Data += String(getN("brightness").value);
-            Data += String.fromCharCode(0x01)
+            Data += String.fromCharCode(0x01);
             Data += getN("nickname").value;
-            Data += String.fromCharCode(0x01)
+            Data += String.fromCharCode(0x01);
             Data += getN("wifi_name").value;
-            Data += String.fromCharCode(0x01)
+            Data += String.fromCharCode(0x01);
             Data += getN("wifi_password").value;
-            Data += String.fromCharCode(0x01)
+            Data += String.fromCharCode(0x01);
             Data += getN("safe_mode_wifi_name").value;
-            Data += String.fromCharCode(0x01)
+            Data += String.fromCharCode(0x01);
             Data += getN("safe_mode_wifi_password").value;
 
             getI("nickname_status").innerHTML = StripHTML(getN("nickname").value);
@@ -1434,10 +1434,10 @@
         //DisplaySection("startup");
 
         //enable the websocket now that things are mostly initialized
+        getI("bootbodytext").value = "Connecting to web socket " + window.location.hostname;
 
         //TODO: Update to have dynamic IP pulled from preferences
-        var ip = getLocalAddr();
-        var ws = new WebSocket("ws://1.1.1.1/ws", ['arduino']);
+        var ws = new WebSocket("ws://" + window.location.hostname + ":81/ws", ['arduino']);
         
         ws.binaryType = 'arraybuffer';
         ws.onmessage = HandleWSMessage;

@@ -12,12 +12,10 @@ boi_wifi::WifiModeEnum Mode;
 RequestHandler::RequestHandler() {}
 
 bool RequestHandler::canHandle(AsyncWebServerRequest *request){
-    
+    return true;
+
     // TODO: Update to pull the IP address from preferences
-    IPAddress ip_address = WiFi.localIP();
-    String address_string = String(ip_address[0]) + String(".") +  String(ip_address[1]) + String(".") +  String(ip_address[2]) + String(".") +  String(ip_address[3]);
-    
-    if(request->host() == address_string)
+    if(request->host() == WiFi.localIP().toString())
     {
         request->addInterestingHeader("Cache-Control: no-cache, no-store, must-revalidate");
         request->addInterestingHeader("Pragma: no-cache");
@@ -29,40 +27,48 @@ bool RequestHandler::canHandle(AsyncWebServerRequest *request){
 void RequestHandler::handleRequest(AsyncWebServerRequest *request) {
     Serial.printf("host: %s, url: %s\n", request->host().c_str(), request->url().c_str());
 
-    if((request->url() == "/whoami"))
-    {
-        request->send(200, "text/html", HTMLResumeData);
-        
-    }else if((request->url() == "/GuestCounter"))
-    {   
+    if((request->url() == "/whoami")) {
+        request->send(200, "text/html", "");
+    }else if((request->url() == "/GuestCounter")) {   
         this->GuestCounter();
-
         request->send(200, "text/html", String(this->CurrentGuestCount));
+    }else if((request->url() == "/favicon.ico")) {
+        request->send(404, "text/html", "");
     }else{
         //AsyncResponseStream *response = request->beginResponseStream("text/html");
+/*
         switch(Mode)
         {
             case boi_wifi::NormalMode:
-                request->send(200, "text/html", HTMLWebsiteData);
+                request->send_P(200, "text/html", HTMLWebsiteData);
                 break;
 
             case boi_wifi::SafeModeWithNetworking:
-                request->send(200, "text/html", HTMLWebsiteData);
+                request->send_P(200, "text/html", HTMLWebsiteData);
                 break;
 
             case boi_wifi::PartyMode:
-                request->send(200, "text/html", HTMLPartyData);
+                request->send_P(200, "text/html", HTMLPartyData);
                 break;
 
             case boi_wifi::BusinessCardMode:
-                request->send(200, "text/html", HTMLBusinessCardData);
+                request->send_P(200, "text/html", HTMLBusinessCardData);
                 break;
 
             default:
-                request->send(200, "text/html", HTMLRickData);
+                request->send_P(200, "text/html", HTMLRickData);
                 break;
         }
     }
+*/
+
+        AsyncWebServerResponse *response = request->beginResponse_P(200, "text/html", HTMLWebsiteData, HTMLWebsiteDataLen);
+        response->addHeader("Content-Encoding", "gzip");
+        request->send(response);
+
+        //request->send_P(200, "text/html", HTMLWebsiteData);
+    }
+    Serial.printf("handled request\n");
 }
 
 void boi_wifi::SetupRequestServer()
@@ -79,6 +85,9 @@ void boi_wifi::SetupRequestServer()
 void boi_wifi::DeleteWebServer()
 {
     //remove and delete the request handler
+    if(!this->server)
+        return;
+
     this->server->removeHandler(this->request_handler);
     this->server->end();
 
