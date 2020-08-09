@@ -172,7 +172,7 @@ uint32_t LEDsInternal::GetValue(ScriptInfoStruct *cur_script, uint8_t Command, u
             {
                 case 0:
                     //led value
-                    output = cur_script->leds[data & 0xf].CurrentVal;
+                    output = cur_script->leds[data & 0xf].EndVal;
                     yy2 = (data & 0x30) >> 4;
                     break;
 
@@ -670,7 +670,6 @@ void LEDsInternal::Run()
                         {
                             //change the active position
                             cur_script->active_pos = *(uint16_t *)(&cur_script->data[cur_script->active_pos]);
-                            cur_script->active_pos += 2;
                             LogicSeen = 1;
                             break;
                         }
@@ -829,7 +828,7 @@ void LEDsInternal::Run()
                         else
                         {
                             DestMask = 0xffffff & ~(0xff << Mask);
-                            cur_script->leds[i].CurrentVal = (cur_script->leds[i].CurrentVal & DestMask) | ((int)TempStartVal << Mask);
+                            cur_script->leds[i].CurrentVal = (cur_script->leds[i].CurrentVal & DestMask) | (((int)TempStartVal & 0xff) << Mask);
                         }
 
                         //if we hit the end then set the final value
