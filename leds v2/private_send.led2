@@ -1,32 +1,33 @@
 // Ce n'est pas WyFy, C'est WEE FEE
+version 2
 
 enable_wifi:
 
-move led_60 * 100 105
+move led4 * 255 105
 
 delay 105
 
-move led_80 * 100 105
-move led_40 * 100 105
+move led6 * 255 105
+move led2 * 255 105
 
 delay 105
 
-move led_100 * 100 105
-move led_20 * 100 105
+move led8 * 255 105
+move led0 * 255 105
 
 delay 105
 
-move led_60 * 0 105
+move led4 * 0 105
 
 delay 105
 
-move led_80 * 0 105
-move led_40 * 0 105
+move led6 * 0 105
+move led2 * 0 105
 
 delay 105
 
-move led_100 * 0 105
-move led_20 * 0 105
+move led8 * 0 105
+move led0 * 0 105
 
 delay 105
 

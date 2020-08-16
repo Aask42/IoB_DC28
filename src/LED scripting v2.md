@@ -11,7 +11,7 @@ Any commands with __DEST__ allows one of the following names to indicate the LED
 v2 LED Name | LED Notes
 -|-
 LED8 |  Top LED of the battery
-LED2 - LED7 |
+LED1 - LED7 | LED's in between Bottom - Top
 LED0 | Bottom LED of the battery
 LED_TL | Top left LED when facing the battery
 LED_TR | Top right LED when facing the battery
@@ -92,8 +92,8 @@ __If the script gets to the end of it's commands without a STOP at the end then 
 
 - Commands are case insensitive.  
 - Any _VALUE_ value is from _0_ to _255_ in version 2 and _0.00_ to _100.00_ in version 1.
-- A __*__ in place of a _VALUE_ uses the value the referenced __LED__ should be at the time the line started to be executed. The is useful when multiple scripts are running on top of each other to use the value the __LED__ would be if no other scripts had been running.
-- Similar to __*__, a __@__ uses the value the __LED__ actually is at when the line started being executed. This is the true actual __LED__ value even when multiple scripts are running on top of each other and attempting to alter the value.
+- A __*__ in place of a _VALUE_ uses the value the referenced __LED__ should be at the time the line started to be executed. This is useful when multiple scripts are running on top of each other to use the value the __LED__ would be if no other scripts had been running.
+- Similar to __*__, an __@__ uses the value the __LED__ actually is at when the line started being executed. This is the true actual __LED__ value even when multiple scripts are running on top of each other and attempting to alter the value.
 - If _VALUE_ is __RAND__ then 2 more parameters will follow indicating a min/max range with which to generate a random value.
     - _VALUE_ can not be __RAND__ for _IF_ or _WAIT_
     - In version 1 the min/max is capped between _0.00_ and _100.0_ inclusive if.
