@@ -1,35 +1,35 @@
 // Twinkle time!
 version 2
 
-set led8.r 0
-set led7.r 0
-set led6.r 0
-set led5.r 0
-set led4.r 0
-set led3.r 0
-set led2.r 0
-set led1.r 0
-set led0.r 0
+//set led8.r 0
+//set led7.r 0
+//set led6.r 0
+//set led5.r 0
+//set led4.r 0
+//set led3.r 0
+//set led2.r 0
+//set led1.r 0
+//set led0.r 0
 
-set led8.g 0
-set led7.g 0
-set led6.g 0
-set led5.g 0
-set led4.g 0
-set led3.g 0
-set led2.g 0
-set led1.g 0
-set led0.g 0
+//set led8.g 0
+//set led7.g 0
+//set led6.g 0
+//set led5.g 0
+//set led4.g 0
+//set led3.g 0
+//set led2.g 0
+//set led1.g 0
+//set led0.g 0
 
-set led8.b 0
-set led7.b 0
-set led6.b 0
-set led5.b 0
-set led4.b 0
-set led3.b 0
-set led2.b 0
-set led1.b 0
-set led0.b 0
+//set led8.b 0
+//set led7.b 0
+//set led6.b 0
+//set led5.b 0
+//set led4.b 0
+//set led3.b 0
+//set led2.b 0
+//set led1.b 0
+//set led0.b 0
 
 twinkleTime:
 move led7.b * 0 250
@@ -110,3 +110,7 @@ goto twinkleTime
 // Blue=   0, 0, 255
 // Green=  0, 255, 0
 // Indigo= 63, 0, 255
+
+//Each LED will go up/down 25-30% independently from others
+//Each LED will move through the color spectrum R/O/Y/B/G/I
+//Looking for Starpower type look/feel from LED's

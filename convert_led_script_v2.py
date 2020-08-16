@@ -116,7 +116,7 @@ def GetDestination(name):
 #zz = type of value
 #Value is binary data for the value info
 #Count is number of fields parsed
-def GetValue(command, yy, value, destid):
+def GetValue(command, yy, value):
     global LEDVersion
 
     zz = 0x00
@@ -169,15 +169,15 @@ def GetValue(command, yy, value, destid):
 
     #not value, led, global, or local, check for *, @, and random
     if value[0] == "*":
-        return (1, struct.pack("B", 0x40 | (yy << 4) | destid), 1)
+        return (1, struct.pack("B", 0x40), 1)
         
     elif value[0] == "@":
-        return (1,  struct.pack("B", 0x80 | (yy << 4) | destid), 1)
+        return (1,  struct.pack("B", 0x80), 1)
 
     elif value[0] == "rand":
         #random value, need to determine the following params
-        (zz1, Value1, Count1) = GetValue(command, yy, value[1:], destid)
-        (zz2, Value2, Count2) = GetValue(command, yy, value[1+Count1:], destid)
+        (zz1, Value1, Count1) = GetValue(command, yy, value[1:])
+        (zz2, Value2, Count2) = GetValue(command, yy, value[1+Count1:])
 
         #setup the output data
         ww = 3
@@ -218,8 +218,8 @@ def GetTime(value):
 
     if value[0] == "rand":
         #random value, need to determine the following params
-        (zz1, Value1, Count1) = GetValue("time", 0, value[1:], 0)
-        (zz2, Value2, Count2) = GetValue("time", 0, value[1+Count1:], 0)
+        (zz1, Value1, Count1) = GetValue("time", 0, value[1:])
+        (zz2, Value2, Count2) = GetValue("time", 0, value[1+Count1:])
 
         #setup the output data
         ww = 3
@@ -296,7 +296,7 @@ def ParseLED(directory, filename, entrycount, initfile):
             Value = []
             Count = 0
             if(splitline[0] != "not"):
-                (zz, Value, Count) = GetValue(splitline[0], yy, splitline[2:], xxxx)
+                (zz, Value, Count) = GetValue(splitline[0], yy, splitline[2:])
 
             #add the value information
             outdata.append((zz << 6) | (typeflag << 4) | xxxx)
@@ -308,7 +308,7 @@ def ParseLED(directory, filename, entrycount, initfile):
                 if(typeflag != 0):
                     ReportError("move used on a non led destination: %s" % (curline))
 
-                (zz, Value, Count1) = GetValue(splitline[0], yy, splitline[2+Count:], xxxx)
+                (zz, Value, Count1) = GetValue(splitline[0], yy, splitline[2+Count:])
                 outdata.append(zz << 6)
                 outdata += Value
 
@@ -344,7 +344,7 @@ def ParseLED(directory, filename, entrycount, initfile):
             Value = bytearray()
             Count = 0
             if (splitline[0] != "stop") or (len(splitline) >= 2):
-                (zz, Value, Count) = GetTime(splitline[1:])
+                (zz, Value, Count) = GetValue(splitline[0], 0, splitline[1:])
 
             CommandID = ["delay", "stop"].index(splitline[0])
 
@@ -356,7 +356,7 @@ def ParseLED(directory, filename, entrycount, initfile):
         elif splitline[0] in ["if", "wait"]:
             (yy, typeflag, xxxx) = GetDestination(splitline[1])
             MathType = [">", "<", "=", ">=", "<=", "!="].index(splitline[2])
-            (zz, Value, Count) = GetValue(splitline[0], yy, splitline[3:], xxxx)
+            (zz, Value, Count) = GetValue(splitline[0], yy, splitline[3:])
 
             if splitline[0] == "if":
                 Command = 0x82
