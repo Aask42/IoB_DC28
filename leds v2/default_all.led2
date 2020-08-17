@@ -1,7 +1,25 @@
 // DFIU
+version 2
 
-set led_100 100.0
-set led_80 100.0
-set led_60 100.0
-set led_40 100.0
-set led_20 100.0
+set led8.g 254
+set led7.g 254
+set led6.g 254
+set led5.g 254
+set led4.g 254
+set led3.g 254
+set led2.g 254
+set led1.g 254
+set led0.g 254
+
+default:
+mul led8.g 150
+mul led7.g 150
+mul led6.g 150
+mul led5.g 150
+mul led4.g 150
+mul led3.g 150
+mul led2.g 150
+mul led1.g 150
+mul led0.g 150
+
+goto default

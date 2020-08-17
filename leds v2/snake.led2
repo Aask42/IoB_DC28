@@ -1,70 +1,71 @@
 // Tau or muon instead of electron?
+version 2
 
-
-set batt 100.0
-set stat 0.0
-set node 0.0
+    //replace below w/ TL, TR, BR, BL?, then LED0-9
+// set batt 255 - v2,dc28 has no batt led cmd
+// set stat 0 - v2,dc28 has no stat led cmd
+// set node 0 - v2,dc28 has no node led cmd
 
 snake:
 
-move led_20 * 100 150
-wait led_20 >= 75.0
+move led0 * 255 150
+wait led0 >= 191
 
-move led_40 * 100 150
-wait led_40 >= 75.0
+move led2 * 255 150
+wait led2 >= 191
 
-move led_60 * 100 150
-wait led_60 >= 75.0
+move led4 * 255 150
+wait led4 >= 191
 
-move led_80 * 100 150
-wait led_80 >= 75.0
+move led6 * 255 150
+wait led6 >= 191
 
-move led_100 * 100 150
-wait led_100 >= 75.0
+move led8 * 255 150
+wait led8 >= 191
 
-move led_20 * 0 150
-wait led_20 <= 25.0
+move led0 * 0 150
+wait led0 <= 64
 
-move led_40 * 0 150
-wait led_40 <= 25.0
+move led2 * 0 150
+wait led2 <= 64
 
-move led_60 * 0 150
-wait led_60 <= 25.0
+move led4 * 0 150
+wait led4 <= 64
 
-move led_80 * 0 150
-wait led_80 <= 25.0
+move led6 * 0 150
+wait led6 <= 64
 
-move led_100 * 0 150
-wait led_100 <= 25.0
+move led8 * 0 150
+wait led8 <= 64
 
-move led_100 * 100 150
-wait led_100 >= 75.0
+move led8 * 255 150
+wait led8 >= 191
 
-move led_80 * 100 150
-wait led_80 >= 75.0
+move led6 * 255 150
+wait led6 >= 191
 
-move led_60 * 100 150
-wait led_60 >= 75.0
+move led4 * 255 150
+wait led4 >= 191
 
-move led_40 * 100 150
-wait led_40 >= 75.0
+move led2 * 255 150
+wait led2 >= 191
 
-move led_20 * 100 150
-wait led_20 >= 75.0
+move led0 * 255 150
+wait led0 >= 191
 
-move led_100 * 0 150
-wait led_100 <= 25.0
+move led8 * 0 150
+wait led8 <= 64
 
-move led_80 * 0 150
-wait led_80 <= 25.0
+move led6 * 0 150
+wait led6 <= 64
 
-move led_60 * 0 150
-wait led_60 <= 25.0
+move led4 * 0 150
+wait led4 <= 64
 
-move led_40 * 0 150
-wait led_40 <= 25.0
+move led2 * 0 150
+wait led2 <= 64
 
-move led_20 * 0 150
-wait led_20 <= 25.0
+move led0 * 0 150
+wait led0 <= 64
 
 goto snake
