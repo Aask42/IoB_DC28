@@ -1,13 +1,13 @@
 #include "boi_wifi.h"
-#include <WiFiMulti.h>
-#include <HTTPClient.h>
-#include <WiFiClientSecure.h>
+//#include <WiFiMulti.h>
+//#include <HTTPClient.h>
+//#include <WiFiClientSecure.h>
 //#include "esp_http_client.h"
 
 
 void send_post_to_battery_internet(const char *message, unsigned int length){
     return;
-
+/*
     WiFiMulti WiFiMulti;
 
     WiFiMulti.addAP("stupid_network", "stupid_password");
@@ -65,4 +65,5 @@ void send_post_to_battery_internet(const char *message, unsigned int length){
     } else {
         Serial.println("Unable to create client");
     }
+*/
 }

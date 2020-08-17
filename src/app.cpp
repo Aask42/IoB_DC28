@@ -174,7 +174,7 @@ void setup(void) {
   if(!MessageHandler->GetOptions()->Configured || WifiState)
   {
     Serial.printf("WifiState: %d\n", WifiState);
-    BatteryWifi = new boi_wifi(Battery, MessageHandler, (boi_wifi::WifiModeEnum)WifiState);
+    //BatteryWifi = new boi_wifi(Battery, MessageHandler, (boi_wifi::WifiModeEnum)WifiState);
   }
 }
 
@@ -216,8 +216,11 @@ float safeboot_voltage()
 
 void loop() {
   SensorDataStruct SensorData;
-  uint32_t HeldTime;
   int8_t NewLEDCap;
+
+#if BOI_VERSION == 1
+  uint32_t HeldTime;
+#endif
 
   if(SafeBoot)
   {
