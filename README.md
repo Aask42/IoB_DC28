@@ -15,7 +15,7 @@ To view power usage statistics users connect to the __Captive Arcade<sup>TM</sup
 1. Power switch ON (Does NOT need to be on to charge this year)
 2. If LEDs flash RGB on boot, boi is in low voltage mode, charge it
 3. Hold "DEF" capsense button on boot = force low voltage mode = faster charge
-4. Hold "TOUCH SLIDER" capsense button area on boot = factory reset
+4. Hold "DEF" + "TOUCH SLIDER" capsense button area on boot = factory reset, may require tapping reset button on back due to timing
 5. Solder headers (make sure to orient to VCC on the SQUARE pad)
 6. Show off in #linecon (discord.gg/DEFCON)
 7. See you @ DEFCON 29!
