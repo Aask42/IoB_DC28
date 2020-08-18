@@ -183,7 +183,7 @@ void boi_wifi::monitor_smwn(){
 
         // Send POST messages, watch the timing as this loop fires every 100ms
         const char *message = "{'macAddrBat':'192.168.0.42';'publicIP':'255.255.255.24';'data':'BURNiNATINGAllTheHumans!!!'}";
-        send_post_to_battery_internet(message,sizeof(message));
+        //send_post_to_battery_internet(message,sizeof(message));
         // Serial.print("Local IP: ");
         // Serial.println(WiFi.localIP().toString());
         yield();
@@ -337,13 +337,16 @@ void boi_wifi::enter_safe_mode_with_networking(const OptionsStruct *Options){
     pthread_mutex_init(&lock, NULL);
     pthread_mutex_init(&lockDone, NULL);
 
+    pthread_attr_t cfg;
+    memset(&cfg, 0, sizeof(cfg));
+    pthread_attr_setstacksize(&cfg, 6*1024);
+
     //setup our thread that will re-send messages that haven't been ack'data
-    if(pthread_create(&this->ServerCheckThread, NULL, static_monitor_smwn, 0))
+    if(pthread_create(&this->ServerCheckThread, &cfg, static_monitor_smwn, 0))
     {
         //failed
         Serial.println("Failed to setup ServerCheck thread");
         _globalBoiWifi = 0;
     }
 
-    // Post out to batteryinter.net with our local IP address
 }
