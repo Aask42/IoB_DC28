@@ -265,7 +265,7 @@ uint32_t LEDsInternal::GetValue(ScriptInfoStruct *cur_script, uint8_t Command, u
     //shift output based on yy or command type to align with the final destination
     if(IsShiftRotate)
         output = output & 0xff;
-    else if(yy)
+    else if(yy && (yy != 5))
         output = (output & 0xff) << (24 - (yy * 8)); //shift the byte into location
     else
         output &= 0x00ffffff;
