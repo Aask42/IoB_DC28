@@ -181,11 +181,6 @@ void boi_wifi::monitor_smwn(){
         }
         pthread_mutex_unlock(&lock);
 
-        // Send POST messages, watch the timing as this loop fires every 100ms
-        const char *message = "{'macAddrBat':'192.168.0.42';'publicIP':'255.255.255.24';'data':'BURNiNATINGAllTheHumans!!!'}";
-        //send_post_to_battery_internet(message,sizeof(message));
-        // Serial.print("Local IP: ");
-        // Serial.println(WiFi.localIP().toString());
         yield();
         delay(100);
     };

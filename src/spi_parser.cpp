@@ -47,9 +47,9 @@ void SPIParser::Communicate(SPIDataStruct *Data)
         return;
     }
 
-    //pthread_mutex_lock(&spi_data_lock);
+    pthread_mutex_lock(&spi_data_lock);
     memcpy(Buffer, this->OutSPIBuffer, sizeof(Buffer));
-    //pthread_mutex_unlock(&spi_data_lock);
+    pthread_mutex_unlock(&spi_data_lock);
 
     SPI.beginTransaction(SPISettings(1000000, MSBFIRST, SPI_MODE0));
     digitalWrite(SS, LOW);
@@ -74,14 +74,9 @@ void SPIParser::SetRGBLed(uint8_t LEDNum, uint32_t RGB)
     if(LEDNum > 8)
         return;
 
-    pthread_mutex_lock(&spi_data_lock);
-
-    //printf("Setting LED %d: %x\n", LEDNum, RGB);
-    this->OutSPIBuffer[4 + (LEDNum * 3)] = (RGB >> 16) & 0xff;
-    this->OutSPIBuffer[4 + (LEDNum * 3) + 1] = (RGB >> 8) & 0xff;
-    this->OutSPIBuffer[4 + (LEDNum * 3) + 2] = RGB & 0xff;
-
-    pthread_mutex_unlock(&spi_data_lock);
+    this->RGBData[(LEDNum * 3)] = (RGB >> 16) & 0xff;
+    this->RGBData[(LEDNum * 3) + 1] = (RGB >> 8) & 0xff;
+    this->RGBData[(LEDNum * 3) + 2] = RGB & 0xff;
 }
 
 void SPIParser::SetRGBLed(uint8_t LEDNum, uint8_t R, uint8_t G, uint8_t B)
@@ -89,13 +84,9 @@ void SPIParser::SetRGBLed(uint8_t LEDNum, uint8_t R, uint8_t G, uint8_t B)
     if(LEDNum > 8)
         return;
 
-    pthread_mutex_lock(&spi_data_lock);
-
-    this->OutSPIBuffer[4 + (LEDNum * 3)] = R;
-    this->OutSPIBuffer[4 + (LEDNum * 3) + 1] = G;
-    this->OutSPIBuffer[4 + (LEDNum * 3) + 2] = B;
-    
-    pthread_mutex_unlock(&spi_data_lock);
+    this->RGBData[(LEDNum * 3)] = R;
+    this->RGBData[(LEDNum * 3) + 1] = G;
+    this->RGBData[(LEDNum * 3) + 2] = B;
 }
 
 void SPIParser::SetGATPower(bool Enable)
@@ -122,6 +113,15 @@ void SPIParser::GenerateSPIDataStruct(SPIDataStruct *Data)
     Data->BatteryVoltage = (float)this->InSPIBuffer[4] + ((float)this->InSPIBuffer[5] / 100.0);
     Data->GATVoltage = (float)this->InSPIBuffer[6] + ((float)this->InSPIBuffer[7] / 100.0);
     Data->GATCurrent = (((short)this->InSPIBuffer[8]) << 8) | this->InSPIBuffer[9];
+}
+
+void SPIParser::UpdateOutBuffer()
+{
+    //responsible for moving the LED info over into the SPI buffer
+    pthread_mutex_lock(&spi_data_lock);
+    memcpy(&this->OutSPIBuffer[4], this->RGBData, sizeof(this->RGBData));
+
+    pthread_mutex_unlock(&spi_data_lock);
 }
 
 #endif

@@ -26,11 +26,13 @@ class SPIParser
         void SetRGBLed(uint8_t LEDNum, uint32_t RGB);
         void SetRGBLed(uint8_t LEDNum, uint8_t R, uint8_t G, uint8_t B);
         void SetGATPower(bool Enable);
+        void UpdateOutBuffer();
 
     private:
         void GenerateSPIDataStruct(SPIDataStruct *Data);
         uint8_t InSPIBuffer[31];
         uint8_t OutSPIBuffer[31];
+        uint8_t RGBData[27];
         int64_t LastSensorDataUpdate;
 };
 

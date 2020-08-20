@@ -200,7 +200,7 @@ uint32_t LEDsInternal::GetValue(ScriptInfoStruct *cur_script, uint8_t Command, u
                         switch((tempdata >> 2) & 0x3)
                         {
                             case 0:
-                                if(yy)
+                                if(yy && (yy != 5))
                                 {
                                     Rand[i] = cur_script->data[cur_script->active_pos];
                                     cur_script->active_pos++;
@@ -521,7 +521,7 @@ void LEDsInternal::Run()
                             break;
 
                     }
-                    break;
+                    //break;
                 }
                 else
                 {
@@ -861,6 +861,7 @@ void LEDsInternal::Run()
 
 #if BOI_VERSION == 2
         //update the LEDs
+        SPIHandler->UpdateOutBuffer();
         SPIHandler->Communicate(&SPIData);
 #endif
         delay(10);
