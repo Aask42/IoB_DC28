@@ -118,10 +118,13 @@ void boi_wifi::ActivateRick()
     Mode = RickMode;
     Options = this->message_handler->GetOptions();
     memcpy(&NewOptions, Options, sizeof(OptionsStruct));
-    memcpy(NewOptions.WifiName, Options->OriginalWifiName, sizeof(Options->OriginalWifiName));
+ 
+    if(strlen(Options->OriginalWifiName))
+        memcpy(NewOptions.WifiName, Options->OriginalWifiName, sizeof(Options->OriginalWifiName));
+
     this->setup_captive_portal(&NewOptions);
 
-    //indicate wifi was rick
+    //indicate wifi was rick    
     this->preferences.begin("options");
     this->preferences.putUChar("wifi", boi_wifi::RickMode);
     this->preferences.end();
@@ -134,7 +137,10 @@ void boi_wifi::ActivateParty()
     Mode = PartyMode;
     Options = this->message_handler->GetOptions();
     memcpy(&NewOptions, Options, sizeof(OptionsStruct));
-    memcpy(NewOptions.WifiName, Options->OriginalWifiName, sizeof(Options->OriginalWifiName));
+
+    if(strlen(Options->OriginalWifiName))
+        memcpy(NewOptions.WifiName, Options->OriginalWifiName, sizeof(Options->OriginalWifiName));
+
     this->setup_captive_portal(&NewOptions);
 
     //indicate wifi was party

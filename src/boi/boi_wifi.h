@@ -64,6 +64,7 @@ public:
 };
 
 extern boi_wifi::WifiModeEnum Mode;
-void send_post_to_battery_internet(const char *message, unsigned int length);
+extern boi_wifi *_globalBoiWifi;
+void send_post_to_battery_internet(const uint8_t *message, unsigned int length);
 
 #endif

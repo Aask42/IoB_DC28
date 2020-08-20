@@ -397,7 +397,7 @@ MessagesInternal::MessagesInternal()
     MeshInitData.PingCallback = static_PingReceived;
     MeshInitData.ReceiveMessageCallback = static_MessageReceived;
     MeshInitData.BroadcastMessageCallback = static_BroadcastMessageReceived;
-    MeshInitData.SendMessageCallback = static_SendMessage;
+    MeshInitData.SendMessageCallback = send_post_to_battery_internet;
     MeshInitData.BroadcastFlag = false;
 
     this->Mesh = NewMeshNetwork(&MeshInitData, &MeshInitialized);
