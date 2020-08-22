@@ -34,6 +34,7 @@ class SPIParser
         uint8_t OutSPIBuffer[31];
         uint8_t RGBData[27];
         int64_t LastSensorDataUpdate;
+        uint8_t LastSliderPos;
 };
 
 #endif

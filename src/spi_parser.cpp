@@ -1,4 +1,5 @@
 #include "spi_parser.h"
+#include "app.h"
 
 #if BOI_VERSION == 2
 
@@ -10,8 +11,10 @@ pthread_mutex_t spi_data_lock;
 SPIParser::SPIParser()
 {
     this->LastSensorDataUpdate = 0;
+    this->LastSliderPos = 0;
     memset(this->InSPIBuffer, 0, sizeof(this->InSPIBuffer));
     memset(this->OutSPIBuffer, 0, sizeof(this->OutSPIBuffer));
+    memset(this->RGBData, 0, sizeof(this->RGBData));
 
     //initialize and setup the SPI interface
     pinMode(SS, OUTPUT);
@@ -67,6 +70,16 @@ void SPIParser::Communicate(SPIDataStruct *Data)
         this->GenerateSPIDataStruct(Data);
 
     pthread_mutex_unlock(&spi_lock);
+
+    //if the slider changed then update our value and update the LEDs
+    //do this outside of the mutex lock to avoid the LED update code calling
+    //communicate and deadlocking
+    if(Data && (this->LastSliderPos != Data->SliderPos))
+    {
+        this->LastSliderPos = Data->SliderPos;
+        if(LEDHandler)
+            LEDHandler->SetLEDBrightness(0);
+    }
 }
 
 void SPIParser::SetRGBLed(uint8_t LEDNum, uint32_t RGB)

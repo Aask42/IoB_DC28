@@ -75,9 +75,7 @@ class LEDs
         virtual uint16_t GetAmbientSensor();;
         virtual const char *LEDScriptIDToStr(uint8_t ID);
 
-#if BOI_VERSION == 1
         virtual void SetLEDBrightness(float BrightnessPercent);
-#endif
         virtual float GetLEDBrightness();
         virtual void SetLEDCap(uint8_t Count);
 };

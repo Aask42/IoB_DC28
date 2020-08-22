@@ -40,9 +40,7 @@ class LEDsInternal : public LEDs
         uint16_t GetAmbientSensor();
         const char *LEDScriptIDToStr(uint8_t ID);
 
-#if BOI_VERSION == 1
         void SetLEDBrightness(float BrightnessPercent);
-#endif
         float GetLEDBrightness();
         void SetLEDCap(uint8_t Count);
 

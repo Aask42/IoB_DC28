@@ -1383,11 +1383,11 @@ void LEDsInternal::ReadAmbientSensor()
     //this is all sorts of broke. We have to power down wifi and reset registers to fix this
 }
 
-#if BOI_VERSION == 1
 void LEDsInternal::SetLEDBrightness(float BrightnessPercent)
 {
     int i;
 
+#if BOI_VERSION == 1
     //set the scale of the LED brightness, note that this needs to follow the same logic that SetLED does
     if(BrightnessPercent < 0.0)
         BrightnessPercent = 0.0;
@@ -1398,6 +1398,7 @@ void LEDsInternal::SetLEDBrightness(float BrightnessPercent)
 
     //calculate a new value for max
     this->MaxBrightness = int(pow(pow(MAX_RESOLUTION, POWER_LAW_A) * BrightnessPercent, 1/POWER_LAW_A) + 0.5);
+#endif
 
     //force all LEDs to set their brightness accordingly
     for(i = 0; i < LEDEnum::LED_Count; i++)
@@ -1407,7 +1408,6 @@ void LEDsInternal::SetLEDBrightness(float BrightnessPercent)
     SPIHandler->Communicate(&SPIData);
 #endif
 }
-#endif
 
 float LEDsInternal::GetLEDBrightness()
 {
