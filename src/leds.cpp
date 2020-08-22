@@ -533,7 +533,7 @@ void LEDsInternal::Run()
                     {
                         case 0x0:  //delay
                         {
-                            uint32_t DelayAmount = this->GetValue(cur_script, 0, yy, 5);
+                            uint32_t DelayAmount = this->GetValue(cur_script, 0, yy << 6, 5);
                             cur_script->DelayEndTime = esp_timer_get_time() + (DelayAmount * 1000);
                             break;
                         }
