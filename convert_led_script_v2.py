@@ -150,7 +150,7 @@ def GetValue(command, yy, value, destid):
 
     if(Info["id"] == -1):
         zz += 1
-        Info = GetLED(value)
+        Info = GetLED(value[0])
 
     if(Info["id"] == -1):
         zz += 1
