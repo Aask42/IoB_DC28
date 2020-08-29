@@ -1,37 +1,73 @@
-// Workin' hard or hardly workin'! Amirite?!? 
-version 2
+// Workin' hard or hardly workin'! Amirite?!? Those batz tho
+//I'm a new version with moar LED's!!!!!! woooooooooooooooooooooooooooooooooooooo ~
 
-discharging:
+//TODO: ledbr works, tr stuck and tl stubborn & not turning on yet :3
+version 2
+dischargingbatz:
+
+//move ledtl * 225 150
+//move ledtr * 225 150
+move ledbr * 225 150
+wait ledbr >= 191
 
 move led8 * 255 150
 wait led8 >= 191
 
+move led7 * 255 150
+wait led7 >= 191
+
 move led6 * 255 150
 wait led6 >= 191
+
+move led5 * 255 150
+wait led5 >= 191
 
 move led4 * 255 150
 wait led4 >= 191
 
+move led3 * 255 150
+wait led3 >= 191
+
 move led2 * 255 150
 wait led2 >= 191
+
+move led1 * 255 150
+wait led1 >= 191
 
 move led0 * 255 150
 wait led0 >= 191
 
+//move ledtr * 0 150
+//move ledtl * 0 150
+move ledbr * 0 150
+wait ledbr <= 64
+
 move led8 * 0 150
 wait led8 <= 64
+
+move led7 * 0 150
+wait led7 <= 64
 
 move led6 * 0 150
 wait led6 <= 64
 
+move led5 * 0 150
+wait led5 <= 64
+
 move led4 * 0 150
 wait led4 <= 64
+
+move led3 * 0 150
+wait led3 <= 64
 
 move led2 * 0 150
 wait led2 <= 64
 
+move led1 * 0 150
+wait led1 <= 64
+
 move led0 * 0 150
 wait led0 <= 64
 
-// Send help....
-goto discharging
+// wubalubadubdub....
+goto dischargingbatz

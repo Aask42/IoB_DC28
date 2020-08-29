@@ -1,38 +1,67 @@
 // Pikachu I choose YOU!
 version 2
 
+//starts top full lit, goes down, loops 1 and lights up moving down, stops fully lit, blinks 3 times, stops on, moves down from turning off top to down
+
 charged:
 //loop up
+move led0 * 255 150
+wait led0 >= 191
+
 move led1 * 255 150
 wait led1 >= 191
 
 move led2 * 255 150
 wait led2 >= 191
 
+move led3 * 255 150
+wait led3 >= 191
+
 move led4 * 255 150
 wait led4 >= 191
 
+move led5 * 255 150
+wait led5 >= 191
+
 move led6 * 255 150
 wait led6 >= 191
+
+move led7 * 255 150
+wait led7 >= 191
 
 move led8 * 255 150
 wait led8 >= 191
 
 // loop down
+move led0 * 0 150
+wait led0 <= 64
+
 move led1 * 0 150
 wait led1 <= 64
 
 move led2 * 0 150
 wait led2 <= 64
 
+move led3 * 0 150
+wait led3 <= 64
+
 move led4 * 0 150
 wait led4 <= 64
+
+move led5 * 0 150
+wait led5 <= 64
 
 move led6 * 0 150
 wait led6 <= 64
 
+move led7 * 0 150
+wait led7 <= 64
+
 move led8 * 0 150
 wait led8 <= 64
+
+move led0 * 255 150
+wait led0 >= 191
 
 move led1 * 255 150
 wait led1 >= 191
@@ -40,29 +69,53 @@ wait led1 >= 191
 move led2 * 255 150
 wait led2 >= 191
 
+move led3 * 255 150
+wait led3 >= 191
+
 move led4 * 255 150
 wait led4 >= 191
 
+move led5 * 255 150
+wait led5 >= 191
+
 move led6 * 255 150
 wait led6 >= 191
+
+move led7 * 255 150
+wait led7 >= 191
 
 move led8 * 255 150
 wait led8 >= 191
 
+move led0 * 0 150
+wait led0 <= 64
+
 move led1 * 0 150
 wait led1 <= 64
 
 move led2 * 0 150
 wait led2 <= 64
 
+move led3 * 0 150
+wait led3 <= 64
+
 move led4 * 0 150
 wait led4 <= 64
+
+move led5 * 0 150
+wait led5 <= 64
 
 move led6 * 0 150
 wait led6 <= 64
 
+move led7 * 0 150
+wait led7 <= 64
+
 move led8 * 0 150
 wait led8 <= 64
+
+move led0 * 255 150
+wait led0 >= 191
 
 move led1 * 255 150
 wait led1 >= 191
@@ -70,29 +123,53 @@ wait led1 >= 191
 move led2 * 255 150
 wait led2 >= 191
 
+move led3 * 255 150
+wait led3 >= 191
+
 move led4 * 255 150
 wait led4 >= 191
 
+move led5 * 255 150
+wait led5 >= 191
+
 move led6 * 255 150
 wait led6 >= 191
+
+move led7 * 255 150
+wait led7 >= 191
 
 move led8 * 255 150
 wait led8 >= 191
 
+move led0 * 0 150
+wait led0 <= 64
+
 move led1 * 0 150
 wait led1 <= 64
 
 move led2 * 0 150
 wait led2 <= 64
 
+move led3 * 0 150
+wait led3 <= 64
+
 move led4 * 0 150
 wait led4 <= 64
+
+move led5 * 0 150
+wait led5 <= 64
 
 move led6 * 0 150
 wait led6 <= 64
 
+move led7 * 0 150
+wait led7 <= 64
+
 move led8 * 0 150
 wait led8 <= 64
+
+move led0 * 255 150
+wait led0 >= 191
 
 move led1 * 255 150
 wait led1 >= 191
@@ -100,11 +177,20 @@ wait led1 >= 191
 move led2 * 255 150
 wait led2 >= 191
 
+move led3 * 255 150
+wait led3 >= 191
+
 move led4 * 255 150
 wait led4 >= 191
 
+move led5 * 255 150
+wait led5 >= 191
+
 move led6 * 255 150
 wait led6 >= 191
+
+move led7 * 255 150
+wait led7 >= 191
 
 move led8 * 255 150
 wait led8 >= 191
@@ -112,50 +198,74 @@ wait led8 >= 191
 delay 840
 
 move led8 * 0 50
+move led7 * 0 50
 move led6 * 0 50
+move led5 * 0 50
 move led4 * 0 50
+move led3 * 0 50
 move led2 * 0 50
 move led1 * 0 50
+move led0 * 0 50
 
 delay 210
 
 move led8 * 255 50
+move led7 * 255 50
 move led6 * 255 50
+move led5 * 255 50
 move led4 * 255 50
+move led3 * 255 50
 move led2 * 255 50
 move led1 * 255 50
+move led0 * 255 50
 
 delay 420
 
 move led8 * 0 50
+move led7 * 0 50
 move led6 * 0 50
+move led5 * 0 50
 move led4 * 0 50
+move led3 * 0 50
 move led2 * 0 50
 move led1 * 0 50
+move led0 * 0 50
 
 delay 210
 
 move led8 * 255 50
+move led7 * 255 50
 move led6 * 255 50
+move led5 * 255 50
 move led4 * 255 50
+move led3 * 255 50
 move led2 * 255 50
 move led1 * 255 50
+move led0 * 255 50
 
 delay 420
 
 move led8 * 0 50
+move led7 * 0 50
 move led6 * 0 50
+move led5 * 0 50
 move led4 * 0 50
+move led3 * 0 50
 move led2 * 0 50
 move led1 * 0 50
+move led0 * 0 50
 
 delay 210
 
 move led8 * 255 50
+move led7 * 255 50
 move led6 * 255 50
+move led5 * 255 50
 move led4 * 255 50
+move led3 * 255 50
 move led2 * 255 50
 move led1 * 255 50
+move led0 * 255 50
 
 delay 1500
 
