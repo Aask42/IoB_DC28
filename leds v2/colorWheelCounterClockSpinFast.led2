@@ -9,8 +9,11 @@ move led3 * 0xFFA500 50
 delay 50
 move led4 * 0xFFA500 50
 
+
 delay 50
 
+//keep blinking middle led to previous color and back
+move led4 * led7 50
 move led7 * 0xFFA500 50
 move led1 * 0xFFA500 50
 delay 50
@@ -18,6 +21,7 @@ move led4 * 0xFFA500 50
 
 delay 50
 
+move led4 * led6 50
 move led6 * 0xFFA500 50
 move led2 * 0xFFA500 50
 delay 50
@@ -25,6 +29,7 @@ move led4 * 0xFFA500 50
 
 delay 50
 
+move led4 * led8 50
 move led8 * 0xFFA500 50
 move led0 * 0xFFA500 50
 delay 50
@@ -36,6 +41,7 @@ delay 75
 //next
 
 //2 blue start
+move led4 * led5 50
 move led5 * 0x000080 50
 move led3 * 0x000080 50
 delay 50
@@ -43,6 +49,7 @@ move led4 * 0x000080 50
 
 delay 50
 
+move led4 * led7 50
 move led7 * 0x000080 50
 move led1 * 0x000080 50
 delay 50
@@ -50,6 +57,7 @@ move led4 * 0x000080 50
 
 delay 50
 
+move led4 * led6 50
 move led6 * 0x000080 50
 move led2 * 0x000080 50
 delay 50
@@ -57,6 +65,7 @@ move led4 * 0x000080 50
 
 delay 50
 
+move led4 * led8 50
 move led8 * 0x000080 50
 move led0 * 0x000080 50
 delay 50
@@ -68,6 +77,7 @@ delay 75
 //next
 
 //3 red-orange start
+move led4 * led5 50
 move led5 * 0xFF8C00 50
 move led3 * 0xFF8C00 50
 delay 50
@@ -75,6 +85,7 @@ move led4 * 0xFF8C00 50
 
 delay 50
 
+move led4 * led7 50
 move led7 * 0xFF8C00 50
 move led1 * 0xFF8C00 50
 delay 50
@@ -82,6 +93,7 @@ move led4 * 0xFF8C00 50
 
 delay 50
 
+move led4 * led6 50
 move led6 * 0xFF8C00 50
 move led2 * 0xFF8C00 50
 delay 50
@@ -89,6 +101,7 @@ move led4 * 0xFF8C00 50
 
 delay 50
 
+move led4 * led8 50
 move led8 * 0xFF8C00 50
 move led0 * 0xFF8C00 50
 delay 50
@@ -98,6 +111,7 @@ delay 75
 //3 red-orange end
 
 //4 blue-green start
+move led4 * led5 50
 move led5 * 0x0D98BA 50
 move led3 * 0x0D98BA 50
 delay 50
@@ -105,6 +119,7 @@ move led4 * 0x0D98BA 50
 
 delay 50
 
+move led4 * led7 50
 move led7 * 0x0D98BA 50
 move led1 * 0x0D98BA 50
 delay 50
@@ -112,6 +127,7 @@ move led4 * 0x0D98BA 50
 
 delay 50
 
+move led4 * led6 50
 move led6 * 0x0D98BA 50
 move led2 * 0x0D98BA 50
 delay 50
@@ -119,6 +135,7 @@ move led4 * 0x0D98BA 50
 
 delay 50
 
+move led4 * led8 50
 move led8 * 0x0D98BA 50
 move led0 * 0x0D98BA 50
 delay 50
@@ -130,6 +147,7 @@ delay 75
 //next
 
 //5 red start
+move led4 * led5 50
 move led5 * 0xFF0000 50
 move led3 * 0xFF0000 50
 delay 50
@@ -137,6 +155,7 @@ move led4 * 0xFF0000 50
 
 delay 50
 
+move led4 * led7 50
 move led7 * 0xFF0000 50
 move led1 * 0xFF0000 50
 delay 50
@@ -144,6 +163,7 @@ move led4 * 0xFF0000 50
 
 delay 50
 
+move led4 * led6 50
 move led6 * 0xFF0000 50
 move led2 * 0xFF0000 50
 delay 50
@@ -151,6 +171,7 @@ move led4 * 0xFF0000 50
 
 delay 50
 
+move led4 * led8 50
 move led8 * 0xFF0000 50
 move led0 * 0xFF0000 50
 delay 50
@@ -160,6 +181,7 @@ delay 75
 //5 red end
 
 //6 green start
+move led4 * led5 50
 move led5 * 0x00FF00 50
 move led3 * 0x00FF00 50
 delay 50
@@ -167,6 +189,7 @@ move led4 * 0x00FF00 50
 
 delay 50
 
+move led4 * led7 50
 move led7 * 0x00FF00 50
 move led1 * 0x00FF00 50
 delay 50
@@ -174,6 +197,7 @@ move led4 * 0x00FF00 50
 
 delay 50
 
+move led4 * led6 50
 move led6 * 0x00FF00 50
 move led2 * 0x00FF00 50
 delay 50
@@ -181,6 +205,7 @@ move led4 * 0x00FF00 50
 
 delay 50
 
+move led4 * led8 50
 move led8 * 0x00FF00 50
 move led0 * 0x00FF00 50
 delay 50
@@ -190,6 +215,7 @@ delay 75
 //6 green end
 
 //7 red-violet start
+move led4 * led5 50
 move led5 * 0xC71585 50
 move led3 * 0xC71585 50
 delay 50
@@ -197,6 +223,7 @@ move led4 * 0xC71585 50
 
 delay 50
 
+move led4 * led7 50
 move led7 * 0xC71585 50
 move led1 * 0xC71585 50
 delay 50
@@ -204,6 +231,7 @@ move led4 * 0xC71585 50
 
 delay 50
 
+move led4 * led6 50
 move led6 * 0xC71585 50
 move led2 * 0xC71585 50
 delay 50
@@ -211,6 +239,7 @@ move led4 * 0xC71585 50
 
 delay 50
 
+move led4 * led8 50
 move led8 * 0xC71585 50
 move led0 * 0xC71585 50
 delay 50
@@ -222,6 +251,7 @@ delay 75
 //next
 
 //8 yellow-green start
+move led4 * led5 50
 move led5 * 0x9ACD32 50
 move led3 * 0x9ACD32 50
 delay 50
@@ -229,6 +259,7 @@ move led4 * 0x9ACD32 50
 
 delay 50
 
+move led4 * led7 50
 move led7 * 0x9ACD32 50
 move led1 * 0x9ACD32 50
 delay 50
@@ -236,6 +267,7 @@ move led4 * 0x9ACD32 50
 
 delay 50
 
+move led4 * led6 50
 move led6 * 0x9ACD32 50
 move led2 * 0x9ACD32 50
 delay 50
@@ -243,6 +275,7 @@ move led4 * 0x9ACD32 50
 
 delay 50
 
+move led4 * led8 50
 move led8 * 0x9ACD32 50
 move led0 * 0x9ACD32 50
 delay 50
@@ -254,6 +287,7 @@ delay 75
 //next
 
 //9 violet start
+move led4 * led5 50
 move led5 * 0xEE82EE 50
 move led3 * 0xEE82EE 50
 delay 50
@@ -261,6 +295,7 @@ move led4 * 0xEE82EE 50
 
 delay 50
 
+move led4 * led7 50
 move led7 * 0xEE82EE 50
 move led1 * 0xEE82EE 50
 delay 50
@@ -268,6 +303,7 @@ move led4 * 0xEE82EE 50
 
 delay 50
 
+move led4 * led6 50
 move led6 * 0xEE82EE 50
 move led2 * 0xEE82EE 50
 delay 50
@@ -275,6 +311,7 @@ move led4 * 0xEE82EE 50
 
 delay 50
 
+move led4 * led8 50
 move led8 * 0xEE82EE 50
 move led0 * 0xEE82EE 50
 delay 50
@@ -286,6 +323,7 @@ delay 75
 //next
 
 //10 yellow start
+move led4 * led5 50
 move led5 * 0xFFFF00 50
 move led3 * 0xFFFF00 50
 delay 50
@@ -293,6 +331,7 @@ move led4 * 0xFFFF00 50
 
 delay 50
 
+move led4 * led7 50
 move led7 * 0xFFFF00 50
 move led1 * 0xFFFF00 50
 delay 50
@@ -300,6 +339,7 @@ move led4 * 0xFFFF00 50
 
 delay 50
 
+move led4 * led6 50
 move led6 * 0xFFFF00 50
 move led2 * 0xFFFF00 50
 delay 50
@@ -307,6 +347,7 @@ move led4 * 0xFFFF00 50
 
 delay 50
 
+move led4 * led8 50
 move led8 * 0xFFFF00 50
 move led0 * 0xFFFF00 50
 delay 50
@@ -318,6 +359,7 @@ delay 75
 //next
 
 //11 blue-violet start
+move led4 * led5 50
 move led5 * 0x8A2BE2 50
 move led3 * 0x8A2BE2 50
 delay 50
@@ -325,6 +367,7 @@ move led4 * 0x8A2BE2 50
 
 delay 50
 
+move led4 * led7 50
 move led7 * 0x8A2BE2 50
 move led1 * 0x8A2BE2 50
 delay 50
@@ -332,6 +375,7 @@ move led4 * 0x8A2BE2 50
 
 delay 50
 
+move led4 * led6 50
 move led6 * 0x8A2BE2 50
 move led2 * 0x8A2BE2 50
 delay 50
@@ -339,6 +383,7 @@ move led4 * 0x8A2BE2 50
 
 delay 50
 
+move led4 * led8 50
 move led8 * 0x8A2BE2 50
 move led0 * 0x8A2BE2 50
 delay 50
@@ -350,6 +395,7 @@ delay 75
 //next
 
 //12 yellow-orange start
+move led4 * led5 50
 move led5 * 0xFFCC00 50
 move led3 * 0xFFCC00 50
 delay 50
@@ -357,6 +403,7 @@ move led4 * 0xFFCC00 50
 
 delay 50
 
+move led4 * led7 50
 move led7 * 0xFFCC00 50
 move led1 * 0xFFCC00 50
 delay 50
@@ -364,6 +411,7 @@ move led4 * 0xFFCC00 50
 
 delay 50
 
+move led4 * led6 50
 move led6 * 0xFFCC00 50
 move led2 * 0xFFCC00 50
 delay 50
@@ -371,6 +419,7 @@ move led4 * 0xFFCC00 50
 
 delay 50
 
+move led4 * led8 50
 move led8 * 0xFFCC00 50
 move led0 * 0xFFCC00 50
 delay 50
