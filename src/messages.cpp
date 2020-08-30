@@ -1,5 +1,6 @@
 #include "messages_internal.h"
 #include "app.h"
+#include <HTTPClient.h>
 
 MessagesInternal *_globalMessages;
 pthread_mutex_t message_lock;
@@ -452,3 +453,53 @@ void MessagesInternal::SetBrightness(uint8_t BrightnessValue)
     LEDHandler->SetLEDBrightness(NewBrightness);
 }
 #endif
+
+bool MessagesInternal::QueryBatteryInternet(){
+    String URL;
+    bool FoundMessage = false;
+
+    if(!_globalBoiWifi || !(Mode == boi_wifi::SafeModeWithNetworking))
+        return false;
+
+    //can send the message
+    Serial.print("[HTTPS] begin...\n");
+    URL = "https://batteryinter.net/battery.php?mac=";
+    URL += WiFi.macAddress();
+    if (1) { //https.begin(URL, rootCACertificate)) {  // HTTPS
+        Serial.print("[HTTPS] GET...\n");
+
+        int httpCode = HTTP_CODE_OK; // https.GET();
+
+        // file found at server
+        if (httpCode == HTTP_CODE_OK) {
+            String payload = "AAAAAAAAAAAAAAAAAAAAAAAAAAA\nBBBBBBBBBBBBBBBBBBBBBBB"; //https.getString();
+            Serial.println(payload);
+
+            //walk the payload and send messages to Itero
+            unsigned int payload_len = payload.length();
+            unsigned int pos = 0;
+            unsigned int newline_pos;
+            while(pos < payload_len) {
+                //find a newline, if no newline then set to end of data
+                newline_pos = payload.indexOf('\n', pos);
+                if(newline_pos == -1)
+                    newline_pos = payload_len;
+
+                //send the data along
+                this->Mesh->ProcessMessage((uint8_t *)&(payload.c_str()[pos]), newline_pos - pos - 1);
+                FoundMessage = true;
+
+                //move past the newline and get the next piece
+                pos = newline_pos + 1;
+            };
+        } else {
+            Serial.printf("[HTTPS] GET... failed, error: %s\n", https.errorToString(httpCode).c_str());
+        }
+
+        https.end();
+    } else {
+        Serial.printf("[HTTPS] Unable to connect\n");
+    }
+
+    return FoundMessage;
+}
