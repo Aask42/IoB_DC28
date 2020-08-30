@@ -465,14 +465,14 @@ bool MessagesInternal::QueryBatteryInternet(){
     Serial.print("[HTTPS] begin...\n");
     URL = "https://batteryinter.net/battery.php?mac=";
     URL += WiFi.macAddress();
-    if (1) { //https.begin(URL, rootCACertificate)) {  // HTTPS
+    if (https.begin(URL, rootCACertificate)) {
         Serial.print("[HTTPS] GET...\n");
 
-        int httpCode = HTTP_CODE_OK; // https.GET();
+        int httpCode = https.GET();
 
         // file found at server
         if (httpCode == HTTP_CODE_OK) {
-            String payload = "AAAAAAAAAAAAAAAAAAAAAAAAAAA\nBBBBBBBBBBBBBBBBBBBBBBB"; //https.getString();
+            String payload = https.getString();
             Serial.println(payload);
 
             //walk the payload and send messages to Itero
