@@ -30,8 +30,6 @@ HTTPClient https;
 void send_post_to_battery_internet(const uint8_t *message, unsigned int length){
     String Data;
 
-    return;
-
     if(!_globalBoiWifi || !(Mode == boi_wifi::SafeModeWithNetworking))
         return;
 
