@@ -152,11 +152,14 @@ void boi_wifi::monitor_smwn(){
     SensorDataStruct SensorData;
     int LoopCount;
     int LoopScanCount;
+    uint64_t NextGetCheck;
 
     pthread_mutex_lock(&lockDone);
 
     LoopCount = 0;
     LoopScanCount = 0;
+    NextGetCheck = esp_timer_get_time();
+
     while(1)
     {
         if(pthread_mutex_trylock(&lock))
@@ -179,6 +182,15 @@ void boi_wifi::monitor_smwn(){
             yield();
             LoopCount = 0;
         }
+
+        if(esp_timer_get_time() >= NextGetCheck) {
+            //process messages, if we had messages then check every 10 seconds otherwise every minute
+            if(this->message_handler->QueryBatteryInternet())
+                NextGetCheck = esp_timer_get_time() + (10*1000*1000);
+            else
+                NextGetCheck = esp_timer_get_time() + (60*1000*1000);
+        }
+
         pthread_mutex_unlock(&lock);
 
         yield();
@@ -285,7 +297,7 @@ void boi_wifi::enter_safe_mode_with_networking(const OptionsStruct *Options){
 
     yield();
     delay(100);
-    
+
     wl_status_t status;
     status = WiFi.begin(Options->SafeModeWifiName,Options->SafeModeWifiPassword);
     int counter =0;

@@ -28,38 +28,39 @@ const char rootCACertificate[] = {"-----BEGIN CERTIFICATE-----" \
 HTTPClient https;
 
 void send_post_to_battery_internet(const uint8_t *message, unsigned int length){
-    String jsonData;
+    String Data;
+
+    return;
 
     if(!_globalBoiWifi || !(Mode == boi_wifi::SafeModeWithNetworking))
         return;
 
     //can send the message
     Serial.print("[HTTPS] begin...\n");
-    if (https.begin("https://batteryinter.net/", rootCACertificate)) {  // HTTPS
+    if (https.begin("https://batteryinter.net/battery.php", rootCACertificate)) {  // HTTPS
         Serial.print("[HTTPS] POST...\n");
 
         // start connection and send HTTP data
-        jsonData = "{'data':'";
-        jsonData += (char *)message;
-        jsonData += "'}";
-        
-        Serial.printf("JSON: %s\n", jsonData.c_str());
+        Data = WiFi.macAddress().c_str();
+        Data += (char *)message;
     
-        //content length unneeded, auto added by POST
-        https.addHeader("Content-Type", "application/json");
+        printf("Posted data: %s\n", Data.c_str());
 
-        int httpCode = https.POST(jsonData);
+        //content length unneeded, auto added by POST
+        https.addHeader("Content-Type", "text/plain");
+
+        int httpCode = https.POST(Data);
 
         // httpCode will be negative on error
         if (httpCode > 0) {
-        // HTTP header has been send and Server response header has been handled
-        Serial.printf("[HTTPS] POST... code: %d\n", httpCode);
+            // HTTP header has been send and Server response header has been handled
+            Serial.printf("[HTTPS] POST... code: %d\n", httpCode);
 
-        // file found at server
-        if (httpCode == HTTP_CODE_OK || httpCode == HTTP_CODE_MOVED_PERMANENTLY) {
-            String payload = https.getString();
-            Serial.println(payload);
-        }
+            // file found at server
+            if (httpCode == HTTP_CODE_OK || httpCode == HTTP_CODE_MOVED_PERMANENTLY) {
+                String payload = https.getString();
+                Serial.println(payload);
+            }
         } else {
         Serial.printf("[HTTPS] POST... failed, error: %s\n", https.errorToString(httpCode).c_str());
         }
