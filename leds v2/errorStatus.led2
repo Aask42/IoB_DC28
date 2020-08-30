@@ -1,0 +1,22 @@
+//quick led script to call in the event of an error that you'd like to make or some warning to the user
+
+version 2
+
+err:
+move led0.g * 175 150
+move led4.r * 175 150
+move led8.b * 175 150
+
+wait led0.g >= 175
+wait led4.r >= 175
+wait led8.b >= 175
+
+move led0.g * 0 150
+move led4.r * 0 150
+move led8.b * 0 150
+
+wait led0.g <= 25
+wait led4.r <= 25
+wait led8.b <= 25
+
+goto err
