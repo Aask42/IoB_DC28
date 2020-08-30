@@ -1,35 +1,111 @@
 // Put your tray tables up and your seat backs in the upright and locked position!
 version 2
 
-disable_wifi:
+privateBilling:
 
-move led8 * 255 105
-move led0 * 255 105
-
-delay 105
-
-move led6 * 255 105
-move led2 * 255 105
+//blue
+//led's start outside and converge to middle
+move led8.b * 255 105
+move led0.b * 255 105
 
 delay 105
 
-move led4 * 255 105
+move led7.b * 255 105
+move led1.b * 255 105
 
 delay 105
 
-move led8 * 0 105
-move led0 * 0 105
+move led6.b * 255 105
+move led2.b * 255 105
 
 delay 105
 
-move led6 * 0 105
-move led2 * 0 105
+move led5.b * 255 105
+move led3.b * 255 105
 
 delay 105
 
-move led4 * 0 105
+move led4.b * 255 105
 
 delay 105
 
-//goto disable_wifi
+//led's off outside first moving to middle
+move led8.b * 0 105
+move led0.b * 0 105
+
+delay 105
+
+move led7.b * 0 105
+move led1.b * 0 105
+
+delay 105
+
+move led6.b * 0 105
+move led2.b * 0 105
+
+delay 105
+
+move led5.b * 0 105
+move led3.b * 0 105
+
+delay 105
+
+move led4.b * 0 105
+
+delay 105
+
+//red section
+//led's start outside and converge to middle
+
+move led8.r * 255 105
+move led0.r * 255 105
+
+delay 105
+
+move led7.r * 255 105
+move led1.r * 255 105
+
+delay 105
+
+move led6.r * 255 105
+move led2.r * 255 105
+
+delay 105
+
+move led5.r * 255 105
+move led3.r * 255 105
+
+delay 105
+
+move led4.r * 255 105
+
+delay 105
+
+//led's off outside first moving to middle
+
+move led8.r * 0 105
+move led0.r * 0 105
+
+delay 105
+
+move led7.r * 0 105
+move led1.r * 0 105
+
+delay 105
+
+move led6.r * 0 105
+move led2.r * 0 105
+
+delay 105
+
+move led5.r * 0 105
+move led3.r * 0 105
+
+delay 105
+
+move led4.r * 0 105
+
+delay 105
+
+//goto privateBilling
 stop
