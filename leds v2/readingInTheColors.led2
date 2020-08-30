@@ -1,0 +1,126 @@
+// uwu, a piece of bottle!
+version 2
+
+//clear stateful led values
+set led8 0
+set led7 0
+set led6 0
+set led5 0
+set led4 0
+set led3 0
+set led2 0
+set led1 0
+set led0 0
+
+//reading in the messages!
+messenger:
+
+set led8.r RAND 0x000000 0xFFFFFF
+set led8.g RAND 0x000000 0xFFFFFF
+set led8.b RAND 0x000000 0xFFFFFF
+
+set led7.r RAND 0x000000 0xFFFFFF
+set led7.g RAND 0x000000 0xFFFFFF
+set led7.b RAND 0x000000 0xFFFFFF
+
+set led6.r RAND 0x000000 0xFFFFFF
+set led6.g RAND 0x000000 0xFFFFFF
+set led6.b RAND 0x000000 0xFFFFFF
+
+set led5.r RAND 0x000000 0xFFFFFF
+set led5.g RAND 0x000000 0xFFFFFF
+set led5.b RAND 0x000000 0xFFFFFF
+
+set led4.r RAND 0x000000 0xFFFFFF
+set led4.g RAND 0x000000 0xFFFFFF
+set led4.b RAND 0x000000 0xFFFFFF
+
+set led3.r RAND 0x000000 0xFFFFFF
+set led3.g RAND 0x000000 0xFFFFFF
+set led3.b RAND 0x000000 0xFFFFFF
+
+set led2.r RAND 0x000000 0xFFFFFF
+set led2.g RAND 0x000000 0xFFFFFF
+set led2.b RAND 0x000000 0xFFFFFF
+
+set led1.r RAND 0x000000 0xFFFFFF
+set led1.g RAND 0x000000 0xFFFFFF
+set led1.b RAND 0x000000 0xFFFFFF
+
+set led0.r RAND 0x000000 0xFFFFFF
+set led0.g RAND 0x000000 0xFFFFFF
+set led0.b RAND 0x000000 0xFFFFFF
+
+move led8 * 255 50
+wait led8 >= 242
+delay RAND 64 2000
+move led8 * 0 50
+
+move led7 * 255 50
+wait led7 >= 242
+move led7 * 0 50
+
+move led6 * 255 50
+wait led6 >= 242
+move led6 * 0 50
+
+move led5 * 255 50
+wait led5 >= 242
+move led5 * 0 50
+
+move led4 * 255 50
+wait led4 >= 242
+move led4 * 0 50
+
+move led3 * 255 50
+wait led3 >= 242
+move led3 * 0 50
+
+move led2 * 255 50
+wait led2 >= 242
+move led2 * 0 50
+
+move led1 * 255 50
+wait led1 >= 242
+move led1 * 0 50
+
+move led0 * 255 50
+// Change direction!
+wait led0 >= 242
+delay RAND 64 2000
+move led0 * 0 50
+
+move led1 * 255 50
+wait led1 >= 242
+move led1 * 0 50
+
+move led2 * 255 50
+wait led2 >= 242
+move led2 * 0 50
+
+move led3 * 255 50
+wait led3 >= 242
+move led3 * 0 50
+
+move led4 * 255 50
+wait led4 >= 242
+move led4 * 0 50
+
+move led5 * 255 50
+wait led5 >= 242
+move led5 * 0 50
+
+move led6 * 255 50
+wait led6 >= 242
+move led6 * 0 50
+
+move led7 * 255 50
+wait led7 >= 242
+move led7 * 0 50
+
+move led8 * 255 50
+wait led8 >= 242
+move led8 * 0 50
+
+//got the message?
+goto messenger
