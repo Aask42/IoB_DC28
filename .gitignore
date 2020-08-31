@@ -6,3 +6,4 @@ leds-names.h
 html-*-header.h
 test/output_export.cpp
 extensions.json
+.idea

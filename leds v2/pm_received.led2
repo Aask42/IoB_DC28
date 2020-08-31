@@ -3,32 +3,191 @@ version 2
 
 pm_received:
 
-move led8 * 255 105
-move led0 * 255 105
+move led8.r * 255 105
+move led0.r * 255 105
 
 delay 105
 
-move led6 * 255 105
-move led2 * 255 105
+move led7.g * 255 105
+move led1.g * 255 105
 
 delay 105
 
-move led4 * 255 105
+move led6.b * 255 105
+move led2.b * 255 105
 
 delay 105
 
-move led8 * 0 105
-move led0 * 0 105
+//yellow
+move led5 * 0xFFFF00 105
+move led3 * 0xFFFF00 105
 
 delay 105
 
-move led6 * 0 105
-move led2 * 0 105
-
+//blip middle
+move led4.r * 255 105
 delay 105
-
+move led4.r * 0 105
+delay 105
+move led4.g * 255 105
+delay 105
+move led4.g * 0 105
+delay 105
+move led4.b * 255 105
+delay 105
+move led4.b * 0 105
+delay 105
+move led4 * 0xFFFF00 105
+delay 105
 move led4 * 0 105
 
 delay 105
 
-goto pm_received
+move led8.r * 0 105
+move led0.r * 0 105
+
+delay 105
+
+move led7.g * 0 105
+move led1.g * 0 105
+
+delay 105
+
+move led6.b * 0 105
+move led2.b * 0 105
+
+delay 105
+
+move led5 * 0 105
+move led3 * 0 105
+
+delay 105
+
+
+//repeat
+
+move led8.r * 255 105
+move led0.r * 255 105
+
+delay 105
+
+move led7.g * 255 105
+move led1.g * 255 105
+
+delay 105
+
+move led6.b * 255 105
+move led2.b * 255 105
+
+delay 105
+
+//yellow
+move led5 * 0xFFFF00 105
+move led3 * 0xFFFF00 105
+
+delay 105
+
+//blip middle
+move led4.r * 255 105
+delay 105
+move led4.r * 0 105
+delay 105
+move led4.g * 255 105
+delay 105
+move led4.g * 0 105
+delay 105
+move led4.b * 255 105
+delay 105
+move led4.b * 0 105
+delay 105
+move led4 * 0xFFFF00 105
+delay 105
+move led4 * 0 105
+
+delay 105
+
+move led8.r * 0 105
+move led0.r * 0 105
+
+delay 105
+
+move led7.g * 0 105
+move led1.g * 0 105
+
+delay 105
+
+move led6.b * 0 105
+move led2.b * 0 105
+
+delay 105
+
+move led5 * 0 105
+move led3 * 0 105
+
+delay 105
+
+
+
+//repeat
+move led8.r * 255 105
+move led0.r * 255 105
+
+delay 105
+
+move led7.g * 255 105
+move led1.g * 255 105
+
+delay 105
+
+move led6.b * 255 105
+move led2.b * 255 105
+
+delay 105
+
+//yellow
+move led5 * 0xFFFF00 105
+move led3 * 0xFFFF00 105
+
+delay 105
+
+//blip middle
+move led4.r * 255 105
+delay 105
+move led4.r * 0 105
+delay 105
+move led4.g * 255 105
+delay 105
+move led4.g * 0 105
+delay 105
+move led4.b * 255 105
+delay 105
+move led4.b * 0 105
+delay 105
+move led4 * 0xFFFF00 105
+delay 105
+move led4 * 0 105
+
+delay 105
+
+move led8.r * 0 105
+move led0.r * 0 105
+
+delay 105
+
+move led7.g * 0 105
+move led1.g * 0 105
+
+delay 105
+
+move led6.b * 0 105
+move led2.b * 0 105
+
+delay 105
+
+move led5 * 0 105
+move led3 * 0 105
+
+delay 105
+
+//goto pm_received
+stop

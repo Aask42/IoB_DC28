@@ -1,69 +1,123 @@
-// Tau or muon instead of electron?
+// 落雷 攻撃, Lightning or Snake?
 version 2
 
-    //replace below w/ TL, TR, BR, BL?, then LED0-9
-// set batt 255 - v2,dc28 has no batt led cmd
-// set stat 0 - v2,dc28 has no stat led cmd
-// set node 0 - v2,dc28 has no node led cmd
+//BR,TR,TL - introduce feeling of movement going BR to TL while LED's move up, and reverse it while they move downward
+//inc / dec brightness as top/bottom LED progresses, respectively
 
 snake:
 
+//begin LED's moving up battery
+
+//blue LED only to max
 move led0 * 255 150
 wait led0 >= 191
+
+//green brightness move up over time iteration 150
+move led1.g * 255 150
+wait led1.g >= 191
 
 move led2 * 255 150
 wait led2 >= 191
 
+move led3.g * 255 150
+wait led3.g >= 191
+
 move led4 * 255 150
 wait led4 >= 191
+
+move led5.g * 255 150
+wait led5.g >= 191
 
 move led6 * 255 150
 wait led6 >= 191
 
+move led7.g * 255 150
+wait led7.g >= 191
+
 move led8 * 255 150
 wait led8 >= 191
 
+//turn off LED's over time duration 150
 move led0 * 0 150
 wait led0 <= 64
 
+move led1.g * 0 150
+wait led1.g <= 64
+
 move led2 * 0 150
 wait led2 <= 64
+
+move led3.g * 0 150
+wait led3.g <= 64
 
 move led4 * 0 150
 wait led4 <= 64
 
+move led5.g * 0 150
+wait led5.g <= 64
+
 move led6 * 0 150
 wait led6 <= 64
 
+move led7.g * 0 150
+wait led7.g <= 64
+
 move led8 * 0 150
 wait led8 <= 64
+
+//move LED's back down battery
 
 move led8 * 255 150
 wait led8 >= 191
 
+move led7.g * 255 150
+wait led7.g >= 191
+
 move led6 * 255 150
 wait led6 >= 191
+
+move led5.g * 255 150
+wait led5.g >= 191
 
 move led4 * 255 150
 wait led4 >= 191
 
+move led3.g * 255 150
+wait led3.g >= 191
+
 move led2 * 255 150
 wait led2 >= 191
+
+move led1.g * 255 150
+wait led1.g >= 191
 
 move led0 * 255 150
 wait led0 >= 191
 
+//turn off LED's from top to bottom
 move led8 * 0 150
 wait led8 <= 64
+
+move led7.g * 0 150
+wait led7.g >= 191
 
 move led6 * 0 150
 wait led6 <= 64
 
+move led5.g * 0 150
+wait led5.g >= 191
+
 move led4 * 0 150
 wait led4 <= 64
 
+move led3.g * 0 150
+wait led3.g >= 191
+
 move led2 * 0 150
 wait led2 <= 64
+
+move led1.g * 0 150
+wait led1.g >= 191
 
 move led0 * 0 150
 wait led0 <= 64
