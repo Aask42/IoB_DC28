@@ -50,5 +50,6 @@ class Messages
 
 //message network initialization
 Messages *NewMessagesHandler();
+extern pthread_mutex_t https_lock;
 
 #endif

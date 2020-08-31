@@ -6,7 +6,6 @@
 #include "app.h"
 #include <math.h>
 #include <esp_wifi.h>
-#include <string>
 #include <Wire.h>
 
 #if BOI_VERSION == 2
@@ -323,11 +322,11 @@ void boi::toggle_backpower(){
 
     // Check current power-draw through INA219, print if above zero
     if(current_detected > 5.00){
-        Serial.println("Current Sensed:"+String(current_detected) + "mAh");
+        Serial.printf("Current Sensed: %dmAh\n", current_detected);
     }
 
     Serial.println("Toggling backpower...: ");
-    Serial.println("Initial Backpower Status: "+String(backpower_status));
+    Serial.printf("Initial Backpower Status: %d\n", backpower_status);
 
     switch(backpower_status){
         case 0:
@@ -347,7 +346,7 @@ void boi::toggle_backpower(){
             
             break;
         case 1:
-            Serial.println("Disabling backpower on pin "+String(BACKPOWER_OUT_PIN)+"!");     
+            Serial.printf("Disabling backpower on pin %d!\n", BACKPOWER_OUT_PIN);     
             Serial.println("-. --- _/̄ˉ -.. .. ... .- ... ... . -- -... .-.. . -.-.-- -.-.-- -.-.--");
 #if BOI_VERSION == 1
             digitalWrite(BACKPOWER_OUT_PIN, 1);
