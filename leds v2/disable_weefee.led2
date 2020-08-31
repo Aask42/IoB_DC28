@@ -1,0 +1,162 @@
+// Ce n'est pas WyFy, C'est WEE FEE
+//weefee v2, now with moar LED's and colors! ~
+version 2
+move led0 * 0x000000 250
+move led1 * 0x000000 250
+move led2 * 0x000000 250
+move led3 * 0x000000 250
+move led4 * 0x000000 250
+move led5 * 0x000000 250
+move led6 * 0x000000 250
+move led7 * 0x000000 250
+move led8 * 0x000000 250
+
+delay 250
+
+disable_the_waffles:
+
+move led8 * 255 105
+move led0 * 255 105
+
+delay 105
+
+move led7.r * 255 105
+move led1.r * 255 105
+
+delay 105
+
+move led6 * 255 105
+move led2 * 255 105
+
+delay 105
+
+move led5.r * 255 105
+move led3.r * 255 105
+
+delay 105
+
+move led4 * 255 105
+
+delay 105
+
+move led8 * 0 105
+move led0 * 0 105
+
+delay 105
+
+move led7.r * 0 105
+move led1.r * 0 105
+
+delay 105
+
+move led6 * 0 105
+move led2 * 0 105
+
+delay 105
+
+move led5 * 0 105
+move led3 * 0 105
+
+delay 105
+
+move led4 * 0 105
+
+delay 105
+
+move led8 * 255 105
+move led0 * 255 105
+
+delay 105
+
+move led7.r * 255 105
+move led1.r * 255 105
+
+delay 105
+
+move led6 * 255 105
+move led2 * 255 105
+
+delay 105
+
+move led5.r * 255 105
+move led3.r * 255 105
+
+delay 105
+
+move led4 * 255 105
+
+delay 105
+
+move led8 * 0 105
+move led0 * 0 105
+
+delay 105
+
+move led7.r * 0 105
+move led1.r * 0 105
+
+delay 105
+
+move led6 * 0 105
+move led2 * 0 105
+
+delay 105
+
+move led5.r * 0 105
+move led3.r * 0 105
+
+delay 105
+
+move led4 * 0 105
+
+delay 105
+
+move led8 * 255 105
+move led0 * 255 105
+
+delay 105
+
+move led7.r * 255 105
+move led1.r * 255 105
+
+delay 105
+
+move led6 * 255 105
+move led2 * 255 105
+
+delay 105
+
+move led5.r * 255 105
+move led3.r * 255 105
+
+delay 105
+
+move led4 * 255 105
+
+delay 105
+
+move led8 * 0 105
+move led0 * 0 105
+
+delay 105
+
+move led7.r * 0 105
+move led1.r * 0 105
+
+delay 105
+
+move led6 * 0 105
+move led2 * 0 105
+
+delay 105
+
+move led5.r * 0 105
+move led3.r * 0 105
+
+delay 105
+
+move led4 * 0 105
+
+delay 105
+
+stop
