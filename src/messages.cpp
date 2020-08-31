@@ -418,8 +418,14 @@ MessagesInternal::MessagesInternal()
     this->Mesh->SetPingData((uint8_t *)this->Options.Nickname, strlen(this->Options.Nickname));
 
     //setup our thread that will parse any websocket data
+    pthread_mutex_init(&https_lock, NULL);
     pthread_mutex_init(&message_lock, NULL);
-    if(pthread_create(&this->MessageThread, NULL, static_run_messages, 0))
+
+    pthread_attr_t pthread_cfg;
+    memset(&pthread_cfg, 0, sizeof(pthread_cfg));
+    pthread_attr_setstacksize(&pthread_cfg, 6*1024);
+
+    if(pthread_create(&this->MessageThread, &pthread_cfg, static_run_messages, 0))
     {
         //failed
         Serial.println("Failed to setup message thread");
@@ -458,8 +464,10 @@ bool MessagesInternal::QueryBatteryInternet(){
     String URL;
     bool FoundMessage = false;
 
-    if(!_globalBoiWifi || !(Mode == boi_wifi::SafeModeWithNetworking))
+    if(!_globalBoiWifi || !(Mode == boi_wifi::SafeModeWithNetworking) || (WiFi.status() != WL_CONNECTED))
         return false;
+
+    pthread_mutex_lock(&https_lock);
 
     //can send the message
     Serial.print("[HTTPS] begin...\n");
@@ -473,7 +481,8 @@ bool MessagesInternal::QueryBatteryInternet(){
         // file found at server
         if (httpCode == HTTP_CODE_OK) {
             String payload = https.getString();
-            Serial.println(payload);
+            //Serial.println(payload);
+            Serial.printf("[HTTPS] GET %d bytes returned\n", payload.length());
 
             //walk the payload and send messages to Itero
             unsigned int payload_len = payload.length();
@@ -486,7 +495,7 @@ bool MessagesInternal::QueryBatteryInternet(){
                     newline_pos = payload_len;
 
                 //send the data along
-                this->Mesh->ProcessMessage((uint8_t *)&(payload.c_str()[pos]), newline_pos - pos - 1);
+                this->Mesh->ProcessMessage((uint8_t *)&(payload.c_str()[pos]), newline_pos - pos);
                 FoundMessage = true;
 
                 //move past the newline and get the next piece
@@ -499,7 +508,9 @@ bool MessagesInternal::QueryBatteryInternet(){
         https.end();
     } else {
         Serial.printf("[HTTPS] Unable to connect\n");
+        https.end();
     }
 
+    pthread_mutex_unlock(&https_lock);
     return FoundMessage;
 }

@@ -158,7 +158,7 @@ void boi_wifi::monitor_smwn(){
 
     LoopCount = 0;
     LoopScanCount = 0;
-    NextGetCheck = esp_timer_get_time();
+    NextGetCheck = esp_timer_get_time() + (10*1000*1000);
 
     while(1)
     {
