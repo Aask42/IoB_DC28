@@ -10,9 +10,9 @@ Any commands with __DEST__ allows one of the following names to indicate the LED
 
 v2 LED Name | LED Notes
 -|-
-LED8 |  Top LED of the battery
-LED1 - LED7 | LED's in between Bottom - Top
-LED0 | Bottom LED of the battery
+LED0 |  Top LED of the battery
+LED1 - LED7 | LED's in between Top - Bottom
+LED8 | Bottom LED of the battery
 LED_TL | Top left LED when facing the battery
 LED_TR | Top right LED when facing the battery
 LED_BL | Bottom left LED when facing the battery

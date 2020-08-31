@@ -71,7 +71,7 @@ void boi_wifi::DisableWiFi()
 {
     //kill the thread
     Serial.println("Disabling wifi");
-    LEDHandler->StartScript(LED_DISABLE_WIFI, 1);
+    LEDHandler->StartScript(LED_DISABLE_WEEFEE, 1);
 
     pthread_mutex_lock(&lock);
     pthread_mutex_lock(&lockDone);

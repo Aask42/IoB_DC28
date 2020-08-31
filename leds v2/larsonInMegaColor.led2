@@ -1,0 +1,141 @@
+// We got a hundred miles to DEF CON, a full tank of gas, half a pack of circuits, it's dark, and we're wearing sunglasses
+version 2
+
+set led8 0
+set led7 0
+set led6 0
+set led5 0
+set led4 0
+set led3 0
+set led2 0
+set led1 0
+set led0 0
+
+larsonInColor:
+
+//pick random color at bottom and share it to rest of leds
+move led8.r * RAND 0 255 50
+move led8.g * RAND 0 255 50
+move led8.b * RAND 0 255 50
+//we do not know the val RAND comes back with, so delay for duration to set val fully
+delay 64
+delay RAND 100 1000
+
+//next led gets previous value before it shuts off
+move led7.r * led8.r 50
+move led7.g * led8.g 50
+move led7.b * led8.b 50
+//turn off previous led
+move led8 * 0 50
+delay 64
+
+move led6.r * led7.r 50
+move led6.g * led7.g 50
+move led6.b * led7.b 50
+move led7 * 0 50
+delay 64
+
+
+move led5.r * led6.r 50
+move led5.g * led6.g 50
+move led5.b * led6.b 50
+move led6 * 0 50
+delay 64
+
+
+move led4.r * led5.r 50
+move led4.g * led5.g 50
+move led4.b * led5.b 50
+move led5 * 0 50
+delay 64
+
+
+move led3.r * led4.r 50
+move led3.g * led4.g 50
+move led3.b * led4.b 50
+move led4 * 0 50
+delay 64
+
+
+move led2.r * led3.r 50
+move led2.g * led3.g 50
+move led2.b * led3.b 50
+move led3 * 0 50
+delay 64
+
+
+move led1.r * led2.r 50
+move led1.g * led2.g 50
+move led1.b * led2.b 50
+move led2 * 0 50
+delay 64
+
+
+move led0.r * led1.r 50
+move led0.g * led1.g 50
+move led0.b * led1.b 50
+move led1 * 0 50
+
+// Change direction!
+
+delay 64
+//reset at top of bat, get a new random color to share moving back down
+move led0 * 0 50
+
+move led0.r * RAND 0 255 50
+move led0.g * RAND 0 255 50
+move led0.b * RAND 0 255 50
+delay 64
+delay RAND 100 1000
+
+move led1.r * led0.r 50
+move led1.g * led0.g 50
+move led1.b * led0.b 50
+move led0 * 0 50
+delay 64
+
+move led2.r * led1.r 50
+move led2.g * led1.g 50
+move led2.b * led1.b 50
+move led1 * 0 50
+delay 64
+
+move led3.r * led2.r 50
+move led3.g * led2.g 50
+move led3.b * led2.b 50
+move led2 * 0 50
+delay 64
+
+move led4.r * led3.r 50
+move led4.g * led3.g 50
+move led4.b * led3.b 50
+move led3 * 0 50
+delay 64
+
+move led5.r * led4.r 50
+move led5.g * led4.g 50
+move led5.b * led4.b 50
+move led4 * 0 50
+delay 64
+
+move led6.r * led5.r 50
+move led6.g * led5.g 50
+move led6.b * led5.b 50
+move led5 * 0 50
+delay 64
+
+move led7.r * led6.r 50
+move led7.g * led6.g 50
+move led7.b * led6.b 50
+move led6 * 0 50
+delay 64
+
+move led8.r * led7.r 50
+move led8.g * led7.g 50
+move led8.b * led7.b 50
+move led7 * 0 50
+delay 64
+move led8 * 0 50
+
+// hit it
+goto larsonInColor

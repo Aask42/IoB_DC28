@@ -1,6 +1,7 @@
-// We got a hundred miles to DEF CON, a full tank of gas, half a pack of circuits, it's dark, and we're wearing sunglasses
+// uwu, a piece of bottle!
 version 2
 
+//clear stateful led values
 set led8 0
 set led7 0
 set led6 0
@@ -11,7 +12,44 @@ set led2 0
 set led1 0
 set led0 0
 
-larson:
+//reading in the messages!
+messenger:
+
+set led8.r RAND 0x000000 0xFFFFFF
+set led8.g RAND 0x000000 0xFFFFFF
+set led8.b RAND 0x000000 0xFFFFFF
+
+set led7.r RAND 0x000000 0xFFFFFF
+set led7.g RAND 0x000000 0xFFFFFF
+set led7.b RAND 0x000000 0xFFFFFF
+
+set led6.r RAND 0x000000 0xFFFFFF
+set led6.g RAND 0x000000 0xFFFFFF
+set led6.b RAND 0x000000 0xFFFFFF
+
+set led5.r RAND 0x000000 0xFFFFFF
+set led5.g RAND 0x000000 0xFFFFFF
+set led5.b RAND 0x000000 0xFFFFFF
+
+set led4.r RAND 0x000000 0xFFFFFF
+set led4.g RAND 0x000000 0xFFFFFF
+set led4.b RAND 0x000000 0xFFFFFF
+
+set led3.r RAND 0x000000 0xFFFFFF
+set led3.g RAND 0x000000 0xFFFFFF
+set led3.b RAND 0x000000 0xFFFFFF
+
+set led2.r RAND 0x000000 0xFFFFFF
+set led2.g RAND 0x000000 0xFFFFFF
+set led2.b RAND 0x000000 0xFFFFFF
+
+set led1.r RAND 0x000000 0xFFFFFF
+set led1.g RAND 0x000000 0xFFFFFF
+set led1.b RAND 0x000000 0xFFFFFF
+
+set led0.r RAND 0x000000 0xFFFFFF
+set led0.g RAND 0x000000 0xFFFFFF
+set led0.b RAND 0x000000 0xFFFFFF
 
 move led8 * 255 50
 wait led8 >= 242
@@ -84,5 +122,5 @@ move led8 * 255 50
 wait led8 >= 242
 move led8 * 0 50
 
-// Hit it. 
-goto larson
+//got the message?
+goto messenger
