@@ -272,6 +272,8 @@ void boi_wifi::enter_safe_mode_with_networking(const OptionsStruct *Options){
     // No DNS
     // Initialize the webserver still
     // Initialize the mesh network
+    
+    LEDHandler->StartScript(LED_ENABLE_SMWN, 1);
 
     if(this->ServerCheckThread)
     {
@@ -355,5 +357,7 @@ void boi_wifi::enter_safe_mode_with_networking(const OptionsStruct *Options){
         Serial.println("Failed to setup ServerCheck thread");
         _globalBoiWifi = 0;
     }
+
+    LEDHandler->StopScript(LED_ENABLE_SMWN);
 
 }

@@ -1,78 +1,133 @@
 // Ce n'est pas WyFy, C'est WEE FEE
-// Tau or muon instead of electron?
+
 version 2
+move led0 * 0x000000 250
+move led1 * 0x000000 250
+move led2 * 0x000000 250
+move led3 * 0x000000 250
+move led4 * 0x0000FF 250
+move led5 * 0x000000 250
+move led6 * 0x000000 250
+move led7 * 0x000000 250
+move led8 * 0x000000 250
 
-charging:
-move led8.r * 0 250
-move led0.r * 255 150
-wait led0.r >= 200
+delay 250
 
-move led0.g * 255 100
-move led1.g * 255 150
-wait led1.g >= 200
+enable_the_waffles:
 
-move led1.b * 255 100
-move led2.b * 255 150
-wait led2.b >= 200
+move led5 * led4 105
+move led3 * led4 105
 
-move led2.r * 255 100
-move led3.r * 255 150
-wait led3.r >= 200
+move led4 * 0x00AF00 105
 
-move led3.g * 255 100
-move led4.g * 255 150
-wait led4.g >= 200
+delay 105
 
-move led4.b * 255 100
-move led5.b * 255 150
-wait led5.b >= 200
+move led6 * led5 105
+move led2 * led3 105
 
-move led5.r * 255 100
-move led6.r * 255 150
-wait led6.r >= 200
+move led5 * 0x00AF00 105
+move led3 * 0x00AF00 105
 
-move led6.g * 255 100
-move led7.g * 255 150
-wait led7.g >= 200
+delay 105
 
-move led7.b * 255 100
-move led8.b * 255 150
-wait led8.b >= 200
+move led7 * led6 105
+move led1 * led2 105
 
-move led8.r * 255 100
-move led0.r * 0 150
-wait led0.r <= 50
+move led6 * 0x00AF00 105
+move led2 * 0x00AF00 105
 
-move led0.g * 0 250
-move led1.g * 0 150
-wait led1.g <= 50
+delay 105
 
-move led1.b * 0 250
-move led2.b * 0 150
-wait led2.b <= 50
+move led8 * led7 105
+move led0 * led1 105
 
-move led2.r * 0 250
-move led3.r * 0 150
-wait led3.r <= 50
+move led7 * 0x00AF00 105
+move led1 * 0x00AF00 105
 
-move led3.g * 0 250
-move led4.g * 0 150
-wait led4.g <= 50
+delay 105
 
-move led4.b * 0 250
-move led5.b * 0 150
-wait led5.b <= 50
+move led4 * led8 105
 
-move led5.r * 0 250
-move led6.r * 0 150
-wait led6.r <= 50
+move led8 * 0x00AF00 105
+move led0 * 0x00AF00 105
 
-move led6.g * 0 250
-move led7.g * 0 150
-wait led7.g <= 50
+delay 105
 
-move led7.b * 0 250
-move led8.b * 0 150
-wait led8.b <= 50
+move led5 * led4 105
+move led3 * led4 105
 
-goto charging
+move led4 * 0x00AF00 105
+
+delay 105
+
+move led6 * led5 105
+move led2 * led3 105
+
+move led5 * 0x00AF00 105
+move led3 * 0x00AF00 105
+
+delay 105
+
+move led7 * led6 105
+move led1 * led2 105
+
+move led6 * 0x00AF00 105
+move led2 * 0x00AF00 105
+
+delay 105
+
+move led8 * led7 105
+move led0 * led1 105
+
+move led7 * 0x00AF00 105
+move led1 * 0x00AF00 105
+
+delay 105
+
+move led4 * led8 105
+
+move led8 * 0x00AF00 105
+move led0 * 0x00AF00 105
+
+delay 105
+
+
+move led5 * led4 105
+move led3 * led4 105
+
+move led4 * 0x00AF00 105
+
+delay 105
+
+move led6 * led5 105
+move led2 * led3 105
+
+move led5 * 0x00AF00 105
+move led3 * 0x00AF00 105
+
+delay 105
+
+move led7 * led6 105
+move led1 * led2 105
+
+move led6 * 0x00AF00 105
+move led2 * 0x00AF00 105
+
+delay 105
+
+move led8 * led7 105
+move led0 * led1 105
+
+move led7 * 0x00AF00 105
+move led1 * 0x00AF00 105
+
+delay 105
+
+// move led4 * 255 105
+
+move led8 * 0x00AF00 105
+move led0 * 0x00AF00 105
+
+delay 105
+
+stop
