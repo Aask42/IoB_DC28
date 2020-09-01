@@ -382,12 +382,12 @@
                                         <td class=optioncell><input type=number min=-1 max=300 name=timeout size=3 value=-1>
                                         </td>
                                     </tr>
-                                    <tr>
+                                    <tr id=brightnesstr1>
                                         <td class=optioncell>Brightness</td>
                                         <td class=optioncell><input type="range" min="0" max="200" value=0 name="brightness"
                                                 oninput="SendBrightnessValue();"></td>
                                     </tr>
-                                    <tr>
+                                    <tr id=brightnesstr2>
                                         <td class=optioncell>Brightness via buttons</td>
                                         <td class=optioncell><input type=checkbox name=brightness_buttons></td>
                                     </tr>
@@ -727,6 +727,13 @@
 
                 case 'l':
                     SetBrightness(data8arr.slice(1));
+                    break;
+
+                case 'L':
+                    if (Command[1] == '0') {
+                        getI("brightnesstr1").style.visibility = "hidden";
+                        getI("brightnesstr2").style.visibility = "hidden";                        
+                    }
                     break;
 
                 case 'p': //private message

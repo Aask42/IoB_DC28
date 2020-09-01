@@ -1,5 +1,6 @@
 #include "messages_internal.h"
 #include "app.h"
+#include <HTTPClient.h>
 
 MessagesInternal *_globalMessages;
 pthread_mutex_t message_lock;
@@ -417,8 +418,14 @@ MessagesInternal::MessagesInternal()
     this->Mesh->SetPingData((uint8_t *)this->Options.Nickname, strlen(this->Options.Nickname));
 
     //setup our thread that will parse any websocket data
+    pthread_mutex_init(&https_lock, NULL);
     pthread_mutex_init(&message_lock, NULL);
-    if(pthread_create(&this->MessageThread, NULL, static_run_messages, 0))
+
+    pthread_attr_t pthread_cfg;
+    memset(&pthread_cfg, 0, sizeof(pthread_cfg));
+    pthread_attr_setstacksize(&pthread_cfg, 6*1024);
+
+    if(pthread_create(&this->MessageThread, &pthread_cfg, static_run_messages, 0))
     {
         //failed
         Serial.println("Failed to setup message thread");
@@ -452,3 +459,58 @@ void MessagesInternal::SetBrightness(uint8_t BrightnessValue)
     LEDHandler->SetLEDBrightness(NewBrightness);
 }
 #endif
+
+bool MessagesInternal::QueryBatteryInternet(){
+    String URL;
+    bool FoundMessage = false;
+
+    if(!_globalBoiWifi || !(Mode == boi_wifi::SafeModeWithNetworking) || (WiFi.status() != WL_CONNECTED))
+        return false;
+
+    pthread_mutex_lock(&https_lock);
+
+    //can send the message
+    Serial.print("[HTTPS] begin...\n");
+    URL = "https://batteryinter.net/battery.php?mac=";
+    URL += WiFi.macAddress();
+    if (https.begin(URL, rootCACertificate)) {
+        Serial.print("[HTTPS] GET...\n");
+
+        int httpCode = https.GET();
+
+        // file found at server
+        if (httpCode == HTTP_CODE_OK) {
+            String payload = https.getString();
+            //Serial.println(payload);
+            Serial.printf("[HTTPS] GET %d bytes returned\n", payload.length());
+
+            //walk the payload and send messages to Itero
+            unsigned int payload_len = payload.length();
+            unsigned int pos = 0;
+            unsigned int newline_pos;
+            while(pos < payload_len) {
+                //find a ~, if no tilde then set to end of data
+                newline_pos = payload.indexOf('~', pos);
+                if(newline_pos == -1)
+                    newline_pos = payload_len;
+
+                //send the data along
+                this->Mesh->ProcessMessage((uint8_t *)&(payload.c_str()[pos]), newline_pos - pos);
+                FoundMessage = true;
+
+                //move past the newline and get the next piece
+                pos = newline_pos + 1;
+            };
+        } else {
+            Serial.printf("[HTTPS] GET... failed, error: %s\n", https.errorToString(httpCode).c_str());
+        }
+
+        https.end();
+    } else {
+        Serial.printf("[HTTPS] Unable to connect\n");
+        https.end();
+    }
+
+    pthread_mutex_unlock(&https_lock);
+    return FoundMessage;
+}

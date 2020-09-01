@@ -6,7 +6,6 @@
 // some other fun tools.
 
 #include "app.h"
-#include <string>
 #include <driver/adc.h>
 #include <esp_adc_cal.h>
 #include "boi/boi_wifi.h"
@@ -159,7 +158,7 @@ void setup(void) {
   Battery = new boi();
 
   // Current Sensing Operation - Check to see if we have anything on the pins 
-  Serial.println("Current Sensed:"+String(Battery->read_current()));
+  Serial.printf("Current Sensed: %d\n", Battery->read_current());
   LastTouchCheckTime = esp_timer_get_time();
   LastSensorPrintTime = LastTouchCheckTime;
 

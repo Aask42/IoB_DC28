@@ -25,47 +25,56 @@ const char rootCACertificate[] = {"-----BEGIN CERTIFICATE-----" \
 "-----END CERTIFICATE-----"
 };
 
+pthread_mutex_t https_lock;
 HTTPClient https;
 
 void send_post_to_battery_internet(const uint8_t *message, unsigned int length){
-    String jsonData;
+    uint8_t *Data;
 
-    if(!_globalBoiWifi || !(Mode == boi_wifi::SafeModeWithNetworking))
+    if(!_globalBoiWifi || !(Mode == boi_wifi::SafeModeWithNetworking) || (WiFi.status() != WL_CONNECTED))
         return;
+
+    pthread_mutex_lock(&https_lock);
 
     //can send the message
     Serial.print("[HTTPS] begin...\n");
-    if (https.begin("https://batteryinter.net/", rootCACertificate)) {  // HTTPS
-        Serial.print("[HTTPS] POST...\n");
+    if (https.begin("https://batteryinter.net/battery.php", rootCACertificate)) {  // HTTPS
+        Serial.printf("[HTTPS] POSTing %d bytes...\n", length + 17);
 
         // start connection and send HTTP data
-        jsonData = "{'data':'";
-        jsonData += (char *)message;
-        jsonData += "'}";
-        
-        Serial.printf("JSON: %s\n", jsonData.c_str());
+        Data = (uint8_t *)malloc(length + 17);
+        if(!Data)
+        {
+            printf("Out of memory\n");
+            return;
+        }
+
+        memcpy(Data, WiFi.macAddress().c_str(), 17);
+        memcpy(&Data[17], message, length);
     
         //content length unneeded, auto added by POST
-        https.addHeader("Content-Type", "application/json");
-
-        int httpCode = https.POST(jsonData);
+        https.addHeader("Content-Type", "text/plain");
+        int httpCode = https.POST(Data, length + 17);
+        free(Data);
 
         // httpCode will be negative on error
         if (httpCode > 0) {
-        // HTTP header has been send and Server response header has been handled
-        Serial.printf("[HTTPS] POST... code: %d\n", httpCode);
+            // HTTP header has been send and Server response header has been handled
+            Serial.printf("[HTTPS] POST... code: %d\n", httpCode);
 
-        // file found at server
-        if (httpCode == HTTP_CODE_OK || httpCode == HTTP_CODE_MOVED_PERMANENTLY) {
-            String payload = https.getString();
-            Serial.println(payload);
-        }
+            // file found at server
+            if (httpCode == HTTP_CODE_OK) {
+                Serial.println("[HTTPS] POST complete");
+            }
         } else {
-        Serial.printf("[HTTPS] POST... failed, error: %s\n", https.errorToString(httpCode).c_str());
+            Serial.printf("[HTTPS] POST... failed, error: %s\n", https.errorToString(httpCode).c_str());
         }
 
         https.end();
     } else {
         Serial.printf("[HTTPS] Unable to connect\n");
+        https.end();
     }
+
+    pthread_mutex_unlock(&https_lock);
 }

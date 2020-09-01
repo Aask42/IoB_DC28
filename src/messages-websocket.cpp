@@ -348,6 +348,10 @@ void MessagesInternal::SendConnectedData()
 
     this->socket_server->binaryAll(msg, strlen(msg));
 
+#if BOI_VERSION == 2
+    this->socket_server->binaryAll("L0", 2);
+#endif
+
     //generate a string of options to send
     String OptionString;
     OptionString = "o";
@@ -472,7 +476,7 @@ void MessagesInternal::SendStoredBroadcastMessages()
         memcpy(&NewMessage[1], &this->BroadcastMessages[i][sizeof(unsigned short)], DataLen);
 
         //send it
-        Serial.println(NewMessage);
+        //Serial.println(NewMessage);
         this->socket_server->binaryAll(NewMessage, DataLen + 1);
         free(NewMessage);
         free(this->BroadcastMessages[i]);

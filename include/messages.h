@@ -45,9 +45,11 @@ class Messages
         virtual void HandleSensorData(struct SensorDataStruct *SensorData);
         virtual uint8_t GetPingCount();
         virtual void DoFactoryReset();
+        virtual bool QueryBatteryInternet();
 };
 
 //message network initialization
 Messages *NewMessagesHandler();
+extern pthread_mutex_t https_lock;
 
 #endif

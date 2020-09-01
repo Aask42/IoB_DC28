@@ -8,6 +8,10 @@
 #include "messages.h"
 #include "app.h"
 
+extern const char rootCACertificate[];
+typedef class HTTPClient HTTPClient;
+extern HTTPClient https;
+
 class boi;
 class Messages;
 struct OptionsStruct;
