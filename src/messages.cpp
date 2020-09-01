@@ -489,8 +489,8 @@ bool MessagesInternal::QueryBatteryInternet(){
             unsigned int pos = 0;
             unsigned int newline_pos;
             while(pos < payload_len) {
-                //find a newline, if no newline then set to end of data
-                newline_pos = payload.indexOf('\n', pos);
+                //find a ~, if no tilde then set to end of data
+                newline_pos = payload.indexOf('~', pos);
                 if(newline_pos == -1)
                     newline_pos = payload_len;
 
