@@ -93,14 +93,14 @@ void do_battery_checkin(){
         Serial.println("[HTTPS] POSTing to checkin...");
 
         // start connection and send HTTP data
-        Data = (uint8_t *)malloc(17 + 15);
+        String LocalIP = WiFi.localIP().toString();
+        Data = (uint8_t *)malloc(17 + LocalIP.length());
         if(!Data)
         {
             printf("Out of memory\n");
             return;
         }
 
-        String LocalIP = WiFi.localIP().toString();
         memcpy(Data, WiFi.macAddress().c_str(), 17);
         memcpy(&Data[17], LocalIP.c_str(), LocalIP.length());
     
