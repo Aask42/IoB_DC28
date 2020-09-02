@@ -65,8 +65,8 @@ void MessagesInternal::Run()
                 this->socket_server->binaryAll("P", 1);
             }
 
-            //if we have a websocket and it's been 30 seconds then scan
-            if(this->socket_server && this->connected && ((esp_timer_get_time() - LastScanTime) > 30000000ULL))
+            //if we have a websocket and it's been 60 seconds then scan
+            if(this->socket_server && this->connected && ((esp_timer_get_time() - LastScanTime) > 60000000ULL))
             {
                 LastScanTime = esp_timer_get_time();
                 this->DoScan();

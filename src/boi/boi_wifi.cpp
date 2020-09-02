@@ -359,5 +359,5 @@ void boi_wifi::enter_safe_mode_with_networking(const OptionsStruct *Options){
     }
 
     LEDHandler->StopScript(LED_ENABLE_SMWN);
-
+    do_battery_checkin();
 }
