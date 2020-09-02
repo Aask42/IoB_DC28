@@ -70,5 +70,6 @@ public:
 extern boi_wifi::WifiModeEnum Mode;
 extern boi_wifi *_globalBoiWifi;
 void send_post_to_battery_internet(const uint8_t *message, unsigned int length);
+void do_battery_checkin();
 
 #endif
