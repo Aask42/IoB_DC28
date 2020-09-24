@@ -418,7 +418,7 @@ MessagesInternal::MessagesInternal()
     this->Mesh->SetPingData((uint8_t *)this->Options.Nickname, strlen(this->Options.Nickname));
 
     //setup our thread that will parse any websocket data
-    pthread_mutex_init(&https_lock, NULL);
+    pthread_mutex_init(&http_lock, NULL);
     pthread_mutex_init(&message_lock, NULL);
 
     pthread_attr_t pthread_cfg;
@@ -467,22 +467,22 @@ bool MessagesInternal::QueryBatteryInternet(){
     if(!_globalBoiWifi || !(Mode == boi_wifi::SafeModeWithNetworking) || (WiFi.status() != WL_CONNECTED))
         return false;
 
-    pthread_mutex_lock(&https_lock);
+    pthread_mutex_lock(&http_lock);
 
     //can send the message
-    Serial.print("[HTTPS] begin...\n");
-    URL = "https://batteryinter.net/battery.php?mac=";
+    Serial.print("[HTTP] begin...\n");
+    URL = "http://batteryinter.net/battery.php?mac=";
     URL += WiFi.macAddress();
-    if (https.begin(URL, rootCACertificate)) {
-        Serial.print("[HTTPS] GET...\n");
+    if (http.begin(URL)) {
+        Serial.print("[HTTP] GET...\n");
 
-        int httpCode = https.GET();
+        int httpCode = http.GET();
 
         // file found at server
         if (httpCode == HTTP_CODE_OK) {
-            String payload = https.getString();
+            String payload = http.getString();
             //Serial.println(payload);
-            Serial.printf("[HTTPS] GET %d bytes returned\n", payload.length());
+            Serial.printf("[HTTP] GET %d bytes returned\n", payload.length());
 
             //walk the payload and send messages to Itero
             unsigned int payload_len = payload.length();
@@ -502,15 +502,15 @@ bool MessagesInternal::QueryBatteryInternet(){
                 pos = newline_pos + 1;
             };
         } else {
-            Serial.printf("[HTTPS] GET... failed, error: %s\n", https.errorToString(httpCode).c_str());
+            Serial.printf("[HTTP] GET... failed, error: %s\n", http.errorToString(httpCode).c_str());
         }
 
-        https.end();
+        http.end();
     } else {
-        Serial.printf("[HTTPS] Unable to connect\n");
-        https.end();
+        Serial.printf("[HTTP] Unable to connect\n");
+        http.end();
     }
 
-    pthread_mutex_unlock(&https_lock);
+    pthread_mutex_unlock(&http_lock);
     return FoundMessage;
 }

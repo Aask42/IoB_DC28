@@ -8,9 +8,8 @@
 #include "messages.h"
 #include "app.h"
 
-extern const char rootCACertificate[];
 typedef class HTTPClient HTTPClient;
-extern HTTPClient https;
+extern HTTPClient http;
 
 class boi;
 class Messages;
