@@ -374,6 +374,10 @@ void MessagesInternal::SendConnectedData()
     OptionString += this->Options.WifiName;
     OptionString += '\x01';
     OptionString += this->Options.WifiPassword;
+    OptionString += '\x01';
+    OptionString += this->Options.SafeModeWifiName;
+    OptionString += '\x01';
+    OptionString += this->Options.SafeModeWifiPassword;
     this->socket_server->binaryAll(OptionString.c_str(), OptionString.length());
 
     if(this->Options.Configured)
