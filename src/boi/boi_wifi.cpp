@@ -316,6 +316,7 @@ void boi_wifi::enter_safe_mode_with_networking(const OptionsStruct *Options){
         if(counter > 300) {
             Serial.printf("Unable to connect to WiFi Safe Mode with Networking :(... %d\n", WiFi.status());
             this->ActivateNormal();
+            LEDHandler->StopScript(LED_ENABLE_SMWN);
             return;
         }
         else if((counter % 100) == 0) {

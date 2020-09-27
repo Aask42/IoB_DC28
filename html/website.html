@@ -183,7 +183,7 @@
 
     div.messagebodytext {
         vertical-align: text-top;
-        width: 100%;
+        width: 90%;
         height: 100%;
         display: inline-block;
         overflow-y: auto;
@@ -329,10 +329,10 @@
                     </div>
                     <div class=body style="position: relative;">
                         <div class=mainbody id=messagebody
-                            style="display: flex; flex-direction: column;align-items: stretch;justify-content: space-between;height: 100%;">
-                            <div class=messagebodytext "></div>
+                            style="display: flex; flex-direction: column;align-items: stretch;justify-content: space-between;height: 98%;width:90%">
+                            <div class="messagebodytext"></div>
                             <div id=messagebodytextmsg>
-                                <form>Message: <input type=text name="message" onkeydown="return processKey(event);">
+                                <form>Message: <input type=text name="message" onkeydown="return processKey(event);" style="width:70%">
                                 <input type=button value="Send" name="button" onclick="SendMessage();">
                                 </form>
                             </div>

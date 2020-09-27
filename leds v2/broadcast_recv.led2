@@ -1,52 +1,131 @@
 // We got a hundred miles to DEF CON, a full tank of gas, half a pack of circuits, it's dark, and we're wearing sunglasses
+
 version 2
+move led0 * 0x000000 250
+move led1 * 0x000000 250
+move led2 * 0x000000 250
+move led3 * 0x000000 250
+move led4 * 0x0000FF 250
+move led5 * 0x000000 250
+move led6 * 0x000000 250
+move led7 * 0x000000 250
+move led8 * 0x000000 250
 
-spring:
+delay 250
 
-move led8 * 255 150
+move led5 * led4 105
+move led3 * led4 105
 
-wait led8 >= 255
-move led6 * 0 150
+move led4 * 0x00AFFF 105
 
-wait led6 <= 0
+delay 105
 
-move led6 * 255 150
+move led6 * led5 105
+move led2 * led3 105
 
-wait led6 >= 153
+move led5 * 0x00AFFF 105
+move led3 * 0x00AFFF 105
 
-move led4 * 255 150
-move led8 * 0 150
+delay 105
 
-wait led4 >= 102
+move led7 * led6 105
+move led1 * led2 105
 
-move led2 * 255 150
-move led6 * 0 150
+move led6 * 0x00AFFF 105
+move led2 * 0x00AFFF 105
 
-wait led2 >= 61
+delay 105
 
-move led2 * 255 150
-move led4 * 0 150
+move led8 * led7 105
+move led0 * led1 105
 
-// Change direction!
+move led7 * 0x00AFFF 105
+move led1 * 0x00AFFF 105
 
-wait led2 >= 61
-move led2 * 0 150
+delay 105
 
-move led2 * 255 150
+move led4 * led8 105
 
-wait led2 >= 102
-move led2 * 0 150
+move led8 * 0x00AFFF 105
+move led0 * 0x00AFFF 105
 
-move led4 * 255 150
+delay 105
 
-wait led4 >= 153
-move led2 * 0 150
+move led5 * led4 105
+move led3 * led4 105
 
-move led6 * 255 150
+move led4 * 0x00AFFF 105
 
-wait led6 >= 255
-move led4 * 0 150
+delay 105
 
-// SPROING!!!!
-//goto spring
+move led6 * led5 105
+move led2 * led3 105
+
+move led5 * 0x00AFFF 105
+move led3 * 0x00AFFF 105
+
+delay 105
+
+move led7 * led6 105
+move led1 * led2 105
+
+move led6 * 0x00AFFF 105
+move led2 * 0x00AFFF 105
+
+delay 105
+
+move led8 * led7 105
+move led0 * led1 105
+
+move led7 * 0x00AFFF 105
+move led1 * 0x00AFFF 105
+
+delay 105
+
+move led4 * led8 105
+
+move led8 * 0x00AFFF 105
+move led0 * 0x00AFFF 105
+
+delay 105
+
+
+move led5 * led4 105
+move led3 * led4 105
+
+move led4 * 0x00AFFF 105
+
+delay 105
+
+move led6 * led5 105
+move led2 * led3 105
+
+move led5 * 0x00AFFF 105
+move led3 * 0x00AFFF 105
+
+delay 105
+
+move led7 * led6 105
+move led1 * led2 105
+
+move led6 * 0x00AFFF 105
+move led2 * 0x00AFFF 105
+
+delay 105
+
+move led8 * led7 105
+move led0 * led1 105
+
+move led7 * 0x00AFFF 105
+move led1 * 0x00AFFF 105
+
+delay 105
+
+// move led4 * 255 105
+
+move led8 * 0x00AFFF 105
+move led0 * 0x00AFFF 105
+
+delay 105
+
 stop
