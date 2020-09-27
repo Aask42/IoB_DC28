@@ -272,6 +272,19 @@
             color: pink;
         }
     }
+
+    body::-webkit-scrollbar {
+        width: 1em;
+    }
+    
+    body::-webkit-scrollbar-track {
+        box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
+    }
+    
+    body::-webkit-scrollbar-thumb {
+        background-color: darkgrey;
+        outline: 1px solid slategrey;
+    }
 </style>
 
 <body>
@@ -330,7 +343,7 @@
                     <div class=body style="position: relative;">
                         <div class=mainbody id=messagebody
                             style="display: flex; flex-direction: column;align-items: stretch;justify-content: space-between;height: 98%;width:90%">
-                            <div class="messagebodytext"></div>
+                            <div class="messagebodytext" id="chatwindow"></div>
                             <div id=messagebodytextmsg>
                                 <form>Message: <input type=text name="message" onkeydown="return processKey(event);" style="width:70%">
                                 <input type=button value="Send" name="button" onclick="SendMessage();">
@@ -658,6 +671,11 @@
             return document.getElementsByClassName(name)[0];
         }
 
+        function updateScroll(){
+            var element = document.getElementsByClassName("messagebodytext")[0];
+            element.scrollTop = element.scrollHeight;
+        }
+
         function processKey(e) {
             //see if the enter key was pressed, if so then we need to click the button
             if (e == null)
@@ -666,6 +684,7 @@
             if (e.keyCode == 13) {
                 e.preventDefault();
                 SendMessage();
+                updateScroll();
                 return false;
             }
         }
@@ -1438,13 +1457,14 @@
             SendWS("o", [], Data);
         }
 
+        
+
         GenerateSelections(0);
         //DisplaySection("startup");
 
         //enable the websocket now that things are mostly initialized
         getI("bootbodytext").value = "Connecting to web socket " + window.location.hostname;
 
-        //TODO: Update to have dynamic IP pulled from preferences
         var ws = new WebSocket("ws://" + window.location.hostname + ":81/ws", ['arduino']);
         
         ws.binaryType = 'arraybuffer';
