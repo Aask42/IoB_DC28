@@ -332,7 +332,7 @@
                             style="display: flex; flex-direction: column;align-items: stretch;justify-content: space-between;height: 100%;">
                             <div class=messagebodytext "></div>
                             <div id=messagebodytextmsg>
-                                <form>Message: <input type=text name=message onkeydown=" return processKey(event);">
+                                <form>Message: <input type=text name="message" onkeydown="return processKey(event);">
                                 <input type=button value="Send" name="button" onclick="SendMessage();">
                                 </form>
                             </div>
@@ -664,7 +664,8 @@
                 var e = window.event;
 
             if (e.keyCode == 13) {
-                getI("button").click();
+                e.preventDefault();
+                SendMessage();
                 return false;
             }
         }
