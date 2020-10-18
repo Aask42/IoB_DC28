@@ -185,3 +185,14 @@ void RequestHandler::GuestCounter()
     this->preferences.end();
     Serial.printf("We have been visited %d times ^_^\n", this->CurrentGuestCount);
 }
+
+bool boi_wifi::shouldWeEnterSafeModeWithNetworking(){
+    const OptionsStruct *Options;
+    Options = this->message_handler->GetOptions();
+    
+    bool return_bool = 0;
+    if((Options->SafeModeWifiName != NULL) && (Options->SafeModeWifiPassword != NULL)){
+        return_bool = 1;
+    }
+    return return_bool;
+}
