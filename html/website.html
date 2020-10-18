@@ -446,166 +446,289 @@
     
                                 </head>
     
-                                <body>
-                                    <body class="vscode-light">
-                                        <h1 id="internet-of-batteries-def-con-28---on-a-mission-from-rng">Internet of Batteries: DEF CON 28 - On a mission from RNG</h1>
-                                <p><strong>BoI | Definition: Noun, Battery of Internets</strong> (Because you always wanted to connect a battery to the internet)</p>
-                                <p>Welcome to the Internet of Batteries: DEF CON 28 Edition! We're back for our 2nd year after being told that the SAO standard &quot;doesn't support&quot; a battery back-powering the circuit on the VCC. Last year we successfully brought you a badge/add-on hybrid to support powering devices through both FEMALE and MALE headers, and this year we've iterated on that concept to bring you an updated model including a Cypress PSOC5, RGB, MORE LEDs, MORE colors, MORE  capacity, MORE CLOUD, and an updated version of our WiFi mesh network to enable Safe Mode w/ Networking.</p>
-                                <p>This badge is compatable with SAO 1.69bis, though if plugged in to any other DC badge it could cause aliens to show up with ships that hang in the sky in much the same way bricks don't.</p>
-                                <p>Additionally, there is a WiFi Mesh Network (Itero) which powers the IoB. Through this network you can send broadcast messages to one big group chat, or sent PMs to up to 25 added devices. To scan for available nodes in the area, add other batteries to your &quot;friends&quot; list, and interact with group &amp; private chat, you will need to connect to the <strong>Captive Arcade<sup>TM</sup></strong>. When connected, &quot;Friends&quot; and scanned nodes will show green.</p>
-                                <p>To view power usage statistics users connect to the <strong>Captive Arcade<sup>TM</sup></strong> on the ESP32 to view local battery power consumption and discharge stats.</p>
-                                <h2 id="jump-start">Jump Start</h2>
-                                <ol start="0">
-                                <li>WASH YOUR HANDS (ya filthy animal)</li>
-                                <li>Power switch ON (Does NOT need to be on to charge this year)</li>
-                                <li>If LEDs flash RGB on boot, boi is in low voltage mode, charge it</li>
-                                <li>Hold &quot;DEF&quot; capsense button on boot = force low voltage mode = faster charge</li>
-                                <li>Hold &quot;TOUCH SLIDER&quot; capsense button area on boot = factory reset</li>
-                                <li>Solder headers (make sure to orient to VCC on the SQUARE pad)</li>
-                                <li>Show off in #linecon (<a href="http://discord.gg/DEFCON">discord.gg/DEFCON</a>)</li>
-                                <li>See you @ DEFCON 29!</li>
-                                </ol>
-                                <h2 id="features">Features</h2>
-                                <h3 id="tech-specs">Tech Specs:</h3>
-                                <ul>
-                                <li>ESP32 WiFi Battery Processor</li>
-                                <li>PSoC5 LP analog / lightshow / comms controller</li>
-                                <li>INA199 current sense, capable of 750mA peak sense</li>
-                                <li>Very rushed hardware and firmware engineered by total hacks</li>
-                                </ul>
-                                <h3 id="what-does-it-all-do">What does it all do?</h3>
-                                <ul>
-                                <li>This is a badge...or is it an add-on?</li>
-                                <li>In badge mode, measures total current of add-ons and logs power consumption</li>
-                                <li>In add-on mode, measures its own current</li>
-                                <li>Is capable of back-powering a badge through the add-on header**</li>
-                                <li>RGB lights show useful information or fun light shows</li>
-                                <li>Touch sensors to activate battery gauge, light show, and backpower enabling modes</li>
-                                <li>Other indicator lights show power enable status and low battery*</li>
-                                <li>For 2020 we're in Safe Mode with Networking. The old WiFi mesh, Itero, has been upgraded to be more global... the IoB is IoT!</li>
-                                </ul>
-                                <ul>
-                                <li>Low battery indicator / shutoff mode not yet implemented. Will require MCU FW update to enable.
-                                ** ALL RISKS OF BACKPOWERING ARE TAKEN BY YOU. NOT LIABLE FOR ANY FIRES, DAMAGE, INTERNET WORMS, BLACK HOLES, OR ANYTHING ELSE GOOD OR BAD AS A RESULT OF USING THIS FEATURE</li>
-                                </ul>
-                                <h2 id="better-instructions">Better Instructions</h2>
-                                <ul>
-                                <li>NOTE: If the battery voltage is TOO LOW when powered on, the LEDS will flash RGB then go dark and output current battery voltage on serial out (115200). Once above 3.7v the battery should show animation while charging after rebooting</li>
-                                </ul>
-                                <p>There are FIVE buttons on the DC27 version of the Internet of Batteries:</p>
-                                <table>
-                                <thead>
-                                <tr>
-                                <th>Button</th>
-                                <th>Description</th>
-                                <th>Actions</th>
-                                </tr>
-                                </thead>
-                                <tbody>
-                                <tr>
-                                <td>RESET</td>
-                                <td>This button is located on the BACK of the DEF CELL, at the top to the RIGHT of the ESP32</td>
-                                <td>This resets the Boi</td>
-                                </tr>
-                                <tr>
-                                <td>PROG</td>
-                                <td>This button is located on the BACK of the DEF CELL, at the top to the RIGHT of the ESP32</td>
-                                <td>This is only used when programming the Cypress PSOC5</td>
-                                </tr>
-                                <tr>
-                                <td>DEF</td>
-                                <td>Cycle mode, 2x toggles between  <strong>Captive Arcade<sup>TM</sup></strong></td>
-                                <td>Touch DEF 1x : Capacity -&gt; Node Count -&gt; Party!!! <br/><br/>Touch DEF 2x : Toggle Captive Arcade</td>
-                                </tr>
-                                <tr>
-                                <td>CELL</td>
-                                <td>Toggles backpower on Add-on rail on/off</td>
-                                <td>Auto-off if voltage is detected going the wrong way across the SHUNT resistor</td>
-                                </tr>
-                                <tr>
-                                <td>SLIDER</td>
-                                <td>Adjusts Brightness</td>
-                                <td>Slide up or down to set your desired brightness</td>
-                                </tr>
-                                </tbody>
-                                </table>
-                                <h2 id="boot-order">Boot Order</h2>
-                                <p>This is very important and will help to minimize blowing up like an innocent virus in the wild</p>
-                                <ol start="0">
-                                <li>Detect power on rails: If voltage on LiPoly is too low, <strong>FLASH LEDS ONCE</strong> and boot in to &quot;Safe Mode&quot;</li>
-                                <li>Button assignment</li>
-                                <li>LED assignment</li>
-                                <li>DNS setup</li>
-                                <li>WiFi setup</li>
-                                <li>Enable <strong>Safe Mode w/ Networking</strong> if local wifi config is set - Work In Progress</li>
-                                <li>Enable <strong>Captive Arcade<sup>TM</sup></strong> if Safe Mode w/ Networking fails to connect</li>
-                                <li>React to user input</li>
-                                <li>If voltage across shunt changes direction, and BACKPOWER is ON, force power state to NO_BACKPOWER</li>
-                                <li>POST WiFi Header-frames to &quot;<a href="http://batteryinter.net">batteryinter.net</a>&quot; (Work in progress)</li>
-                                </ol>
-                                <h2 id="board-layout">Board Layout</h2>
-                                <p>Front:</p>
-                                <pre><code class="language-txt"><code><div>Back: (NOW WITH 100% MORE BEEEEEF COURTESY OF BOBO)
-                                        _____
-                                 ______| ESP |______ ---
-                                | O    |     |    O | |
-                                |      |_____|      | |
-                                |   SAO        SAO  | |
-                                |                   | |
-                                |                 U | | ~
-                                |                 S | | 7
-                                |                 B | | . 
-                                |                   | | 5
-                                |      Battery      | | c
-                                |       Goes        | | m
-                                |       Here        | |
-                                |                   | |
-                                |       SHUNT       | |
-                                |_SAO____-_-____SAO_| |
-                                                  ---
-                                |--------~4.5cm--------|
-                                
-                                DC28 dimensions
-                                7.5 cm
-                                4.5cm wide
-                                8.0cm with anode
-                                
-                                Front: 
-                                        ______
-                                 ______|______|______
-                                | O               O  |
-                                |   DEF CON XXIIIV   |
-                                |   SAO   Q    SAO   |
-                                |    LED  U  B LED   |
-                                |    LED  A  T D     |
-                                |    LED  N  N E     |
-                                |    LED  T  1 F     |
-                                |    LED  U    C     |
-                                |    LED  M  B E     |
-                                |    LED     T L     |
-                                |    LED     N L     |
-                                |    LED     2       |
-                                |       SHUNT        |
-                                |_SAO____-_-_____SAO_|
-                                </div></code></code></pre>
-                                <h2 id="how-to-flash-new-firmware">How to flash new firmware</h2>
-                                <h3 id="windows-instructions">Windows Instructions:</h3>
-                                <ol>
-                                <li>Download defcell_quantum_0.2.0.zip from <a href="http://batteryinter.net">batteryinter.net</a></li>
-                                <li>Unzip File</li>
-                                <li>Run &quot;flash.bat&quot;</li>
-                                <li>Party</li>
-                                </ol>
-                                <p>Video of flashing steps: WORK IN PROGRESS</p>
-                                <p><strong>Note:</strong> There are preferences stored in flash which persist even when flashing updated code. To reset ALL data on the device you must perform a full flash reset esptool.exe, then flash the desired version of the firmware to the now empty device.</p>
-                                <h2 id="donations">Donations</h2>
-                                <pre><code><code><div>Bitcoin Cash is pretty sweet:  
-                                    1CbJsCqH9btitkRr13m11RribyF6m7EUTZ
-                                
-                                Bitcoin is cool too: 
-                                    1GrnYwUCAsQY3oejdu8CRutnG55Wi7bXHz  
-                                </div></code></code></pre>
-                                
+                                <body class="vscode-light">
+                                    <h1 id="internet-of-batteries-def-con-28---on-a-mission-from-rng">Internet of Batteries: DEF CON 28 - On a mission from RNG</h1>
+                            <p><strong>BoI | Definition: Noun, Battery of Internets</strong> (Because you always wanted to connect a battery to the internet)</p>
+                            <p>Welcome to the Internet of Batteries: DEF CON 28 Edition! We're back for our 2nd year after being told that the SAO standard &quot;doesn't support&quot; a battery back-powering the circuit on the VCC. Last year we successfully brought you a badge/add-on hybrid to support powering devices through both FEMALE and MALE headers, and this year we've iterated on that concept to bring you an updated model including a Cypress PSOC5, RGB, MORE LEDs, MORE colors, MORE  capacity, MORE CLOUD, and an updated version of our WiFi mesh network to enable Safe Mode w/ Networking.</p>
+                            <p>This badge is compatable with SAO 1.69bis, though if plugged in to any other DC badge it could cause aliens to show up with ships that hang in the sky in much the same way bricks don't.</p>
+                            <p>Additionally, there is a WiFi Mesh Network (Itero) which powers the IoB. Through this network you can send broadcast messages to one big group chat, or sent PMs to up to 25 added devices. To scan for available nodes in the area, add other batteries to your &quot;friends&quot; list, and interact with group &amp; private chat, you will need to connect to the <strong>Captive Arcade<sup>TM</sup></strong>. When connected, &quot;Friends&quot; and scanned nodes will show green.</p>
+                            <p>To view power usage statistics users connect to the <strong>Captive Arcade<sup>TM</sup></strong> on the ESP32 to view local battery power consumption and discharge stats.</p>
+                            <h2 id="jump-start">Jump Start</h2>
+                            <ol start="0">
+                            <li>WASH YOUR HANDS (ya filthy animal)</li>
+                            <li>Power switch ON (<strong>Does NOT need to be on to charge this year</strong>)</li>
+                            <li>If LEDs flash RGB on boot, boi is in low voltage mode, charge it</li>
+                            <li>Hold &quot;DEF&quot; capsense button on boot = force low voltage mode = faster charge</li>
+                            <li>Hold &quot;DEF&quot; + &quot;TOUCH SLIDER&quot; capsense button area on boot = &quot;factory reset&quot;, may require tapping reset button on back due to timing</li>
+                            <li>Solder headers (make sure to orient to VCC on the SQUARE pad)</li>
+                            <li>Configure and connect to the Battery Internet</li>
+                            <li>Show off in #linecon (<a href="http://discord.gg/DEFCON">discord.gg/DEFCON</a>)</li>
+                            <li>See you @ DEFCON 29!</li>
+                            </ol>
+                            <h2 id="features">Features</h2>
+                            <h3 id="tech-specs">Tech Specs:</h3>
+                            <ul>
+                            <li>ESP32 WiFi Battery Processor</li>
+                            <li>PSoC5 LP analog / lightshow / comms controller</li>
+                            <li>INA199 current sense, capable of 750mA peak sense</li>
+                            <li>Very rushed hardware and firmware engineered by total hacks</li>
+                            </ul>
+                            <h3 id="what-does-it-all-do">What does it all do?</h3>
+                            <ul>
+                            <li>This is a badge...or is it an add-on?</li>
+                            <li>In badge mode, measures total current of add-ons and logs power consumption</li>
+                            <li>In add-on mode, measures its own current</li>
+                            <li>Is capable of back-powering a badge through the add-on header**</li>
+                            <li>RGB lights show useful information or fun light shows</li>
+                            <li>Touch sensors to activate battery gauge, light show, and backpower enabling modes</li>
+                            <li>Other indicator lights show power enable status and low battery*</li>
+                            <li>For 2020 we're in Safe Mode with Networking. The old WiFi mesh, Itero, has been upgraded to be more global... the IoB is IoT!
+                            <ul>
+                            <li>Global and Private Chat is now enabled when in Safe Mode with Networking, use at your own risk!!!</li>
+                            </ul>
+                            </li>
+                            </ul>
+                            <ul>
+                            <li>Low battery indicator / shutoff mode not yet implemented. Will require MCU FW update to enable.
+                            ** ALL RISKS OF BACKPOWERING ARE TAKEN BY YOU. NOT LIABLE FOR ANY FIRES, DAMAGE, INTERNET WORMS, BLACK HOLES, OR ANYTHING ELSE GOOD OR BAD AS A RESULT OF USING THIS FEATURE</li>
+                            </ul>
+                            <h2 id="battery-setup---safe-mode-with-networking-smwn">Battery Setup - Safe Mode With Networking (SMWN)</h2>
+                            <p>Steps for initial setup/after a &quot;factory reset&quot;</p>
+                            <ol>
+                            <li>
+                            <p>Turn on Battery</p>
+                            <ul>
+                            <li>You should see a WiFi network called &quot;😷 I'm A Battery ###! 😷&quot;</li>
+                            </ul>
+                            </li>
+                            <li>
+                            <p>Connect to the WiFi captive portal on the DEF CELL QUANTUM</p>
+                            <ul>
+                            <li>Select &quot;Sign in to network&quot; on your chosen device</li>
+                            </ul>
+                            </li>
+                            <li>
+                            <p>DEF CELL QUANTUM will automatically launch a configuration website which allows you to set up the battery</p>
+                            <ul>
+                            <li>Configuring the Safe Mode network credentials will allow you to connect to <a href="http://batteryinter.net">batteryinter.net</a> and talk to other batteries</li>
+                            <li>Configuring the &quot;Captive Portal&quot; credentials will allow you to securely connect to your battery when not in SMWN</li>
+                            </ul>
+                            </li>
+                            <li>
+                            <p>Once you've configured SMWN settings on the config page, your battery will reboot and attempt to connect to the configured WiFi network**</p>
+                            <ul>
+                            <li>From your home network, navigate to &quot;<a href="http://batteryinter.net/connect">batteryinter.net/connect</a>&quot; to connect to the battery. If this fails you will need to look up the local IP of the battery by either observing the serial output on boot, or checking your router for configured devices</li>
+                            <li><strong>If DEF CELL QUANTUM cannot connect to the local network, it will turn off all WiFi until you enable a new WiFi mode. Double tap DEF to enable captive-portal mode to reconfigure if you remember your password. Triple tap DEF to disable secured WiFi captive portal in case you forgot your password</strong></li>
+                            </ul>
+                            </li>
+                            </ol>
+                            <h3 id="global-and-private-chat">Global and Private Chat</h3>
+                            <p>This year, once connected to Safe Mode with Networking you will be able to access the global network of the Internet of Batteries! This includes access to an exclusive (and buggy) global chat, as well as an equally exclusive and buggy private (IE secured) chat mode with ANY Battery on the Internet of Batteries.</p>
+                            <p>A few notes before you go CHARGING in:</p>
+                            <ul>
+                            <li>Animations will play on the DEF CELL QUANTUM as messages are sent/received</li>
+                            <li>Don't be a jerk, have fun, use at your own risk, we cannot control the content so it is up to YOU to prevent trolls (let us know if there are any issues)</li>
+                            <li>Global and private chat may be buggy and will take time for messages to come through, don't you love new inventions?</li>
+                            <li>No gaurantee that msgs will successfully transmit &amp; be received, again, use at your own risk, do not rely on for emergency situations</li>
+                            <li>Don't do anything illegal</li>
+                            <li>DFIU</li>
+                            </ul>
+                            <p><strong>Use global and private chat at your own risk, let us know if there are any issues</strong></p>
+                            <h2 id="better-instructions">Better Instructions</h2>
+                            <ul>
+                            <li>NOTE: If the battery voltage is TOO LOW when powered on, the LEDS will flash RGB then go dark and output current battery voltage on serial out (115200). Once above 3.7v the battery should show animation while charging after rebooting</li>
+                            </ul>
+                            <p>There are FIVE buttons on the DC28 version of the Internet of Batteries:</p>
+                            <table>
+                            <thead>
+                            <tr>
+                            <th>Button</th>
+                            <th>Description</th>
+                            <th>Actions</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr>
+                            <td>RESET</td>
+                            <td>This button is located on the BACK of the DEF CELL, at the top to the RIGHT of the ESP32</td>
+                            <td>This resets the Boi</td>
+                            </tr>
+                            <tr>
+                            <td>PROG</td>
+                            <td>This button is located on the BACK of the DEF CELL, at the top to the RIGHT of the ESP32</td>
+                            <td>This is only used when programming the Cypress PSOC5</td>
+                            </tr>
+                            <tr>
+                            <td>DEF</td>
+                            <td>Cycle mode, 2x toggles between  <strong>Captive Arcade<sup>TM</sup></strong></td>
+                            <td>Touch DEF 1x : Capacity -&gt; Node Count -&gt; Party!!! <br/><br/>Touch DEF 2x : Toggle Captive Arcade</td>
+                            </tr>
+                            <tr>
+                            <td>CELL</td>
+                            <td>Toggles backpower on Add-on rail on/off</td>
+                            <td>Auto-off if voltage is detected going the wrong way across the SHUNT resistor</td>
+                            </tr>
+                            <tr>
+                            <td>SLIDER</td>
+                            <td>Adjusts Brightness</td>
+                            <td>Slide up or down to set your desired brightness</td>
+                            </tr>
+                            </tbody>
+                            </table>
+                            <h3 id="battery-modes">Battery Modes</h3>
+                            <p>Unless already configured for Safe Mode with Netwotking by default the DEF CELL QUANTUM will boot in to &quot;Capacity&quot; mode. See below for a list of the different modes and how to enable them!</p>
+                            <p>There are different modes you can put the battery in based on how many times you tap the DEF button</p>
+                            <table>
+                            <thead>
+                            <tr>
+                            <th>Mode</th>
+                            <th>Features</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr>
+                            <td>Capacity</td>
+                            <td>DEF CELL QUANTUM will twinkle and indicate its current level of charge on the LEDS</td>
+                            </tr>
+                            <tr>
+                            <td>Node Count</td>
+                            <td>DEF CELL QUANTUM will glow with the # of nodes on the Battery Internet</td>
+                            </tr>
+                            <tr>
+                            <td>Party</td>
+                            <td>DEF CELL QUANTUM will be having a FUN time, will YOU?!</td>
+                            </tr>
+                            <tr>
+                            <td>Secured WiFi Captive Portal Active</td>
+                            <td>DEF CELL QUANTUM will broadcast a secured WiFi network which will automatically connect you to your battery's configuration screen</td>
+                            </tr>
+                            <tr>
+                            <td>Unsecured WiFi Captive Portal Active</td>
+                            <td>DEF CELL QUANTUM will broadcast an UNSECURED WiFi network, giving ANYONE who connects access to configure your battery. Only do this if you forget your password.</td>
+                            </tr>
+                            <tr>
+                            <td>Safe Mode with Networking (SMWN)</td>
+                            <td>DEF CELL QUANTUM will attempt to connect to the Battery Internet to allow for global and private chat features to function correctly</td>
+                            </tr>
+                            </tbody>
+                            </table>
+                            <table>
+                            <thead>
+                            <tr>
+                            <th>Action</th>
+                            <th>Result</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr>
+                            <td>1x DEF Tap</td>
+                            <td>Cycles through light-show modes <strong>Capacity -&gt; Node Count -&gt; Party</strong></td>
+                            </tr>
+                            <tr>
+                            <td>2x DEF Taps</td>
+                            <td>Turns on Secured WiFi Captive Portal mode (if WiFi already off), if WiFi is on it will instead turn whatever mode it is currently in. Will show animation indicating WiFi is turning on/off.</td>
+                            </tr>
+                            <tr>
+                            <td>3x DEF Taps</td>
+                            <td>Turns on unsecured WiFi Captive Portal (ONLY USE IF YOU FORGOT YOUR SECURE WiFi CAPTIVE PORTAL PASSWORD). Will show animation indicating WiFi is turning on/off.</td>
+                            </tr>
+                            <tr>
+                            <td>4x DEF Taps</td>
+                            <td>Force SMWN (if SMWN WiFi Login/PW configured, DEF CELL QUANTUM will attempt to Auto-Start SMWN Mode @ Startup)</td>
+                            </tr>
+                            </tbody>
+                            </table>
+                            <p>1x CELL Tap - Turns On/Off Back Powering Rail to Enable/Disable powering power headers located at all corners</p>
+                            <p>Note: DEF / CELL are separate touch buttons. CELL is hard-configured to turn power on/off to the headers' VCC<br>
+                            Note2: there is a 250ms delay between taps to give time to multi-tap</p>
+                            <h3 id="how-to-tell-the-mode-your-battery-is-currently-in">How to tell the Mode your Battery is currently in</h3>
+                            <p>** Note: most modes are compaitble to be multi-layered with other modes simultaneously</p>
+                            <ul>
+                            <li>Party Mode: Rainbow cycling RGB colors, TL/TR corner LED's will alternate flashing. Party mode may be on in addition to other modes (layered with other modes)</li>
+                            <li>SMWN: On attempt to connect to local network you will see an <strong>Alternating Blue/Orange LED Animation</strong> signifying that the DEF CELL QUANTUM is connecting to the configured local WiFi network. Once the battery has finished connecting to the Battery Internet, you will see the alternating pattern fade out and a soft moving Purple animation will take its place.
+                            <ul>
+                            <li>There will also be an LED on in the Bottom Left corner to signify specifically that SMWN mode is on.</li>
+                            </ul>
+                            </li>
+                            <li>Node Count: The number of other DEF CELLs you can see on the network, this includes both the DEF CELL original, and the DEF CELL QUANTUM releases of the Internet of Batteries.</li>
+                            </ul>
+                            <h2 id="boot-order">Boot Order</h2>
+                            <p>This is very important and will help to minimize blowing up like an innocent virus in the wild</p>
+                            <ol start="0">
+                            <li>Detect power on rails: If voltage on LiPoly is too low, <strong>FLASH LEDS ONCE</strong> and boot in to &quot;Safe Mode&quot;</li>
+                            <li>Button assignment</li>
+                            <li>LED assignment</li>
+                            <li>DNS setup</li>
+                            <li>WiFi setup</li>
+                            <li>Enable <strong>Safe Mode w/ Networking</strong> if local WiFi config is set - Work In Progress</li>
+                            <li>Enable <strong>Captive Arcade<sup>TM</sup></strong> if Safe Mode w/ Networking fails to connect</li>
+                            <li>React to user input</li>
+                            <li>If voltage across shunt changes direction, and BACKPOWER is ON, force power state to NO_BACKPOWER</li>
+                            <li>POST WiFi Header-frames to &quot;<a href="http://batteryinter.net">batteryinter.net</a>&quot; (Work in progress)</li>
+                            </ol>
+                            <h2 id="how-to-flash-new-firmware">How to flash new firmware</h2>
+                            <h3 id="windows-instructions">Windows Instructions:</h3>
+                            <ol>
+                            <li>Download defcell_quantum_1.0.0.zip from <a href="http://batteryinter.net">batteryinter.net</a> or from our github page (<a href="https://github.com/Aask42/IoB_DC28">https://github.com/Aask42/IoB_DC28</a>)</li>
+                            <li>Unzip File</li>
+                            <li>Run &quot;flash.bat&quot;</li>
+                            <li>Party</li>
+                            </ol>
+                            <p>Video of flashing steps: WORK IN PROGRESS</p>
+                            <p><strong>Note:</strong> There are preferences stored in flash which persist even when flashing updated code. To reset ALL data on the device you must perform a full flash reset esptool.exe, then flash the desired version of the firmware to the now empty device.</p>
+                            <h2 id="board-layout">Board Layout</h2>
+                            <p>Front:</p>
+                            <pre><code class="language-txt"><code><div>Back: (NOW WITH 100% MORE BEEEEEF COURTESY OF BOBO)
+                                    _____
+                             ______| ESP |______ ---
+                            | O    |     |    O | |
+                            |      |_____|      | |
+                            |   SAO        SAO  | |
+                            |                   | |
+                            |                 U | | ~
+                            |                 S | | 7
+                            |                 B | | . 
+                            |                   | | 5
+                            |      Battery      | | c
+                            |       Goes        | | m
+                            |       Here        | |
+                            |                   | |
+                            |       SHUNT       | |
+                            |_SAO____-_-____SAO_| |
+                                              ---
+                            |--------~4.5cm--------|
+                            
+                            DC28 dimensions
+                            7.5 cm
+                            4.5cm wide
+                            8.0cm with anode
+                            
+                            Front: 
+                                    ______
+                             ______|______|______
+                            | O               O  |
+                            |   DEF CON XXIIIV   |
+                            |   SAO   Q    SAO   |
+                            |    LED  U  B LED   |
+                            |    LED  A  T D     |
+                            |    LED  N  N E     |
+                            |    LED  T  1 F     |
+                            |    LED  U    C     |
+                            |    LED  M  B E     |
+                            |    LED     T L     |
+                            |    LED     N L     |
+                            |    LED     2       |
+                            |       SHUNT        |
+                            |_SAO____-_-_____SAO_|
+                            </div></code></code></pre>
+                            <h2 id="donations">Donations</h2>
+                            <pre><code><code><div>Bitcoin Cash is pretty sweet:  
+                                1CbJsCqH9btitkRr13m11RribyF6m7EUTZ
+                            
+                            Bitcoin is cool too: 
+                                1GrnYwUCAsQY3oejdu8CRutnG55Wi7bXHz  
+                            </div></code></code></pre>
+                            
                                 </body>
     
                                 </html>
