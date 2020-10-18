@@ -495,10 +495,10 @@ void loop() {
   }
 #endif
 
-  //if we are in nodecount or wifi is active then do a scan every 30 seconds
+  //if we are in nodecount or wifi is active then do a scan every 5 seconds
   if((CurrentMode == NodeCountMode) || BatteryWifi)
   {
-    if((CurTime - LastScanTime) >= 30000000ULL)
+    if((CurTime - LastScanTime) >= 5000000ULL)
     {
       LastScanTime = CurTime;
       MessageHandler->DoScan();
