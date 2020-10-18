@@ -273,6 +273,7 @@ void boi_wifi::enter_safe_mode_with_networking(const OptionsStruct *Options){
     // Initialize the webserver still
     // Initialize the mesh network
     
+    LEDHandler->StopScript(LED_ALL);
     LEDHandler->StartScript(LED_ENABLE_SMWN, 1);
 
     if(this->ServerCheckThread)
@@ -358,7 +359,7 @@ void boi_wifi::enter_safe_mode_with_networking(const OptionsStruct *Options){
         Serial.println("Failed to setup ServerCheck thread");
         _globalBoiWifi = 0;
     }
-
     LEDHandler->StopScript(LED_ENABLE_SMWN);
+    LEDHandler->StartScript(LED_SMWN_ACTIVE, 1);
     do_battery_checkin();
 }

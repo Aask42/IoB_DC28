@@ -1,0 +1,40 @@
+// holy cow! A whole chat platform just for us!
+version 2
+
+set ledbl 100
+
+move led0 * 0x099AA2 1000
+move led1 * 0x00B7B2 1000
+move led2 * 0x050AC1 1000
+move led3 * 0x5200C6 1000
+move led4 * 0x556AD7 1000
+move led5 * 0x57AEEA 1000
+move led6 * 0x2B6CC4 1000
+move led7 * 0x1A4876 1000
+move led8 * 0x7851A9 1000
+
+glow:
+
+set lvar_0 led1
+set lvar_1 led2
+set lvar_2 led3
+set lvar_3 led4
+set lvar_4 led5
+set lvar_5 led6
+set lvar_6 led7
+set lvar_7 led8
+set lvar_8 led0
+
+move led0 * lvar_0 1000
+move led1 * lvar_1 1000
+move led2 * lvar_2 1000
+move led3 * lvar_3 1000
+move led4 * lvar_4 1000
+move led5 * lvar_5 1000
+move led6 * lvar_6 1000
+move led7 * lvar_7 1000
+move led8 * lvar_8 1000
+
+delay 1000
+
+goto glow

@@ -135,7 +135,6 @@ void setup(void) {
       //reset done, half power the led to indicate complete
       LEDHandler->SetLEDValue(LED_LEV100, 50.0, LED_OVERRIDE_INFINITE);
     }
-
     return;
   }
 
@@ -151,7 +150,7 @@ void setup(void) {
   //setup params
   Prefs->begin("options");
   Prefs->getBytes("lightshows", ModeSelectedLED, sizeof(ModeSelectedLED));
-  WifiState = boi_wifi::SafeModeWithNetworking; //Prefs->getUChar("wifi", boi_wifi::NormalMode);
+  WifiState = Prefs->getUChar("wifi");
   Prefs->end();
 
   // initialize boi
@@ -166,6 +165,9 @@ void setup(void) {
 
   BatteryWifi = 0;
 
+  
+  // Check to see if we should enable Safe Mode with Networking
+  
   //go to our mode that is set
   SwitchMode();
 
@@ -173,7 +175,11 @@ void setup(void) {
   if(!MessageHandler->GetOptions()->Configured || WifiState)
   {
     Serial.printf("WifiState: %d\n", WifiState);
-    //BatteryWifi = new boi_wifi(Battery, MessageHandler, (boi_wifi::WifiModeEnum)WifiState);
+    BatteryWifi = new boi_wifi(Battery, MessageHandler, boi_wifi::NormalMode);
+    delete BatteryWifi;
+    BatteryWifi = 0;
+
+    BatteryWifi = new boi_wifi(Battery, MessageHandler, (boi_wifi::WifiModeEnum)WifiState);
   }
 }
 
