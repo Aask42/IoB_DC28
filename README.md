@@ -17,8 +17,9 @@ To view power usage statistics users connect to the __Captive Arcade<sup>TM</sup
 3. Hold "DEF" capsense button on boot = force low voltage mode = faster charge
 4. Hold "DEF" + "TOUCH SLIDER" capsense button area on boot = "factory reset", may require tapping reset button on back due to timing
 5. Solder headers (make sure to orient to VCC on the SQUARE pad)
-6. Show off in #linecon (discord.gg/DEFCON)
-7. See you @ DEFCON 29!
+6. Configure and connect to the Battery Internet
+7. Show off in #linecon (discord.gg/DEFCON)
+8. See you @ DEFCON 29!
 
 ## Features
 
@@ -49,20 +50,23 @@ To view power usage statistics users connect to the __Captive Arcade<sup>TM</sup
 Steps for initial setup/after a "factory reset"
 
 1. Turn on Battery
-- You should see a WiFi network called "😷 I'm A Battery ###! 😷"
-2. Connect to the WiFi captive portal on the DEF CELL QUANTUM, and select "Sign in to network" on your chosen device
+   - You should see a WiFi network called "😷 I'm A Battery ###! 😷"
+2. Connect to the WiFi captive portal on the DEF CELL QUANTUM
+   - Select "Sign in to network" on your chosen device
+   
 3. DEF CELL QUANTUM will automatically launch a configuration website which allows you to set up the battery
-4. Configuring the Safe Mode network credentials will allow you to connect to batteryinter.net and talk to other batteries
-5. Configuring the "Captive Portal" credentials will allow you to securely connect to your battery when not in SMWN
-
-**Note: Once you've configured SMWN settings on the config page, your battery will reboot and attempt to connect to the configured WiFi network**
-**If DEF CELL QUANTUM cannot connect to the local network, it will turn off all WiFi until you enable a new WiFi mode. Double tap DEF to enable captive-portal mode to reconfigure if you remember your password. Triple tap DEF to disable secured WiFi captive portal in case you forgot your password**
+   - Configuring the Safe Mode network credentials will allow you to connect to batteryinter.net and talk to other batteries
+   - Configuring the "Captive Portal" credentials will allow you to securely connect to your battery when not in SMWN
+4. Once you've configured SMWN settings on the config page, your battery will reboot and attempt to connect to the configured WiFi network**  
+   - From your home network, navigate to "batteryinter.net/connect" to connect to the battery. If this fails you will need to look up the local IP of the battery by either observing the serial output on boot, or checking your router for configured devices
+   - **If DEF CELL QUANTUM cannot connect to the local network, it will turn off all WiFi until you enable a new WiFi mode. Double tap DEF to enable captive-portal mode to reconfigure if you remember your password. Triple tap DEF to disable secured WiFi captive portal in case you forgot your password**
 
 ### Global and Private Chat
 
 This year, once connected to Safe Mode with Networking you will be able to access the global network of the Internet of Batteries! This includes access to an exclusive (and buggy) global chat, as well as an equally exclusive and buggy private (IE secured) chat mode with ANY Battery on the Internet of Batteries. 
 
 A few notes before you go CHARGING in:
+- Animations will play on the DEF CELL QUANTUM as messages are sent/received
 - Don't be a jerk, have fun, use at your own risk, we cannot control the content so it is up to YOU to prevent trolls (let us know if there are any issues)
 - Global and private chat may be buggy and will take time for messages to come through, don't you love new inventions?
 - No gaurantee that msgs will successfully transmit & be received, again, use at your own risk, do not rely on for emergency situations
@@ -75,7 +79,7 @@ A few notes before you go CHARGING in:
 
 - NOTE: If the battery voltage is TOO LOW when powered on, the LEDS will flash RGB then go dark and output current battery voltage on serial out (115200). Once above 3.7v the battery should show animation while charging after rebooting
 
-There are FIVE buttons on the DC27 version of the Internet of Batteries: 
+There are FIVE buttons on the DC28 version of the Internet of Batteries: 
 
 | Button | Description                                                                              | Actions                                                                                          |
 | ------ | ---------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------ |
@@ -85,7 +89,41 @@ There are FIVE buttons on the DC27 version of the Internet of Batteries:
 | CELL   | Toggles backpower on Add-on rail on/off                                                  | Auto-off if voltage is detected going the wrong way across the SHUNT resistor                    |
 | SLIDER | Adjusts Brightness                                                                       | Slide up or down to set your desired brightness                                                  |
 
+### Battery Modes
 
+Unless already configured for Safe Mode with Netwotking by default the DEF CELL QUANTUM will boot in to "Capacity" mode. See below for a list of the different modes and how to enable them!
+
+There are different modes you can put the battery in based on how many times you tap the DEF button
+
+Mode | Features 
+-|-
+Capacity | DEF CELL QUANTUM will twinkle and indicate its current level of charge on the LEDS
+Node Count | DEF CELL QUANTUM will glow with the # of nodes on the Battery Internet
+Party | DEF CELL QUANTUM will be having a FUN time, will YOU?!
+Secured WiFi Captive Portal Active | DEF CELL QUANTUM will broadcast a secured WiFi network which will automatically connect you to your battery's configuration screen
+Unsecured WiFi Captive Portal Active | DEF CELL QUANTUM will broadcast an UNSECURED WiFi network, giving ANYONE who connects access to configure your battery. Only do this if you forget your password. 
+Safe Mode with Networking (SMWN) | DEF CELL QUANTUM will attempt to connect to the Battery Internet to allow for global and private chat features to function correctly
+
+Action | Result
+--------|------
+1x DEF Tap | Cycles through light-show modes **Capacity -> Node Count -> Party**
+2x DEF Taps | Turns on Secured WiFi Captive Portal mode (if WiFi already off), if WiFi is on it will instead turn whatever mode it is currently in. Will show animation indicating WiFi is turning on/off. 
+3x DEF Taps | Turns on unsecured WiFi Captive Portal (ONLY USE IF YOU FORGOT YOUR SECURE WiFi CAPTIVE PORTAL PASSWORD). Will show animation indicating WiFi is turning on/off. 
+4x DEF Taps | Force SMWN (if SMWN WiFi Login/PW configured, DEF CELL QUANTUM will attempt to Auto-Start SMWN Mode @ Startup)
+1x CELL Tap - Turns On/Off Back Powering Rail to Enable/Disable powering power headers located at all corners
+
+Note: DEF / CELL are separate touch buttons. CELL is hard-configured to turn power on/off to the headers' VCC  
+Note2: there is a 250ms delay between taps to give time to multi-tap 
+
+ ### How to tell the Mode your Battery is currently in
+ 
+ ** Note: most modes are compaitble to be multi-layered with other modes simultaneously
+
+ - Party Mode: Rainbow cycling RGB colors, TL/TR corner LED's will alternate flashing. Party mode may be on in addition to other modes (layered with other modes)
+ - SMWN: On attempt to connect to local network you will see an **Alternating Blue/Orange LED Animation** signifying that the DEF CELL QUANTUM is connecting to the configured local WiFi network. Once the battery has finished connecting to the Battery Internet, you will see the alternating pattern fade out and a soft moving Purple animation will take its place. 
+   - There will also be an LED on in the Bottom Left corner to signify specifically that SMWN mode is on.
+ - Node Count: The number of other DEF CELLs you can see on the network, this includes both the DEF CELL original, and the DEF CELL QUANTUM releases of the Internet of Batteries. 
+  
 ## Boot Order
 
 This is very important and will help to minimize blowing up like an innocent virus in the wild
