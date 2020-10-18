@@ -104,20 +104,21 @@ Secured WiFi Captive Portal Active | DEF CELL QUANTUM will broadcast a secured W
 Unsecured WiFi Captive Portal Active | DEF CELL QUANTUM will broadcast an UNSECURED WiFi network, giving ANYONE who connects access to configure your battery. Only do this if you forget your password. 
 Safe Mode with Networking (SMWN) | DEF CELL QUANTUM will attempt to connect to the Battery Internet to allow for global and private chat features to function correctly
 
+**Notes:**
+  - DEF / CELL are separate touch buttons. CELL is hard-configured to turn power on/off to the headers' VCC
+  - There is a 250ms delay between taps to give time to multi-tap
+
 Action | Result
 --------|------
 1x DEF Tap | Cycles through light-show modes **Capacity -> Node Count -> Party**
 2x DEF Taps | Turns on Secured WiFi Captive Portal mode (if WiFi already off), if WiFi is on it will instead turn whatever mode it is currently in. Will show animation indicating WiFi is turning on/off. 
 3x DEF Taps | Turns on unsecured WiFi Captive Portal (ONLY USE IF YOU FORGOT YOUR SECURE WiFi CAPTIVE PORTAL PASSWORD). Will show animation indicating WiFi is turning on/off. 
 4x DEF Taps | Force SMWN (if SMWN WiFi Login/PW configured, DEF CELL QUANTUM will attempt to Auto-Start SMWN Mode @ Startup)
-1x CELL Tap - Turns On/Off Back Powering Rail to Enable/Disable powering power headers located at all corners
-
-Note: DEF / CELL are separate touch buttons. CELL is hard-configured to turn power on/off to the headers' VCC  
-Note2: there is a 250ms delay between taps to give time to multi-tap 
+1x CELL Tap | Turns On/Off Back Powering Rail to Enable/Disable powering power headers located at all corners
 
  ### How to tell the Mode your Battery is currently in
  
- ** Note: most modes are compaitble to be multi-layered with other modes simultaneously
+ **Note: most modes are compaitble to be multi-layered with other modes simultaneously**
 
  - Party Mode: Rainbow cycling RGB colors, TL/TR corner LED's will alternate flashing. Party mode may be on in addition to other modes (layered with other modes)
  - SMWN: On attempt to connect to local network you will see an **Alternating Blue/Orange LED Animation** signifying that the DEF CELL QUANTUM is connecting to the configured local WiFi network. Once the battery has finished connecting to the Battery Internet, you will see the alternating pattern fade out and a soft moving Purple animation will take its place. 
