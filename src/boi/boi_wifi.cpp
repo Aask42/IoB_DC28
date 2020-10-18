@@ -205,7 +205,7 @@ void boi_wifi::Reconfigure(const OptionsStruct *Options)
     char WifiName[20 + 1 + 10];
     // uint8_t BatterySymbol[] = " \xF0\x9F\x94\x8B "; // Standard edition, but who wants that?
     // uint8_t BatterySymbol[] = " \xF0\x9F\x8E\x83 "; // SPOOKY EDITION OOOOOOOOOoOOOoOooooooooo.............
-    uint8_t BatterySymbol[] = " \xF0\x9F\x98\xB7 "; // SAFE MODE WITH NETWORKING EDITION - WASH YOUR HANDS!!!!!
+    uint8_t BatterySymbol[] = " \xF0\x9F\x8E\x83 \xF0\x9F\x98\xB7 \xF0\x9F\x8E\x83 "; // SAFE MODE WITH NETWORKING EDITION - WASH YOUR HANDS!!!!!
 
     memcpy(WifiName, &BatterySymbol[1], 5);
 
