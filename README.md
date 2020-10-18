@@ -12,10 +12,10 @@ To view power usage statistics users connect to the __Captive Arcade<sup>TM</sup
 ## Jump Start
 
 0. WASH YOUR HANDS (ya filthy animal)
-1. Power switch ON (Does NOT need to be on to charge this year)
+1. Power switch ON (**Does NOT need to be on to charge this year**)
 2. If LEDs flash RGB on boot, boi is in low voltage mode, charge it
 3. Hold "DEF" capsense button on boot = force low voltage mode = faster charge
-4. Hold "DEF" + "TOUCH SLIDER" capsense button area on boot = factory reset, may require tapping reset button on back due to timing
+4. Hold "DEF" + "TOUCH SLIDER" capsense button area on boot = "factory reset", may require tapping reset button on back due to timing
 5. Solder headers (make sure to orient to VCC on the SQUARE pad)
 6. Show off in #linecon (discord.gg/DEFCON)
 7. See you @ DEFCON 29!
@@ -39,24 +39,52 @@ To view power usage statistics users connect to the __Captive Arcade<sup>TM</sup
 - Touch sensors to activate battery gauge, light show, and backpower enabling modes
 - Other indicator lights show power enable status and low battery*
 - For 2020 we're in Safe Mode with Networking. The old WiFi mesh, Itero, has been upgraded to be more global... the IoB is IoT!
+  - Global and Private Chat is now enabled when in Safe Mode with Networking, use at your own risk!!!
 
 * Low battery indicator / shutoff mode not yet implemented. Will require MCU FW update to enable.
 ** ALL RISKS OF BACKPOWERING ARE TAKEN BY YOU. NOT LIABLE FOR ANY FIRES, DAMAGE, INTERNET WORMS, BLACK HOLES, OR ANYTHING ELSE GOOD OR BAD AS A RESULT OF USING THIS FEATURE
 
-## Better Instructions
+## Battery Setup - Safe Mode With Networking (SMWN)
 
+Steps for initial setup/after a "factory reset"
+
+1. Turn on Battery
+- You should see a WiFi network called "😷 I'm A Battery ###! 😷"
+2. Connect to the WiFi captive portal on the DEF CELL QUANTUM, and select "Sign in to network" on your chosen device
+3. DEF CELL QUANTUM will automatically launch a configuration website which allows you to set up the battery
+4. Configuring the Safe Mode network credentials will allow you to connect to batteryinter.net and talk to other batteries
+5. Configuring the "Captive Portal" credentials will allow you to securely connect to your battery when not in SMWN
+
+**Note: Once you've configured SMWN settings on the config page, your battery will reboot and attempt to connect to the configured WiFi network**
+**If DEF CELL QUANTUM cannot connect to the local network, it will turn off all WiFi until you enable a new WiFi mode. Double tap DEF to enable captive-portal mode to reconfigure if you remember your password. Triple tap DEF to disable secured WiFi captive portal in case you forgot your password**
+
+### Global and Private Chat
+
+This year, once connected to Safe Mode with Networking you will be able to access the global network of the Internet of Batteries! This includes access to an exclusive (and buggy) global chat, as well as an equally exclusive and buggy private (IE secured) chat mode with ANY Battery on the Internet of Batteries. 
+
+A few notes before you go CHARGING in:
+- Don't be a jerk, have fun, use at your own risk, we cannot control the content so it is up to YOU to prevent trolls (let us know if there are any issues)
+- Global and private chat may be buggy and will take time for messages to come through, don't you love new inventions?
+- No gaurantee that msgs will successfully transmit & be received, again, use at your own risk, do not rely on for emergency situations
+- Don't do anything illegal
+- DFIU
+
+**Use global and private chat at your own risk, let us know if there are any issues**
+
+## Better Instructions
 
 - NOTE: If the battery voltage is TOO LOW when powered on, the LEDS will flash RGB then go dark and output current battery voltage on serial out (115200). Once above 3.7v the battery should show animation while charging after rebooting
 
 There are FIVE buttons on the DC27 version of the Internet of Batteries: 
 
-Button | Description | Actions
--|-|-
-RESET | This button is located on the BACK of the DEF CELL, at the top to the RIGHT of the ESP32 | This resets the Boi
-PROG | This button is located on the BACK of the DEF CELL, at the top to the RIGHT of the ESP32 | This is only used when programming the Cypress PSOC5
-DEF | Cycle mode, 2x toggles between  __Captive Arcade<sup>TM</sup>__| Touch DEF 1x : Capacity -> Node Count -> Party!!! <br/><br/>Touch DEF 2x : Toggle Captive Arcade
-CELL | Toggles backpower on Add-on rail on/off | Auto-off if voltage is detected going the wrong way across the SHUNT resistor
-SLIDER | Adjusts Brightness | Slide up or down to set your desired brightness
+| Button | Description                                                                              | Actions                                                                                          |
+| ------ | ---------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------ |
+| RESET  | This button is located on the BACK of the DEF CELL, at the top to the RIGHT of the ESP32 | This resets the Boi                                                                              |
+| PROG   | This button is located on the BACK of the DEF CELL, at the top to the RIGHT of the ESP32 | This is only used when programming the Cypress PSOC5                                             |
+| DEF    | Cycle mode, 2x toggles between  __Captive Arcade<sup>TM</sup>__                          | Touch DEF 1x : Capacity -> Node Count -> Party!!! <br/><br/>Touch DEF 2x : Toggle Captive Arcade |
+| CELL   | Toggles backpower on Add-on rail on/off                                                  | Auto-off if voltage is detected going the wrong way across the SHUNT resistor                    |
+| SLIDER | Adjusts Brightness                                                                       | Slide up or down to set your desired brightness                                                  |
+
 
 ## Boot Order
 
@@ -67,11 +95,23 @@ This is very important and will help to minimize blowing up like an innocent vir
 2. LED assignment
 3. DNS setup
 4. WiFi setup
-5. Enable __Safe Mode w/ Networking__ if local wifi config is set - Work In Progress
+5. Enable __Safe Mode w/ Networking__ if local WiFi config is set - Work In Progress
 6. Enable __Captive Arcade<sup>TM</sup>__ if Safe Mode w/ Networking fails to connect
 7. React to user input
 8. If voltage across shunt changes direction, and BACKPOWER is ON, force power state to NO_BACKPOWER
 9. POST WiFi Header-frames to "batteryinter.net" (Work in progress)
+
+## How to flash new firmware
+
+### Windows Instructions:
+1. Download defcell_quantum_1.0.0.zip from batteryinter.net or from our github page (https://github.com/Aask42/IoB_DC28)
+2. Unzip File
+3. Run "flash.bat"
+4. Party
+
+Video of flashing steps: WORK IN PROGRESS
+
+__Note:__ There are preferences stored in flash which persist even when flashing updated code. To reset ALL data on the device you must perform a full flash reset esptool.exe, then flash the desired version of the firmware to the now empty device.
 
 ## Board Layout
 Front:
@@ -120,18 +160,6 @@ Front:
 |       SHUNT        |
 |_SAO____-_-_____SAO_|
 ```
-
-## How to flash new firmware
-
-### Windows Instructions:
-1. Download defcell_quantum_0.2.0.zip from batteryinter.net
-2. Unzip File
-3. Run "flash.bat"
-4. Party
-
-Video of flashing steps: WORK IN PROGRESS
-
-__Note:__ There are preferences stored in flash which persist even when flashing updated code. To reset ALL data on the device you must perform a full flash reset esptool.exe, then flash the desired version of the firmware to the now empty device.
 
 ## Donations
 
