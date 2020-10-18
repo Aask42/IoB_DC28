@@ -165,22 +165,28 @@ void setup(void) {
 
   BatteryWifi = 0;
 
-  
   // Check to see if we should enable Safe Mode with Networking
   
   //go to our mode that is set
   SwitchMode();
 
-  //if we aren't configured or wifi was on then turn on the wifi
-  if(!MessageHandler->GetOptions()->Configured || WifiState)
+  // Check to see if we're configured for Safe Mode with Networking
+  BatteryWifi = new boi_wifi(Battery, MessageHandler, boi_wifi::NormalMode);
+  if( BatteryWifi->shouldWeEnterSafeModeWithNetworking() )
   {
-    Serial.printf("WifiState: %d\n", WifiState);
-    BatteryWifi = new boi_wifi(Battery, MessageHandler, boi_wifi::NormalMode);
+    // Set us up for the battery internet! WOO
     delete BatteryWifi;
     BatteryWifi = 0;
-
+    BatteryWifi = new boi_wifi(Battery, MessageHandler, boi_wifi::SafeModeWithNetworking);
+  } 
+  else if( !MessageHandler->GetOptions()->Configured || WifiState ) 
+  {
+    // Set previous wifi state from last boot
+    delete BatteryWifi;
+    BatteryWifi = 0;
+    Serial.printf("WifiState: %d\n", WifiState);
     BatteryWifi = new boi_wifi(Battery, MessageHandler, (boi_wifi::WifiModeEnum)WifiState);
-  }
+  } 
 }
 
 #if BOI_VERSION == 1
@@ -286,6 +292,11 @@ void loop() {
     printf("DoublePress: %d\n", DoublePress_ACT);
     if(BatteryWifi)
     {
+      if(BatteryWifi->  SafeModeWithNetworking){
+        LEDHandler->StopScript(LED_SMWN_ACTIVE);
+        LEDHandler->StartScript(LED_SMWN_DEACTIVATE,1);
+        LEDHandler->StartScript(LED_TWINKLE,1);
+      }
       delete BatteryWifi;
       BatteryWifi = 0;
 
