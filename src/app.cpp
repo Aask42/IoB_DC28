@@ -29,7 +29,7 @@ typedef enum ModeEnum
 uint8_t CurLED = 0; // Keep track of what LED is lit
 bool SafeBoot = 0;
 uint8_t CurrentMode = 0;
-uint8_t ModeSelectedLED[Mode_Count] = {LED_TWINKLE, LED_DEFAULT_ALL, LED_BLINKLE};
+uint8_t ModeSelectedLED[Mode_Count] = {LED_DISCHARGINGBOI, LED_DEFAULT_ALL, LED_CLASSIC_BONUS};
 uint8_t PrevModeSelectedLED;
 uint8_t TouchCount = 0;
 uint8_t SelectingLED = 0;
@@ -172,14 +172,15 @@ void setup(void) {
 
   // Check to see if we're configured for Safe Mode with Networking
   BatteryWifi = new boi_wifi(Battery, MessageHandler, boi_wifi::NormalMode);
-  if( BatteryWifi->shouldWeEnterSafeModeWithNetworking() )
-  {
-    // Set us up for the battery internet! WOO
-    delete BatteryWifi;
-    BatteryWifi = 0;
-    BatteryWifi = new boi_wifi(Battery, MessageHandler, boi_wifi::SafeModeWithNetworking);
-  } 
-  else if( !MessageHandler->GetOptions()->Configured || WifiState ) 
+  //if( BatteryWifi->shouldWeEnterSafeModeWithNetworking() )
+  //{
+  //  // Set us up for the battery internet! WOO
+  //  delete BatteryWifi;
+  //  BatteryWifi = 0;
+  //  BatteryWifi = new boi_wifi(Battery, MessageHandler, boi_wifi::SafeModeWithNetworking);
+  //} 
+  //else 
+  if( !MessageHandler->GetOptions()->Configured || WifiState ) 
   {
     // Set previous wifi state from last boot
     delete BatteryWifi;
@@ -551,6 +552,7 @@ void SwitchMode()
 
     case NodeCountMode:   //node count mode
       //stop the previously selected script and start ours
+
       LEDHandler->StopScript(ModeSelectedLED[NodeCountMode - 1]);
       LEDHandler->StartScript(ModeSelectedLED[NodeCountMode], 0);
 
@@ -575,6 +577,7 @@ void SwitchMode()
 
       //start the bounce led script for it
       LEDHandler->StartScript(LED_PARTY_MODE, 1);
+      //LEDHandler->StartScript(LED_SPOOKY_TIME, 1);
 
       //set the cap to 5 for party mode
       LEDCap = LED_Count_Battery;

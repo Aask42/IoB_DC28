@@ -1,0 +1,39 @@
+// Jinkies crew! We got a SPPOOKTOBER on our hands@
+
+version 2
+
+move led0 * 0xAAAAAA 250
+move led1 * 0xAAAAAA 250
+move led2 * 0xFF7B00 250
+move led3 * 0xFF7B00 250
+move led4 * 0xFFFF6A 250
+move led5 * 0xFFFF6A 250
+move led6 * 0x56FF65 250
+move led7 * 0x5002FF 250
+move led8 * 0xF003FF 250
+
+glow:
+
+set lvar_0 led1
+set lvar_1 led2
+set lvar_2 led3
+set lvar_3 led4
+set lvar_4 led5
+set lvar_5 led6
+set lvar_6 led7
+set lvar_7 led8
+set lvar_8 led0
+
+move led0 * lvar_0 250
+move led1 * lvar_1 250
+move led2 * lvar_2 250
+move led3 * lvar_3 250
+move led4 * lvar_4 250
+move led5 * lvar_5 250
+move led6 * lvar_6 250
+move led7 * lvar_7 250
+move led8 * lvar_8 250
+
+delay 250
+
+goto glow
