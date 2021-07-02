@@ -103,6 +103,7 @@ void setup(void) {
   DoFactoryReset = (digitalRead(BTN_PWR_PIN) == 0);
 #elif BOI_VERSION == 2
   DoFactoryReset = SPIData.SliderPressed;
+  Serial.printf("DoFactoryReset = SPIData.SliderPressed;");
 #endif
     if(DoFactoryReset) { 
         // this for loop is a 5s DEBUG notification to allow user to shut down battery if reset wasn't intentional
