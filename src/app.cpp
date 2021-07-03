@@ -165,15 +165,6 @@ void setup(void) {
 }
 
 #if BOI_VERSION == 1
-float safeboot_voltage() {
-  esp_adc_cal_characteristics_t adc_chars;
-
-    //Configure ADC
-  adc1_config_width(ADC_WIDTH_BIT_12);
-  adc1_config_channel_atten((adc1_channel_t)ADC_CHANNEL_0, ADC_ATTEN_DB_0);
-
-    //Characterize ADC
-  memset(&adc_chars, 0, sizeof(esp_adc_cal_characteristics_t));
   esp_adc_cal_characterize(ADC_UNIT_1, ADC_ATTEN_DB_0, ADC_WIDTH_BIT_12, DEFAULT_VREF, &adc_chars);
 
   uint32_t adc_reading = 0; //Sample ADC Channel
