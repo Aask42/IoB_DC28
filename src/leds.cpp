@@ -20,7 +20,6 @@ LEDs *NewLEDs(LEDCallbackFunc Callback, bool DisableThread) {
 void *static_run_leds(void *) {
     if(_globalLEDs)
         _globalLEDs->Run();
-
     return 0;
 }
 
@@ -58,31 +57,26 @@ LEDsInternal::LEDsInternal(LEDCallbackFunc Callback, bool DisableThread) {
     memset(script, 0, sizeof(ScriptInfoStruct));
 
 #if BOI_VERSION == 1
-    //setup LED_STAT2 pin so that we can use STAT properly
-    ledcWrite(this->leds[LED_STAT2].Channel, MAX_RESOLUTION); // - 1000);
+    ledcWrite(this->leds[LED_STAT2].Channel, MAX_RESOLUTION); // - 1000); //setup LED_STAT2 pin so that we can use STAT properly
 #endif
-
-    //set a default ID and assign to the script list
-    script->ID = 0xff;
-    this->scripts = script;
+    
+    script->ID = 0xff; //set a default ID
+    this->scripts = script; //and assign to the script list
 
 #if BOI_VERSION == 1
-    //now set the brightness default, this will force STAT and STAT2 to be updated too
     script->active = 1;
-    this->SetLEDBrightness(0.09);
+    this->SetLEDBrightness(0.09); //now set the brightness default, this will force STAT and STAT2 to be updated too
     script->active = 0;
 #endif
 
-    //wipe out the global variables
-    memset(this->GlobalVariables, 0, sizeof(this->GlobalVariables));
-    this->AmbientSensorValue = 0.0;
-    this->LastAmbientReading = 0;
+    memset(this->GlobalVariables, 0, sizeof(this->GlobalVariables)); //wipe out the global variables
+    this->AmbientSensorValue = 0.0; //wipe out the global variables
+    this->LastAmbientReading = 0; //wipe out the global variables
 
     _globalLEDs = this;
 
-    //if we are to disable threads then exit
     if(DisableThread) {
-        return;
+        return; //if we are to disable threads then exit
     }
 
     //setup our thread that will run the LEDs themselves
@@ -101,17 +95,15 @@ void LEDsInternal::set_led_pin(LEDEnum led, uint8_t pin, uint8_t ledChannel) {
     ledcSetup(this->leds[led].Channel, FREQUENCY, BIT_RESOLUTION);
     ledcAttachPin(pin, this->leds[led].Channel);
     this->leds[led].Enabled = 1;
-
 #if BOI_VERSION == 1
-    //turn the LED off, MAX results in full off, 0 is full bright
-    ledcWrite(this->leds[led].Channel, MAX_RESOLUTION);
+    ledcWrite(this->leds[led].Channel, MAX_RESOLUTION); //turn the LED off, MAX results in full off, 0 is full bright
 #elif BOI_VERSION == 2
-    //for an unknown reason the new badge has 0 as off and MAX is full bright
-    ledcWrite(this->leds[led].Channel, 0);
+    ledcWrite(this->leds[led].Channel, 0); //for an unknown reason the new badge has 0 as off and MAX is full bright
 #endif
 }
 
 uint32_t LEDsInternal::GetValue(ScriptInfoStruct *cur_script, uint8_t Command, uint8_t destdata, uint8_t yy) {
+    //TODO: readability is low, many values need to be named on their intent or use
     uint8_t data;
     uint8_t zz;
     uint32_t output;
@@ -133,25 +125,22 @@ uint32_t LEDsInternal::GetValue(ScriptInfoStruct *cur_script, uint8_t Command, u
         case 0:
             //fixed value
             if(yy == 5) {
-                //magic flag indicating that we have 2 bytes following
                 output = *(uint16_t *)(&cur_script->data[cur_script->active_pos]);
-                cur_script->active_pos+=2;
+                cur_script->active_pos+=2; //magic flag indicating that we have 2 bytes following
                 output &= 0x0000ffff;
                 yy = 0;
                 break;
-            }
-            else if(yy || IsShiftRotate) {
+            } else if(yy || IsShiftRotate) {
                 //if yy or the command is one of the shl/shr/rol/rol then a single byte is used
                 output = cur_script->data[cur_script->active_pos];
                 cur_script->active_pos++;
                 break;
-            }
-            else {
+            } else {
                 output = *(uint32_t *)(&cur_script->data[cur_script->active_pos]);
                 cur_script->active_pos+=3;
                 output &= 0x00ffffff;
                 break;
-            }; 
+            };
         case 1:
             data = cur_script->data[cur_script->active_pos];
             cur_script->active_pos++;
@@ -917,38 +906,40 @@ void LEDsInternal::AddScript(uint8_t ID, const char *name, const uint8_t *data, 
     LEDScriptNames[ID] = name;
     ScriptInfoStruct *new_script = (ScriptInfoStruct *)malloc(sizeof(ScriptInfoStruct));
     memset(new_script, 0, sizeof(ScriptInfoStruct));
+    
     //add to the list
     new_script->ID = ID;
     new_script->data = data;
     new_script->len = len;
     new_script->Version = data[0];
-    //if 0 then force to 1
+
     if(!new_script->Version) {
-        new_script->Version = 1;
+        new_script->Version = 1; //if 0 then force to 1
     }
+
     new_script->LEDMask = *(uint16_t *)(&data[1]);
     new_script->next = this->scripts;
     this->scripts = new_script;
 }
 
 void LEDsInternal::StartScript(uint16_t ID, bool TempOverride) {
-    //swap out the script being ran
     ScriptInfoStruct *cur_script;
     cur_script = this->scripts;
+
     while(cur_script && (cur_script->ID != ID)) {
-        cur_script = cur_script->next;
+        cur_script = cur_script->next; //swap out the script being ran
     }
+
     if(!cur_script) {
         return;
     }
-    Serial.printf("activating script %s\n", this->LEDScriptIDToStr(cur_script->ID));
 
-    //start the script
+    Serial.printf("activating script %s\n", this->LEDScriptIDToStr(cur_script->ID));
     pthread_mutex_lock(&led_lock);
     cur_script->StopSet = 0;
     cur_script->DelayEndTime = 0;
-    cur_script->active_pos = 3;     //skip version and led bit mask
-    cur_script->active = 1;
+    cur_script->active_pos = 3; //skip version and led bit mask
+    cur_script->active = 1; //start the script
     cur_script->TempOverride = TempOverride;
 
     for(int i = 0; i < 16; i++) {
@@ -959,13 +950,12 @@ void LEDsInternal::StartScript(uint16_t ID, bool TempOverride) {
     pthread_mutex_unlock(&led_lock);
 }
 
-void LEDsInternal::StopScript(uint16_t ID) {
-    //stop a specific script
+void LEDsInternal::StopScript(uint16_t ID) { //stop a specific script
     ScriptInfoStruct *cur_script;
     ScriptInfoStruct *active_script;
     int i;
-
     cur_script = this->scripts;
+
     if(ID == LED_ALL) {
         //stop all scripts
         Serial.println("Stopping all LED scripts");
@@ -982,33 +972,34 @@ void LEDsInternal::StopScript(uint16_t ID) {
     } 
     else {
         Serial.printf("Stopping LED script %s\n", this->LEDScriptIDToStr(ID));
+        Serial.println("RH: Oh wow, hey there! I invade your serial out ~");
         while(cur_script && (cur_script->ID != ID)) {
             cur_script = cur_script->next;
         }
+
         if(!cur_script) {
             return;
         }
+
         pthread_mutex_lock(&led_lock);
         cur_script->active = 0;
         cur_script->TempOverride = 0;
         this->RemoveFromStack(cur_script);
 
         for(i = 0; i < LED_Count; i++) {
-            //if this led was not being modified then skip it otherwise find it's new value
-            if(!(cur_script->LEDMask & (1 << i))) {
+            if(!(cur_script->LEDMask & (1 << i))) { //if this led was not being modified, then skip it, otherwise find its new value
                 continue;
             }
             active_script = FindScriptForLED(i);
             if(active_script) {
-                if(active_script->LEDMask & (1 << i))
+                if(active_script->LEDMask & (1 << i)) {
                     this->SetLED(active_script, i);
+                }
             }
         }
         pthread_mutex_unlock(&led_lock);
-
 #if BOI_VERSION == 2
-        //update the LEDs
-        SPIHandler->Communicate(&SPIData);
+        SPIHandler->Communicate(&SPIData); //update the LEDs
 #endif
     }
 }
@@ -1019,12 +1010,10 @@ void LEDsInternal::AddToStack(ScriptInfoStruct *script) {
     ScriptInfoStruct *StackScript;
     ScriptInfoStruct *PrevStackScript;
     int i;
+    
+    this->RemoveFromStack(script); //remove ourselves from any current chains just in-case
 
-    //remove ourselves from any current chains just in-case
-    this->RemoveFromStack(script);
-
-    //set our current values based on what the LEDs currently have
-    for(i = 0; i < LED_Count; i++) {
+    for(i = 0; i < LED_Count; i++) { //set our current values based on what the LEDs currently have
         script->leds[i].CurrentVal = this->leds[i].CurrentVal;
     }
 
@@ -1113,6 +1102,7 @@ void LEDsInternal::RemoveFromStack(ScriptInfoStruct *script) {
     if(!script->stackfirst) { //there is no stack, stop looking
         return;
     }
+
     if(script->stackfirst == script) { //if we are the first entry then update the whole chain
         NewHead = script->stacknext;
         NewHead->stackprev = 0;
@@ -1127,8 +1117,7 @@ void LEDsInternal::RemoveFromStack(ScriptInfoStruct *script) {
                 StackScript = StackScript->stacknext;
             }
         }
-    }
-    else {
+    } else {
         //just remove from the chain
         if(script->stacknext) {
             script->stacknext->stackprev = script->stackprev;
@@ -1137,9 +1126,7 @@ void LEDsInternal::RemoveFromStack(ScriptInfoStruct *script) {
             script->stackprev->stacknext = script->stacknext;
         }
 
-        //check the first entry, if the next entry is null due
-        //to pointing at us prior then it is the last entry in
-        //the chain so unset it's first entry
+        //check the first entry, if the next entry is null due to pointing at us prior then it is the last entry in the chain so unset it's first entry
         if(!script->stackfirst->stacknext) {
             script->stackfirst->stackfirst = 0;
         }
@@ -1168,12 +1155,15 @@ void LEDsInternal::SetLocalVariable(uint16_t VarID, uint32_t Value) {
     uint16_t ScriptID = VarID >> 8; //upper 8 bits is the script id, lower 8 bits is the variable id
     VarID = VarID & 0xff;
     CurScript = this->scripts;
+
     while(CurScript && CurScript->ID != ScriptID) {
         CurScript = CurScript->next;
     }
+
     if(!CurScript) {
         return;
     }
+
     CurScript->Variable[VarID].Value = Value;
 }
 
@@ -1207,8 +1197,7 @@ void LEDsInternal::SetLEDValue(LEDEnum LED, uint32_t Value, uint32_t LengthMS) {
     this->leds[LED].OverrideValue = Value;
     if(LengthMS == LED_OVERRIDE_INFINITE) {
         this->leds[LED].OverrideTime = LED_OVERRIDE_INFINITE;
-    }
-    else {
+    } else {
         this->leds[LED].OverrideTime = (esp_timer_get_time() / 1000) + LengthMS;
     }
     this->SetLED(0, LED);
