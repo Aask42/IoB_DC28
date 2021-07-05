@@ -21,7 +21,7 @@
 // Initialize ESP Global variables
 float current_sensed; // This should be read out of Flash each boot, but not yet :)
 
-typedef enum ModeEnum {
+typedef enum ModeEnum { // https://en.cppreference.com/w/cpp/language/enum
   BatteryMode = 0,
   NodeCountMode,
   PartyMode,
@@ -414,11 +414,13 @@ void loop() {
     if((CurTime - LastScanTime) >= 5000000ULL) { //if we are in nodecount or wifi is active then do a scan every 5 seconds
       LastScanTime = CurTime;
       MessageHandler->DoScan();
+      Serial.println("app.cpp, Scanning for Nodes with MessageHandler->DoScan()");
     }
   }
   
   if(CurrentMode == NodeCountMode) { //if our mode is NodeCount then see if we have a new count to set
     uint8_t CurNodeCount = MessageHandler->GetPingCount();
+    Serial.printf("counting Nodes, CurNodeCount %d:", CurNodeCount);
     if(LastNodeCount != CurNodeCount) {
       LastNodeCount = CurNodeCount;
       if(CurNodeCount > LED_Count_Battery) {
@@ -435,11 +437,14 @@ void loop() {
 
 void SwitchMode() {
   if(SelectingLED) { //if they were in the middle of selecting an led then reset it
+    Serial.println("SwitchMode, CurrentMode: " + CurrentMode);
+    Serial.println("SwitchMode, PrevModeSelectedLED: " + PrevModeSelectedLED);
     SelectingLED = 0;
     ModeSelectedLED[CurrentMode] = PrevModeSelectedLED;
   }
   switch(CurrentMode) {
     case BatteryMode:
+      Serial.println("app.cpp SwitchCase, BatteryMode");
       LEDHandler->StopScript(LED_PARTY_MODE); //stop party mode
         //stop the previously selected script and start ours
       LEDHandler->StopScript(ModeSelectedLED[Mode_Count - 1]);
@@ -451,6 +456,7 @@ void SwitchMode() {
       break;
 
     case NodeCountMode:
+      Serial.println("app.cpp SwitchCase, NodeCountMode");
         //stop the previously selected script and start ours
       LEDHandler->StopScript(ModeSelectedLED[NodeCountMode - 1]);
       LEDHandler->StartScript(ModeSelectedLED[NodeCountMode], 0);
@@ -465,12 +471,15 @@ void SwitchMode() {
       break;
 
     case PartyMode:
+      Serial.println("app.cpp SwitchCase, PartyMode");
         //quickly set the values to 0 with no time so it expires
       LEDHandler->SetLEDValue(LED_S_BATT, 0.0, 0);
       LEDHandler->SetLEDValue(LED_S_NODE, 0.0, 0);
 
         //stop the previously selected script and start ours
+      Serial.println("app.cpp SwitchCase, PartyMode, script to stop: " + ModeSelectedLED[PartyMode - 1]);
       LEDHandler->StopScript(ModeSelectedLED[PartyMode - 1]);
+      Serial.print("app.cpp SwitchCase, PartyMode, script to start: " + ModeSelectedLED[PartyMode]);
       LEDHandler->StartScript(ModeSelectedLED[PartyMode], 0);
 
       LEDHandler->StartScript(LED_PARTY_MODE, 1); //start the bounce led script for it
