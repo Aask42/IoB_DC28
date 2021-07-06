@@ -14,12 +14,24 @@ Not required but nice to have
 - [ ] tune twinkle a little
 - [ ] Do ambient light sensor
 
-webpage
+Webpage Work
 -------
-- [ ] Message box wider on the screen
+- [ ] Reusable approach SPA Build Solution required, entire buildout needs to safely & efficiently fit on ESP32 Flash
+    - [ ] Rework/TimeSink Concerns: Identify Hardware-specific (if any) limitations on approaches, beyond flash space limits, are there library changes? (in consideration of future IoB hardware changes)
+    - [ ] Required feature: Responsive 1st HTML solution
+    - [ ] Possible Tech Stack: Looking at Material-UI && React SPA to provide responsive webpages and a modern maintainable codebase for onboard website (later todo, consider pros/cons to branching off onboard website to its own codebase/project to inspire separate open source contributions)
+        - [ ] research before do: how do we pre-build before placing file into Flash? Is it a breaking change to move to diff device compute hardware or flash storages, or can we at most rewrite the build & flash load approach but leave the website itself? (expecting answer to be yes, but what's the likelihood of a hardware change, and if it's likely enough to worry, then what scale of effort is there in case of a hardware change?)
+        - [ ] research before do: is this compat w/ Flash space Limit for existing IoB28 && DC29-bare-ESP32 version rollout?
+- [ ] totally new experience; RH has a holistic UX in mind to impl if possible
+<p align="center"> <img width="460" height="300" src="readme-images/website_ux.png">
+</p>
+ - [ ] for dc29-bare-ESP32 version, what things will be available vs not in the website view? (see testing section to feed back to more TODO here if required)
 
 To test
 -------
+ - [ ] Website functions after rebuild
+ - [ ] dc29-bare-ESP32 version flags
+    - [ ] ensure website hosting unaffected in this version
 
 Done
 -----
