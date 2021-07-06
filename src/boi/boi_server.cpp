@@ -11,12 +11,10 @@ boi_wifi::WifiModeEnum Mode;
 
 RequestHandler::RequestHandler() {}
 
-bool RequestHandler::canHandle(AsyncWebServerRequest *request){
+bool RequestHandler::canHandle(AsyncWebServerRequest *request) {
     return true;
-
     // TODO: Update to pull the IP address from preferences
-    if(request->host() == WiFi.localIP().toString())
-    {
+    if(request->host() == WiFi.localIP().toString()) {
         request->addInterestingHeader("Cache-Control: no-cache, no-store, must-revalidate");
         request->addInterestingHeader("Pragma: no-cache");
         request->addInterestingHeader("Expires: -1");
@@ -26,7 +24,6 @@ bool RequestHandler::canHandle(AsyncWebServerRequest *request){
 
 void RequestHandler::handleRequest(AsyncWebServerRequest *request) {
     Serial.printf("host: %s, url: %s\n", request->host().c_str(), request->url().c_str());
-
     if((request->url() == "/whoami")) {
         request->send(200, "text/html", "");
     }else if((request->url() == "/GuestCounter")) {   
@@ -61,42 +58,33 @@ void RequestHandler::handleRequest(AsyncWebServerRequest *request) {
         }
     }
 */
-
         AsyncWebServerResponse *response = request->beginResponse_P(200, "text/html", HTMLWebsiteData, HTMLWebsiteDataLen);
         response->addHeader("Content-Encoding", "gzip");
         request->send(response);
-
         //request->send_P(200, "text/html", HTMLWebsiteData);
     }
     Serial.printf("handled request\n");
 }
 
-void boi_wifi::SetupRequestServer()
-{
+void boi_wifi::SetupRequestServer() {
     this->server = new AsyncWebServer(80);
     this->request_handler = new RequestHandler();
     this->server->addHandler(this->request_handler);
-
-    //start the server
-    this->server->begin();
+    this->server->begin(); //start the server
     Serial.print("Successfully began broadcasting wifi InternetOfBatteries!!!\n\n");
 }
 
-void boi_wifi::DeleteWebServer()
-{
+void boi_wifi::DeleteWebServer() {
     //remove and delete the request handler
-    if(!this->server)
+    if(!this->server) {
         return;
-
+    }
     this->server->removeHandler(this->request_handler);
     this->server->end();
-
-    //delete the memory
-    delete this->server;
+    delete this->server; //delete the memory
 }
 
-void boi_wifi::ActivateBusinessCard()
-{
+void boi_wifi::ActivateBusinessCard() {
     const OptionsStruct *Options;
     OptionsStruct NewOptions;
     Mode = BusinessCardMode;
@@ -104,92 +92,77 @@ void boi_wifi::ActivateBusinessCard()
     memcpy(&NewOptions, Options, sizeof(OptionsStruct));
     NewOptions.WifiPassword[0] = 0;
     this->setup_captive_portal(&NewOptions);
-
-    //indicate wifi was business card
+        //indicate wifi was business card
     this->preferences.begin("options");
     this->preferences.putUChar("wifi", boi_wifi::BusinessCardMode);
     this->preferences.end();
 }
 
-void boi_wifi::ActivateRick()
-{
+void boi_wifi::ActivateRick() {
     const OptionsStruct *Options;
     OptionsStruct NewOptions;
     Mode = RickMode;
     Options = this->message_handler->GetOptions();
     memcpy(&NewOptions, Options, sizeof(OptionsStruct));
- 
-    if(strlen(Options->OriginalWifiName))
+    if(strlen(Options->OriginalWifiName)) {
         memcpy(NewOptions.WifiName, Options->OriginalWifiName, sizeof(Options->OriginalWifiName));
-
+    }
     this->setup_captive_portal(&NewOptions);
-
-    //indicate wifi was rick    
+        //indicate wifi was rick    
     this->preferences.begin("options");
     this->preferences.putUChar("wifi", boi_wifi::RickMode);
     this->preferences.end();
 }
 
-void boi_wifi::ActivateParty()
-{
+void boi_wifi::ActivateParty() {
     const OptionsStruct *Options;
     OptionsStruct NewOptions;
     Mode = PartyMode;
     Options = this->message_handler->GetOptions();
     memcpy(&NewOptions, Options, sizeof(OptionsStruct));
-
-    if(strlen(Options->OriginalWifiName))
+    if(strlen(Options->OriginalWifiName)) {
         memcpy(NewOptions.WifiName, Options->OriginalWifiName, sizeof(Options->OriginalWifiName));
-
+    }
     this->setup_captive_portal(&NewOptions);
-
-    //indicate wifi was party
+        //indicate wifi was party
     this->preferences.begin("options");
     this->preferences.putUChar("wifi", boi_wifi::PartyMode);
     this->preferences.end();
 }
 
-void boi_wifi::ActivateNormal()
-{
+void boi_wifi::ActivateNormal() {
     const OptionsStruct *Options;
     Mode = NormalMode;
     Options = this->message_handler->GetOptions();
     this->setup_captive_portal(Options);
-
-    //indicate wifi was normal
+        //indicate wifi was normal
     this->preferences.begin("options");
     this->preferences.putUChar("wifi", boi_wifi::NormalMode);
     this->preferences.end();
 }
-void boi_wifi::ActivateSafeModeWithNetworking()
-{
+void boi_wifi::ActivateSafeModeWithNetworking() {
     const OptionsStruct *Options;
     Mode = SafeModeWithNetworking;
     Options = this->message_handler->GetOptions();
-
     this->enter_safe_mode_with_networking(Options);
-
-    //indicate wifi was normal
+        //indicate wifi was normal
     this->preferences.begin("options");
     this->preferences.putUChar("wifi", boi_wifi::SafeModeWithNetworking);
     this->preferences.end();
 }
 
-void RequestHandler::GuestCounter()
-{
+void RequestHandler::GuestCounter(){
     Serial.println("Oh, a visitor!");   
-    // Increase guest counter by one 
     this->preferences.begin("options");
-    this->CurrentGuestCount = this->preferences.getUInt("guest_counter", 0) + 1;
+    this->CurrentGuestCount = this->preferences.getUInt("guest_counter", 0) + 1; // Increase guest counter by one 
     this->preferences.putUInt("guest_counter", this->CurrentGuestCount);
     this->preferences.end();
     Serial.printf("We have been visited %d times ^_^\n", this->CurrentGuestCount);
 }
 
-bool boi_wifi::shouldWeEnterSafeModeWithNetworking(){
+bool boi_wifi::shouldWeEnterSafeModeWithNetworking() {
     const OptionsStruct *Options;
     Options = this->message_handler->GetOptions();
-    
     bool return_bool = 0;
     if((Options->SafeModeWifiName != NULL) && (Options->SafeModeWifiPassword != NULL)){
         return_bool = 1;
