@@ -11,8 +11,10 @@ boi_wifi::WifiModeEnum Mode;
 
 RequestHandler::RequestHandler() {}
 
-bool RequestHandler::canHandle(AsyncWebServerRequest *request) {
-    return true;
+bool RequestHandler::canHandle(AsyncWebServerRequest *request) { // this method is our config to tell ESPAsyncWebserver what requests we want to handle
+    return true; // this means we attempt to handle ALL traffic, not filtering on anything
+    // TODO: we're bypassing this during a fix from Lightning a year ago, is this the code below an incomplete feature??
+
     // TODO: Update to pull the IP address from preferences
     if(request->host() == WiFi.localIP().toString()) {
         request->addInterestingHeader("Cache-Control: no-cache, no-store, must-revalidate");
@@ -22,7 +24,9 @@ bool RequestHandler::canHandle(AsyncWebServerRequest *request) {
     return true;
 }
 
-void RequestHandler::handleRequest(AsyncWebServerRequest *request) {
+void RequestHandler::handleRequest(AsyncWebServerRequest *request) { // why are we always sending back empty bodies?
+        //TODO: send back index.html & also JS ??
+    Serial.println("boi_server.cpp -> handleRequest() called");
     Serial.printf("host: %s, url: %s\n", request->host().c_str(), request->url().c_str());
     if((request->url() == "/whoami")) {
         request->send(200, "text/html", "");
@@ -30,6 +34,8 @@ void RequestHandler::handleRequest(AsyncWebServerRequest *request) {
         this->GuestCounter();
         request->send(200, "text/html", String(this->CurrentGuestCount));
     }else if((request->url() == "/favicon.ico")) {
+        request->send(404, "text/html", "");
+    }else if((request->url() == "/css.ico")) {
         request->send(404, "text/html", "");
     }else{
         //AsyncResponseStream *response = request->beginResponseStream("text/html");
@@ -58,6 +64,8 @@ void RequestHandler::handleRequest(AsyncWebServerRequest *request) {
         }
     }
 */
+            // https://github.com/me-no-dev/ESPAsyncWebServer#send-large-webpage-from-progmem-and-extra-headers
+            // https://github.com/me-no-dev/ESPAsyncWebServer#send-binary-content-from-progmem
         AsyncWebServerResponse *response = request->beginResponse_P(200, "text/html", HTMLWebsiteData, HTMLWebsiteDataLen);
         response->addHeader("Content-Encoding", "gzip");
         request->send(response);
@@ -130,7 +138,7 @@ void boi_wifi::ActivateParty() {
     this->preferences.end();
 }
 
-void boi_wifi::ActivateNormal() {
+void boi_wifi::ActivateNormal() { // setup Server to host Captive Portal
     const OptionsStruct *Options;
     Mode = NormalMode;
     Options = this->message_handler->GetOptions();
@@ -140,6 +148,7 @@ void boi_wifi::ActivateNormal() {
     this->preferences.putUChar("wifi", boi_wifi::NormalMode);
     this->preferences.end();
 }
+
 void boi_wifi::ActivateSafeModeWithNetworking() {
     const OptionsStruct *Options;
     Mode = SafeModeWithNetworking;
@@ -160,7 +169,7 @@ void RequestHandler::GuestCounter(){
     Serial.printf("We have been visited %d times ^_^\n", this->CurrentGuestCount);
 }
 
-bool boi_wifi::shouldWeEnterSafeModeWithNetworking() {
+bool boi_wifi::shouldWeEnterSafeModeWithNetworking() { //check if device is configured for SMWN or if Captive Portal is required for user to enter config still
     const OptionsStruct *Options;
     Options = this->message_handler->GetOptions();
     bool return_bool = 0;
