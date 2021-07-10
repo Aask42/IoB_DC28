@@ -1,0 +1,1227 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>
+    🔋 Internet of Batteries 🔋
+  </title>
+  <meta charset='utf-8' name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+
+  <style> /* sidebar/Navbar styling */
+    body {
+      margin: 0;
+      font-family: "Lato", sans-serif;
+    }
+    .sidebar {
+      margin: 0;
+      padding: 0;
+      width: 200px;
+      background-color: #f1f1f1;
+      position: fixed;
+      height: 100%;
+      overflow: auto;
+    }
+    .sidebar a,h4 {
+      display: block;
+      color: black;
+      padding: 16px;
+      text-decoration: none;
+    }
+    .sidebar a.active {
+      background-color: #04AA6D;
+      color: white;
+    }
+    .sidebar a:hover:not(.active) {
+      background-color: #555;
+      color: white;
+    }
+    /* sidebar positioning by screen size */
+    @media screen and (max-width: 700px) {
+      /* responsive shift of nav from left side to top based on screen px width */
+      .sidebar {
+        width: 100%;
+        height: auto;
+        position: relative;
+      }
+      .sidebar a,h4 {float: left;}
+      div.content {margin-left: 0;}
+    }
+    @media screen and (max-width: 400px) {
+      /* responsive shift of nav from left side to top based on screen px width */
+      .sidebar a,h4 {
+        text-align: center;
+        float: none;
+      }
+    }
+  </style>
+
+<style> /* content is anything that doesn't want to be overlapped by the navbar on the screen */
+    div.content {
+      margin-left: 200px;
+      padding: 1px 16px;
+      /* height: 1000px; */
+    }
+</style>
+
+<style> /* Sensor Stats Styling */
+    td.tablecell {
+        font-size: 16px;
+        text-align: right;
+        vertical-align: text-top;
+        /* transform: translatex(-42px); */
+    }
+    div.tablecell {
+        display: inline;
+    }
+    .tabledata {
+        font-weight: bold;
+    }
+    div.old-style-iob-border {
+        border: 30px groove #1200A4;
+        /* border-radius: 8px; */
+        /* height: 60%; */
+    }
+    div.sensor-data-section {
+        background-color: rgb(91, 81, 203);
+        color: #000000;
+        width: inherit;
+        border-color: rgb(91, 81, 203);
+        border-style: solid;
+        border-width: 6px;
+    }
+    th {
+      display: table-cell;
+      vertical-align: inherit;
+      font-weight: bold;
+      text-align: center;
+    }
+</style>
+
+<style>  /* centers credits */
+    div.center-credits {
+        vertical-align: middle;
+        color: #CB6D51;
+        text-align: center;
+        font-size: 14px;
+        transform: translateY(3.14px)
+    }
+</style>
+
+<style> /* Header Div Styling */
+    .profile-dropdown { /* Profile Dropdown */
+        text-align: right;
+    }
+
+    .logo { /* Logo Control */
+        font-family: futura;
+        font-style: bold;
+        margin: 0 auto;
+        text-align: left;
+        color: #313131;
+        animation:  colorchange 7s infinite alternate;
+    }
+    @keyframes colorchange { /* Logo Control */
+        0% {
+            color: blue;
+        }
+        10% {
+            color: #8e44ad;
+        }
+        20% {
+            color: #1abc9c;
+        }
+        30% {
+            color: #d35400;
+        }
+        40% {
+            color: blue;
+        }
+        50% {
+            color: #34495e;
+        }
+        60% {
+            color: blue;
+        }
+        70% {
+            color: #2980b9;
+        }
+        80% {
+            color: #f1c40f;
+        }
+        90% {
+            color: #2980b9;
+        }
+        100% {
+            color: pink;
+        }
+    }
+</style>
+
+<body>
+<div class="header old-style-iob-border">
+    <!-- contains icon on left && profile option dropdown on right -->
+    
+    <!-- left side -->
+    <div>
+        <div class="logo">Internet of Batteries</div>    
+    </div>
+
+    <!-- right side -->
+    <!-- <div>
+        <div class=profile-dropdown>yourProfileHere-todo</div>
+    </div>     -->
+</div>
+
+<div class="sidebar"> <!-- Always visible -->
+  <!-- this sidebar takes up a place on the screen, add all things you do not want the sidebar to cover, as class="content" -->
+  <a class="active" href="#home">Configure</a>
+  <a target="_blank" href="https://twitter.com/batteryinternet">IoB Twitter</a>
+  <a href="#contact">Contact</a>
+  <a href="#about">About</a>
+  <a href="#Donations">Donations</a>
+
+
+   <!-- Make this link to GH Donations.md TODO: create this page first, then link it! -->
+            <!-- donations should go to an LLC account & used for IoB work for tax write-offs? -->
+    <!-- <div class="donations-details">
+        <h2 id="donations">Donations</h2>
+        <pre><code>
+        Bitcoin Cash:
+        1CbJsCqH9btitkRr13m11RribyF6m7EUTZ
+        Bitcoin:
+        1GrnYwUCAsQY3oejdu8CRutnG55Wi7bXHz  
+        </code></pre>
+    </div> -->
+</div>
+
+<!-- Configure page -->
+<div class="content">
+  <div class="old-style-iob-border">
+    <div class="sensor-data-section"> <!-- adding 'content' class causes sensor details to take up whole screen, must add content above old-style-iob-border -->
+      <!-- displays the battery stats -->
+      <!-- this sensor data table cannot handle anything under 300 Width, the Length/Y axis just scrolls, that is fine -->
+        <!-- will need to devise a different way to display the data on a screen less than 300px wide if we care, leaving the issue for now -->
+      <table border=0 cellspacing=2 cellpadding=0 width=100%>
+        <th>Sensor Stats:</th>
+          <tr>
+              <td class=tablecell>Current: 
+                <div class="tablecell tabledata" id="status_current">0.00</div>
+              </td>
+              <td class=tablecell>BUS: 
+                <div class="tablecell tabledata" id="status_bus">0.00</div>
+              </td>
+              <td class=tablecell colspan=2>Min: 
+                <div class="tablecell tabledata" id="status_vbatmin">
+                  0.00
+                </div>
+          </tr>
+          <tr>
+              <td class=tablecell>VBAT: 
+                <div class="tablecell tabledata" id="status_vbat">0.00</div>
+              </td>
+              <td class=tablecell>Ambient: 
+                <div class="tablecell tabledata" id="status_ambient">0.00</div>
+              </td>
+              <td class=tablecell colspan=2>Max: 
+                <div class="tablecell tabledata" id="status_vbatmax">0.00</div>
+              </td>
+          </tr>
+          <tr>
+              <td class=tablecell>VGAT: 
+                <div class="tablecell tabledata" id="status_vgat">0.00</div>
+              </td>
+              <td class=tablecell>SHUNT: 
+                <div class="tablecell tabledata" id="status_shunt">0.00</div>
+              </td>
+              <td class=tablecell id="wifi_name_status"></td>
+              <td class=tablecell>Charging Status:
+                <div class=tablecell id="status_ready"></div>
+              </td>
+          </tr>
+          <tr>
+              <td class=tablecell>Avg Joules: 
+                <div class="tablecell tabledata" id="status_avg_joules">0.00</div>
+              </td>
+              <td class=tablecell>Total Joules: 
+                <div class="tablecell tabledata" id="status_total_joules">0.00</div>
+              </td>
+              <td class=tablecell id="nickname_status"></td>
+          </tr>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- start of dumped shit -->
+
+
+
+
+
+<div class="content">
+    <div class=tableborder>
+        <div class=selectionbody>
+        </div>
+        <div class=body style="position: relative;">
+            <div class=mainbody id=messagebody
+                style="display: flex; flex-direction: column;align-items: stretch;justify-content: space-between;height: 98%;width:90%">
+                <div class="messagebodytext" id="chatwindow"></div>
+                <div id=messagebodytextmsg>
+                    <form>Message: <input type=text name="message" onkeydown="return processKey(event);" style="width:70%">
+                    <input type=button value="Send" name="button" onclick="SendMessage();">
+                    </form>
+                </div>
+            </div>
+            <div class=mainbody id=optionbody>
+                <form id=options>
+                    <table border=0 cellspacing=0 cellpadding=0>
+                        <tr>
+                            <td class=optioncell>Display splash screen<div onclick="ApplyOptions();"
+                                    style="display: inline-block; position: absolute; right: 0; padding-right: 20px;">
+                                    Apply</div>
+                            </td>
+                            <td class=optioncell><input type=checkbox name=displaysplash></td>
+                        </tr>
+                        <tr>
+                            <td class=optioncell>Nickname</td>
+                            <td class=optioncell><input type=text name=nickname size=25></td>
+                        </tr>
+                        <tr>
+                            <td class=optioncell>Safe Mode Wifi name</td>
+                            <td class=optioncell><input type=text name=safe_mode_wifi_name size=25></td>
+                        </tr>
+                        <tr>
+                            <td class=optioncell>Safe Mode Wifi password</td>
+                            <td class=optioncell><input type=password name=safe_mode_wifi_password size=25></td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <h3 style="background-color: #1200A4;">NOTE: ONCE CONFIGURED, Safe Mode w/ Networking will attempt to connect to batteryinter.net via the Safe Mode configuration here. If unable to connect, it will broadcast its captive portal after approx. 30 seconds.</h3>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class=optioncell>Captive Arcade Mode Wifi name</td>
+                            <td class=optioncell><input type=text name=wifi_name size=25></td>
+                        </tr>
+                        <tr>
+                            <td class=optioncell>Captive Arcade Wifi password</td>
+                            <td class=optioncell><input type=password name=wifi_password size=25></td>
+                        </tr>
+                        <tr>
+                            <td class=optioncell></td>
+                            <td class=optioncell>Captive Arcade Wifi will use WPA2</td>
+                        </tr>
+                        <tr>
+                            <td class=optioncell>Captive Arcade Auto timeout (seconds)<br>
+                                Double click button 1 to turn back on</td>
+                            <td class=optioncell><input type=number min=-1 max=300 name=timeout size=3 value=-1>
+                            </td>
+                        </tr>
+                        <tr id=brightnesstr1>
+                            <td class=optioncell>Brightness</td>
+                            <td class=optioncell><input type="range" min="0" max="200" value=0 name="brightness"
+                                    oninput="SendBrightnessValue();"></td>
+                        </tr>
+                        <tr id=brightnesstr2>
+                            <td class=optioncell>Brightness via buttons</td>
+                            <td class=optioncell><input type=checkbox name=brightness_buttons></td>
+                        </tr>
+                        <tr>
+                            <td class=optioncell onclick='SendWS("L", [], "");'>Light Test</td>
+                        </tr>
+                    </table>
+                </form>
+            </div>
+            <div class=mainbody id=scanbody>
+            </div>
+            <div class=mainbody id=startupbody>
+                <div class=messagebodytext id=startupbodytext onscroll="CheckScroll();">
+                    <html>
+
+                    <head>
+                        <meta http-equiv="Content-type" content="text/html;charset=UTF-8">
+                        <title>Internet of Batteries: DEF CON 28 - "They don't support that"</title>
+
+                        <link rel="stylesheet"
+                            href="https://cdn.jsdelivr.net/gh/Microsoft/vscode/extensions/markdown-language-features/media/markdown.css">
+                        <link rel="stylesheet"
+                            href="https://cdn.jsdelivr.net/gh/Microsoft/vscode/extensions/markdown-language-features/media/highlight.css">
+
+                        <style>
+                            .task-list-item {
+                                list-style-type: none;
+                            }
+
+                            .task-list-item-checkbox {
+                                margin-left: -20px;
+                                vertical-align: middle;
+                            }
+                        </style>
+                        <style>
+                            body {
+                                font-family: -apple-system, BlinkMacSystemFont, 'Segoe WPC', 'Segoe UI', 'Ubuntu', 'Droid Sans', sans-serif;
+                                font-size: 14px;
+                                line-height: 1.6;
+                            }
+                        </style>
+
+
+                    </head>
+
+                    <!-- TODO: add LINK TO GitHub README for instructions -->
+
+
+            <div class=mainbody id=bootbody style="visibility: visible;">
+                <div class=messagebodytext id=bootbodytext>
+                    Waiting on websocket connection
+                </div>
+            </div>
+            <div class=mainbody id=optionbody></div>
+
+        </div>
+        <div class=defcell_banner>
+            <div class="defcell_wrapper">
+                <!-- <div class="rotate" id=defcellrotate><font face="Lucida Console">DEF CELL</font></div> -->
+                <!-- <font face="Lucida Console">DEF CON 28</font> -->
+            </div>
+
+        </div>
+    </div>
+    </div>
+</div>
+
+
+
+
+
+<!-- end of dumped shit -->
+
+
+
+
+
+
+
+
+
+<!-- PrivateMessages page -->
+    <!-- https://www.w3schools.com/howto/howto_css_chat.asp -->
+<div class="content"></div>
+<!-- GraffitiMessages page -->
+<div class="content"></div>
+<!-- Future Work page -->
+    <!-- https://www.w3schools.com/howto/howto_css_coming_soon.asp -->
+<div class="content"></div>
+
+
+
+
+
+
+<script type='text/javascript'> // all the JS things
+        var CurDisplay = "";
+
+        var ScanData = [];
+        var GraffitiMessages = [];
+        var BroadcastMessages = [];
+        var PrivateMessages = [];
+        var Scoreboard = [];
+
+        function getI(id) {
+            return document.getElementById(id);
+        }
+
+        function getN(name) {
+            return document.getElementsByName(name)[0];
+        }
+
+        function getC(name) {
+            return document.getElementsByClassName(name)[0];
+        }
+
+        function updateScroll(){
+            var element = document.getElementsByClassName("messagebodytext")[0];
+            element.scrollTop = element.scrollHeight;
+        }
+
+        function processKey(e) { //see if the enter key was pressed, if so then we need to click the button
+            if (e == null) {
+                var e = window.event;
+            }
+            if (e.keyCode == 13) {
+                e.preventDefault();
+                SendMessage();
+                updateScroll();
+                return false;
+            }
+        }
+
+        function HandleWSMessage(evt) {
+            if (!(evt.data instanceof ArrayBuffer)) { //if not a binary array then ignore the data
+                return;
+            }
+            var data8arr = new Uint8Array(evt.data);
+            var Command = new TextDecoder().decode(data8arr); //Decode the data
+            if (!Command.length) { //if not enough data fail
+                return;
+            }
+            var Data = Command.slice(1); //determine type of message based on the first value of the command
+            switch (Command[0]) {
+                case 'B': //boot startup, indicate what page to show
+                    getI("bootbody").style.visibility = "hidden";
+                    if (Data == "splash") {
+                        GenerateSelections(1);
+                        DisplaySection("startup");
+                    } else if (Data == "options") {
+                        //redraw with just the options available as they need to be set
+                        GenerateSelections(0);
+                        DisplayOptions();
+                    } else {
+                        GenerateSelections(1);
+                        DisplayBroadcast();
+                    }
+                    break;
+
+                case 'o': //option values
+                    ProcessOptions(Data);
+                    break;
+
+                case 'c': //incoming connection
+                    if (data8arr.length <= 6) { //make sure we have a mac
+                        break;
+                    }
+                    MAC = data8arr.slice(1, 7);
+                    GraffitiDone = data8arr[7];
+                    Data = new TextDecoder().decode(data8arr.slice(8, data8arr.length));
+                    ConnectClient(MAC, GraffitiDone, Data);
+                    break;
+
+                case 'd': //disconnecting
+                    if (data8arr.length <= 6) { //make sure we have a mac
+                        break;
+                    }
+                    DisconnectClient(data8arr.slice(1, 7));
+                    break;
+
+                case 'l':
+                    SetBrightness(data8arr.slice(1));
+                    break;
+
+                case 'L':
+                    if (Command[1] == '0') {
+                        getI("brightnesstr1").style.visibility = "hidden";
+                        getI("brightnesstr2").style.visibility = "hidden";                        
+                    }
+                    break;
+
+                case 'p': //private message
+                    if (data8arr.length <= 6) { //make sure we have a mac
+                        break;
+                    }
+                    MAC = data8arr.slice(1, 7);
+                    Sender = data8arr[7];
+                    Data = new TextDecoder().decode(data8arr.slice(8, data8arr.length));
+                    AddPrivateMsg(MAC, Sender, Data);
+                    break;
+
+                case 'b': //broadcast message
+                    AddBroadcastMsg(Data);
+                    break;
+
+                case 'n':
+                    if (data8arr.length <= 6) { //make sure we have a mac
+                        break;
+                    }
+                    MAC = data8arr.slice(1, 7);
+                    Data = new TextDecoder().decode(data8arr.slice(7, data8arr.length));
+                    SetNickname(MAC, Data);
+                    break;
+
+                case 's': //scan of the network
+                    if (data8arr.length == 1) {
+                        ResetScanData(); //if we don't have any following data then reset the scan
+                    } else {
+                        if (data8arr.length <= 6) { //make sure we have a mac
+                            break;
+                        }
+                        MAC = data8arr.slice(1, 7);
+                        Data = new TextDecoder().decode(data8arr.slice(7, data8arr.length));
+                        AddScanEntry(MAC, Data);
+                    }
+                    break;
+
+                case 'S': //device status information
+                    ProcessDeviceStatus(data8arr.slice(1, data8arr.length));
+                    break;
+
+                case 'G': //graffiti wall
+                    MAC = data8arr.slice(1, 7);
+                    Name = new TextDecoder().decode(data8arr.slice(7, 27));
+                    Data = new TextDecoder().decode(data8arr.slice(27, data8arr.length));
+                    AddGraffitiMsg(MAC, Name, Data);
+                    break;
+
+                case 'g': //graffiti failed to set for a connection
+                    if (data8arr.length <= 6) { //make sure we have a mac
+                        break;
+                    }
+
+                    UnsetGraffitiFlag(data8arr.slice(1, 7));
+                    break;
+
+                case 'e': //error
+                    DisplayError(Data);
+                    break;
+
+                case 'P': //ping pong
+                    SendWS("P", [], "");
+                    break;
+
+                case 'z': //scoreboard
+                    Data = new TextDecoder().decode(data8arr.slice(7, data8arr.length))
+                    AddScoreEntry(data8arr);
+                    break;
+
+                default:
+                    break;
+            }
+        }
+
+        function AddScoreEntry(Data) {
+            MAC = Data.slice(1, 7);
+            Score = new Float32Array(Data.slice(7, 4).buffer);
+            Name = new TextDecoder().decode(data8arr.slice(10, data8arr.length))
+
+            var i = FindMACEntry(Scoreboard, MAC);
+            if (i) { //found it, delete
+                Scoreboard.splice(i, 1);
+            }
+
+            var ScoreEntry = { //Create a new entry
+                "MAC": MAC,
+                "Score": Score,
+                "Name": Name
+            };
+            
+            for (i = 0; i < Scoreboard.length; i++) { //find place to insert it
+                if (Scoreboard[i]["Score"] < Score) {
+                    break; //if this entry is below us then exit
+                }
+            }
+            Scoreboard.splice(i, 0, ScoreEntry); //insert into the array
+        }
+
+        function SendWS(Cmd, MAC, Data) {
+            //set command
+            var DataArr = new Uint8Array(1 + MAC.length + Data.length);
+            DataArr[0] = Cmd.charCodeAt(0);
+            var Offset = 1;
+            if (MAC.length) { //add in the command and mac to the beginning of the array
+                DataArr.set(MAC, 1);
+                Offset += MAC.length;
+            }
+            if (Data.length) { //add the data
+                DataArr.set(new TextEncoder().encode(Data), Offset);
+            }
+            ws.send(DataArr); //send the result
+        }
+
+        function FindMACEntry(Data, MAC) {
+            for (var i = 0; i < Data.length; i++) {
+                //check the mac bytes for a match
+                var x;
+                for (x = 0; x < 6; x++) {
+                    if (MAC[x] != Data[i]["MAC"][x]) {
+                        break; //if a mismatch then fail
+                    }
+                }
+                if (x >= 6) {
+                    return i; //if we got through the full mac then return the entry otherwise try the next one
+                }
+            }
+            return -1;
+        }
+
+        function UnsetGraffitiFlag(MAC) {
+            var PrivID = FindMACEntry(PrivateMessages, MAC);
+            if (PrivID < 0) {
+                return;
+            }
+            PrivateMessages[PrivID]["GraffitiDone"] = 0; //modify the entry
+        }
+
+        function DisplayError(Data) {
+            var obj = getI("errormsg");
+            obj.innerHTML = Data;
+            if (Data.length == 0) {
+                obj.style.visibility = "hidden";
+            } else {
+                obj.style.visibility = "visible";
+                window.setTimeout(function () {
+                    getI("errormsg").style.visibility = "hidden";
+                }, 3000);
+            }
+        }
+
+        function Connect(Data) {
+            //convert the data from hex back into a binary format
+            var result = new Uint8Array(6);
+            for (var i = 0; i < Data.length / 2; i++) {
+                result[i] = parseInt(Data.substring(i * 2, (i * 2) + 2), 16);
+            }
+            SendWS('c', result, "");
+        }
+
+        function ConnectClient(MAC, GraffitDone, Data) {
+            //full client connection occurred, add them to the list
+                //TODO: add event log to serial out for visibility?
+            var EntryID = FindMACEntry(PrivateMessages, MAC);
+            if (EntryID != -1) {
+                PrivateMessages[EntryID]["GraffitiDone"] = GraffitDone; //duplicate entry, so don't show it; just update graffiti flag
+                return;
+            }
+            PrivateMessages.push({"MAC": MAC, "Name": Data, "GraffitiDone": GraffitDone, Messages: ["Connected to " + Data + "!"]});
+            GenerateSelections(1); //regenerate the display
+        }
+
+        function SetNickname(MAC, Data) {
+            var PrivID = FindMACEntry(PrivateMessages, MAC); //find our private entry
+            if (PrivID < 0) {
+                return;
+            }
+            //indicate the nickname changed and store it in the message buffer
+            var Msg = "--Nickname changed to " + Data + "--";
+            PrivateMessages[PrivID]["Messages"].push(Msg);
+            AddMessage(PrivateMessages[PrivID]["Name"], Msg, "private:" + String(PrivID));
+            PrivateMessages[PrivID]["Name"] = Data;
+            GenerateSelections(1); //regenerate the display
+        }
+
+        function DisconnectClient(MAC) {
+            //had a full disconnection occur, remove the client entry then re-generate the display
+                //TODO: maybe shove something to serial out for debug if this happens so we see it?
+            PrivID = FindMACEntry(PrivateMessages, MAC);
+            if (PrivID < 0) {
+                return;
+            }
+            PrivateMessages.splice(PrivID, 1);
+            GenerateSelections(1); //regenerate the display
+            DisplayBroadcast(); //move them over to the broadcast area as we can't guarantee the IDs are the same
+        }
+
+        function AddMessage(Nickname, Data, DisplayType) {
+            //if we are currently showing broadcasts then add it to the end
+            if (CurDisplay == DisplayType) {
+                var obj = getC("messagebodytext");
+                var AtBottom = (obj.scrollHeight - obj.scrollTop == obj.offsetHeight);
+                obj.innerHTML += StripHTML(Nickname + ": " + Data) + "<br>";
+                if (AtBottom)
+                    obj.scrollTop = obj.scrollHeight - obj.offsetHeight;
+            }
+        }
+
+        function AddGraffitiMsg(MAC, Name, Data) {
+            Data = Data.split("\x01");
+            var NewEntry = {
+                "Message": Data,
+                "Name": Name
+            };
+            GraffitiMessages.push(NewEntry);
+
+            if (CurDisplay == "graffiti") {
+                var obj = getC("messagebodytext");
+
+                var AtBottom = (obj.scrollHeight - obj.scrollTop == obj.offsetHeight);
+                obj.innerHTML += StripHTML(NewEntry["Name"]) + ": " + StripHTML(Data) + "<br>";
+                if (AtBottom)
+                    obj.scrollTop = obj.scrollHeight - obj.offsetHeight;
+            }
+        }
+
+        function AddPrivateMsg(MAC, Sender, Message) {
+            var PrivID = FindMACEntry(PrivateMessages, MAC); //add a private message
+            if (PrivID < 0) {
+                return;
+            }
+
+            //add our entry
+            var Name = PrivateMessages[PrivID]["Name"];
+            if (Sender) {
+                Name = getN("nickname").value;
+            }
+            PrivateMessages[PrivID]["Messages"].push(Name + ": " + Message);
+            AddMessage(Name, Message, "private:" + String(PrivID));
+        }
+
+        function AddBroadcastMsg(Data) {
+            //get the nickname if any
+            var SplitChar = Data.indexOf(String.fromCharCode(0x01))
+            if (SplitChar == -1) {
+                return;
+            }
+
+            var Nickname = Data.slice(0, SplitChar);
+            var Message = Data.slice(SplitChar + 1);
+            BroadcastMessages.push(Nickname + ": " + Message);
+            AddMessage(Nickname, Message, "broadcast");
+        }
+
+        function ResetScanData() {
+            ScanData = []
+            for (i = 0; i < PrivateMessages.length; i++) { //reset all private divs to default background color
+                var obj = getI("private_" + i);
+                obj.style.backgroundColor = "";
+            }
+            if (CurDisplay == "scan") { //refresh the scan page by calling into the function again
+                DisplayScan();
+            }
+        }
+
+        function AddScanEntry(MAC, Data) {
+            var i = FindMACEntry(ScanData, MAC); //see if the entry is already in the list; returns -1 if not found
+            if (i == -1) { //if the entry was in the list, we don't want to re-add it
+                //add the entry
+                ScanData.push({"MAC": MAC, "Name": Data});
+
+                //if the entry is a known connection then indicate it is in the area
+                var PrivID = FindMACEntry(PrivateMessages, MAC);
+                if (PrivID != -1) {
+                    //good, update the div color
+                    var obj = getI("private_" + PrivID);
+                    obj.style.backgroundColor = "#008800";
+                }
+            }
+
+            if (CurDisplay == "scan") {//if we are showing the scan screen then update it
+                DisplayScan();
+            }
+        }
+
+        function SetBrightness(Data) {
+            getN("brightness").value = Data[0];
+        }
+
+        function SendBrightnessValue() {
+            var Brightness = getN("brightness").value;
+            var BrightnessArr = new Uint8Array(1);
+            BrightnessArr[0] = Brightness;
+            SendWS("l", BrightnessArr, "")
+        }
+
+        function ProcessOptions(Data) {
+            //parse up the data and set the form accordingly
+            getN("displaysplash").checked = parseInt(Data[0]);
+            getN("brightness_buttons").checked = parseInt(Data[1]);
+
+            //take off the boolean options
+            Data = Data.slice(2).split("\x01");
+            getN("timeout").value = parseInt(Data[0]);
+            getN("brightness").value = parseInt(Data[1]);
+            getN("nickname").value = Data[2];
+            getI("nickname_status").innerHTML = StripHTML(Data[2]);
+            getN("wifi_name").value = Data[3];
+            getI("wifi_name_status").innerHTML = StripHTML(Data[3]);
+            getN("wifi_password").value = Data[4];
+            getN("safe_mode_wifi_name").value = Data[5];
+            getN("safe_mode_wifi_password").value = Data[6];
+        }
+
+        function ProcessDeviceStatus(Data) {
+            //convert from Uint8Array to ArrayBuffer so that Uint32Array splits it up properly
+            var ab = Data.buffer;
+
+            //divide the data up into an array of 32bit values
+            //these values are the same order as the boi::SensorDataStruct
+            var dv = new Uint32Array(ab);
+            var fv = new Float32Array(ab);
+
+            //split up the data and fill in fields with it
+            getI("status_current").innerHTML = dv[0];
+            getI("status_vbat").innerHTML = fv[1].toFixed(2) + "V";
+            getI("status_vgat").innerHTML = fv[2].toFixed(2) + "V";
+
+            if (dv[3] && !dv[4]) { //indicate if we are charging or charged based on get_charging_status() in boi.cpp
+                getI("status_ready").innerHTML = "charging";
+            } else if (!dv[3] && !dv[4]) {
+                getI("status_ready").innerHTML = "charged";
+            } else {
+                getI("status_ready").innerHTML = "unplugged";
+            }
+
+            getI("status_shunt").innerHTML = fv[5].toFixed(2) + "V";
+            getI("status_bus").innerHTML = fv[6].toFixed(2) + "V";
+            getI("status_vbatmax").innerHTML = fv[7].toFixed(2) + "V";
+            getI("status_vbatmin").innerHTML = fv[8].toFixed(2) + "V";
+            getI("status_avg_joules").innerHTML = fv[9].toFixed(2) + "μJ";
+            getI("status_total_joules").innerHTML = fv[10].toFixed(2) + "μJ";
+        }
+
+        function ResizeDIVs() {
+            var obj = getI("defcellrotate");
+            var rect = obj.getBoundingClientRect();
+            obj.style.height = rect.width + "px";
+            obj.style.width = rect.height + "px";
+            obj.style.top = (rect.width / 4) + "px";
+
+            var bodyobj = getI("messagebody");
+            var bodytextobj = getC("messagebodytext");
+            var msgobj = getI("messagebodytextmsg");
+            var msgrect = msgobj.getBoundingClientRect();
+            var bodyrect = bodyobj.getBoundingClientRect();
+            var bodytextrect = bodytextobj.getBoundingClientRect();
+
+            //bodytextobj[0].style.height = (bodyrect.height - msgrect.height - 20) + "px";
+            //bodytextobj[0].style.width = (bodyrect.width - 20) + "px";
+
+            //bodytextobj[1].style.height = (bodyrect.height - 20) + "px";
+            //bodytextobj[1].style.width = (bodyrect.width - 20) + "px";
+
+            var msgboxobj = getN("message");
+            var msgboxrect = msgboxobj.getBoundingClientRect();
+
+            //var buttonrect = document.getElementsByName("button")[0].getBoundingClientRect();
+            //msgboxobj.width = msgboxrect.width - buttonrect.width + "px";
+        }
+
+        function StripHTML(str) {
+            return String(str).replace(/</g, "&lt;").replace(/>/g, "&gt;");
+        }
+
+        function DisplaySection(name) {
+            getI("messagebody").style.visibility = "hidden";
+            getI("optionbody").style.visibility = "hidden";
+            getI("scanbody").style.visibility = "hidden";
+            getI("startupbody").style.visibility = "hidden";
+
+            getI(name + "body").style.visibility = "visible";
+
+            if (name == "message") {
+                var bodyobj = getI("messagebody");
+                var bodytextobj = getC("messagebodytext");
+                var bodyrect = bodyobj.getBoundingClientRect();
+                bodytextobj.style.width = (bodyrect.width - (bodytextobj.offsetWidth - bodytextobj.clientWidth)) + "px";
+            }
+        }
+
+        function DisplayOptions() {
+            CurDisplay = "option";
+            DisplaySection("option");
+        }
+
+        function DisplayScan() {
+            //create the list based on what we are aware of
+            var msgbody = getC("messagebodytext");
+            msgbody.innerHTML = "Scan: Click an entry to connect directly<br><br>";
+            for (var i = 0; i < ScanData.length; i++) {
+                //the key entry is the actual 6 byte MAC, the entry is the nickname provided
+                //if the MAC already exists in our connected list then we need to not provide a connect option
+                var PrivID = FindMACEntry(PrivateMessages, ScanData[i]["MAC"]);
+                if (PrivID >= 0) { //if we have a value then we are already connected
+                    msgbody.innerHTML += "<div class=selection><font color=##008800>" + StripHTML(PrivateMessages[PrivID]["Name"]) + "</font></div>";
+                } else {
+                    MACHex = ''; //doesn't exist, needs a connect option
+                    for (var x = 0; x < 6; x++) {
+                        MACHex += ("0" + ScanData[i]["MAC"][x].toString(16)).slice(-2)
+                    }
+                    msgbody.innerHTML += "<div class=selection onclick=\"Connect('" + MACHex + "');\">" + StripHTML(ScanData[i]["Name"]) + "</div>";
+                }
+            }
+            getI("messagebodytextmsg").style.visibility = "hidden";
+
+            CurDisplay = "scan";
+            DisplaySection("message");
+            //SendWS("s");
+        }
+
+        function DisplayBroadcast() {
+            //create the data displayed in the DIV for broadcast
+            var msgbody = getC("messagebodytext");
+            msgbody.innerHTML = "Global Chat:<br>";
+            for (var i = 0; i < BroadcastMessages.length; i++) {
+                msgbody.innerHTML += StripHTML(BroadcastMessages[i]) + "<br>";
+            }
+
+            var msgboxobj = getN("message");
+            msgboxobj.nodeValue = "";
+            getI("messagebodytextmsg").style.visibility = "visible";
+
+            CurDisplay = "broadcast";
+            DisplaySection("message");
+        }
+
+        function DisplayScoreboard() {
+            //create the data displayed in the DIV for broadcast
+            var msgbody = getC("messagebodytext");
+            msgbody.innerHTML = "Scoreboard:<br>";
+            for (var i = 0; i < Scoreboard.length; i++) {
+                msgbody.innerHTML += Scoreboard[i]["Score"] + ": " + StripHTML(Scoreboard[i]["Name"]) + "<br>";
+            }
+
+            var msgboxobj = getN("message");
+            msgboxobj.nodeValue = "";
+            getI("messagebodytextmsg").style.visibility = "hidden";
+
+            CurDisplay = "scoreboard";
+            DisplaySection("message");
+        }
+
+        function DisplayGraffiti() {
+            //create the data displayed in the DIV for broadcast
+            var msgbody = getC("messagebodytext");
+            msgbody.innerHTML = "Graffiti:<br>";
+            for (var i = 0; i < GraffitiMessages.length; i++)
+                msgbody.innerHTML += StripHTML(GraffitiMessages[i]["Name"]) + ": " + StripHTML(GraffitiMessages[i][
+                    "Message"
+                ]) + "<br>";
+
+            var msgboxobj = getN("message");
+            msgboxobj.nodeValue = "";
+            getI("messagebodytextmsg").style.visibility = "hidden";
+
+            CurDisplay = "graffiti";
+            DisplaySection("message");
+        }
+
+        function AddDisconnectHeader(Entry) {
+            var output = "<div onclick='Disconnect(" + Entry +
+                ");' style='display: inline-block; position: absolute; right: 0; padding-right: 20px;'>Disconnect</div><br>"
+            output += "<div onclick='DisplayForceCheck(" + Entry +
+                ");' style='display: inline-block; position: absolute; right: 0; padding-right: 20px; padding-top: 20px;'>(force)</div><br>";
+            return output;
+        }
+
+        function DisplayGraffitiEntry(Entry) {
+            //create the data displayed in the DIV for graffiti
+            var msgbody = getC("messagebodytext");
+            msgbody.innerHTML = "<u>" + StripHTML(PrivateMessages[Entry]["Name"]) + ":</u>";
+            msgbody.innerHTML += AddDisconnectHeader(Entry);
+            msgbody.innerHTML += "<font size=+4 color=#0000dd>First connection<br>Please enter graffiti to tag on the other device<br>Graffiti can not be changed once set<br></font>"
+
+            var msgboxobj = getN("message");
+            msgboxobj.nodeValue = "";
+            getI("messagebodytextmsg").style.visibility = "visible";
+
+            CurDisplay = "graffitientry:" + Entry;
+            DisplaySection("message");
+        }
+
+        function DisplayForceCheck(Entry) {
+            //create the data displayed in the DIV for graffiti
+            var msgbody = getC("messagebodytext");
+            msgbody.innerHTML = "<u>" + StripHTML(PrivateMessages[Entry]["Name"]) + ":</u><br>";
+            msgbody.innerHTML +=
+                "<font size=+2 color=#880000>Are you sure?<br>Other side must force disconnect to reestablish connection to you<br>";
+            msgbody.innerHTML += "<div onclick='ForceDisconnect(" + Entry +
+                ");'>Yes</div>&nbsp;&nbsp;&nbsp;<div onlick='DisplayPrivate(" + Entry + ");'>No</div>";
+            msgbody.innerHTML += "</font>";
+            var msgboxobj = getN("message");
+            msgboxobj.nodeValue = "";
+            getI("messagebodytextmsg").style.visibility = "hidden";
+
+            CurDisplay = "forcedisconn:" + Entry;
+            DisplaySection("message");
+        }
+
+        function DisplayPrivate(Entry) {
+            //if the entry does not have the graffiti set, then display it instead
+            if (!PrivateMessages[Entry]["GraffitiDone"]) {
+                return DisplayGraffitiEntry(Entry);
+            }
+
+            //create the data displayed in the DIV for a private message
+            var msgbody = getC("messagebodytext");
+            msgbody.innerHTML = "<u>" + StripHTML(PrivateMessages[Entry]["Name"]) + ":</u>";
+            msgbody.innerHTML += AddDisconnectHeader(Entry);
+            for (var i = 0; i < PrivateMessages[Entry]["Messages"].length; i++) {
+                msgbody.innerHTML += StripHTML(PrivateMessages[Entry]["Messages"][i]) + "<br>";
+            }
+
+            var msgboxobj = getN("message");
+            msgboxobj.nodeValue = "";
+            getI("messagebodytextmsg").style.visibility = "visible";
+
+            CurDisplay = "private:" + Entry;
+            DisplaySection("message");
+        }
+
+        function SendGraffiti() {
+            //get the response from the user, send it along then set our flag and allow the normal data to be shown
+            var msgobj = getN("message");
+            if (msgobj.value.length == 0) {
+                return;
+            }
+
+            var privid = parseInt(CurDisplay.slice(14));
+            SendWS("G", PrivateMessages[privid]["MAC"], msgobj.value);
+            PrivateMessages[privid]["GraffitiDone"] = 1; //all done, display properly
+            DisplayPrivate(privid);
+
+            msgobj.value = "";
+        }
+
+        function SendMessage() {
+            if (CurDisplay.slice(0, 13) == "graffitientry") { //if we are in graffiti mode then set it instead
+                return SendGraffiti();
+            }
+
+            var msgobj = getN("message"); //get the message object
+            if (msgobj.value.length == 0) {
+                return;
+            }
+
+            //add to our chat
+            var msgbody = getC("messagebodytext");
+            var nickname = getN("nickname").value;
+
+            var finalmsg = nickname + ": " + msgobj.value;
+            msgbody.innerHTML += StripHTML(finalmsg) + "<br>";
+
+            //send a message out, first determine if it is a broadcast or private
+            var Data;
+            var Cmd;
+            var MAC = [];
+            if (CurDisplay == "broadcast") {
+                Cmd = "b"; //broadcast, tell the websocket
+                Data = msgobj.value;
+                BroadcastMessages.push(finalmsg);
+            } else {
+                Cmd = "p"; //personal
+                var privid = parseInt(CurDisplay.slice(8));
+                MAC = PrivateMessages[privid]["MAC"];
+                Data = msgobj.value;
+                PrivateMessages[privid]["Messages"].push(finalmsg);
+            }
+
+            SendWS(Cmd, MAC, Data); //send the command
+            msgobj.value = ""; //now wipe it out
+        }
+
+        function GenerateSelections(displayall) {
+            //wipe out the current html
+            var obj = getC("selectionbody");
+            obj.innerHTML = ""; // TODO err: getting 'cannot set property innerHTML of undefined' on pageloads w/ static page load (not tested during IoB hosting yet)
+
+            //add in the options and broadcast entries to the sidebar/navbar
+            obj.innerHTML += "\<div class=selection onclick='return DisplayOptions()\;'\>Configure\</div\>";
+
+            if (!displayall){ //if we aren't allowed to display anything else, then stop
+              return;
+            }
+
+            //obj.innerHTML += "\<div class=selection onclick='return DisplayScoreboard()\;'\>Scoreboard\</div\>";
+            obj.innerHTML += "\<div class=selection onclick='return DisplayScan()\;'\>Scan&nbsp;Area\</div\>";
+            obj.innerHTML += "\<div class=selection onclick='return DisplayBroadcast()\;'\>Global&nbsp;Chat\</div\>";
+            obj.innerHTML += "\<div class=selection onclick='return DisplayGraffiti()\;'\>Graffiti\</div\>";
+
+            for (var i = 0; i < PrivateMessages.length; i++) { //now add each known direct connection
+                obj.innerHTML += "\<div  class=selection id=private_" + i + " onclick='return DisplayPrivate(" + i +
+                    ")\;'\>" + StripHTML(PrivateMessages[i]["Name"]) + "\<\/div\>";
+            }
+        }
+
+        function ForceDisconnect(entry) { //send a forced disconnect for a client
+            var msgbody = getC("messagebodytext");
+            msgbody.innerHTML += "Attempting disconnect<br>";
+            SendWS("F", PrivateMessages[entry]["MAC"], "");
+        }
+
+        function Disconnect(entry) { //send a disconnect for a client
+            var msgbody = getC("messagebodytext");
+            msgbody.innerHTML += "Attempting disconnect<br>";
+            SendWS("d", PrivateMessages[entry]["MAC"], "");
+        }
+
+        function ApplyOptions() {
+            var Data = "";
+            //parse up the data and set the form accordingly
+            if (getN("displaysplash").checked) {
+                Data += "1";
+            } else {
+                Data += "0";
+            }
+            if (getN("brightness_buttons").checked) {
+                Data += "1";
+            } else {
+                Data += "0";
+            }
+
+            Data += String(getN("timeout").value);
+            Data += String.fromCharCode(0x01);
+            Data += String(getN("brightness").value);
+            Data += String.fromCharCode(0x01);
+            Data += getN("nickname").value;
+            Data += String.fromCharCode(0x01);
+            Data += getN("wifi_name").value;
+            Data += String.fromCharCode(0x01);
+            Data += getN("wifi_password").value;
+            Data += String.fromCharCode(0x01);
+            Data += getN("safe_mode_wifi_name").value;
+            Data += String.fromCharCode(0x01);
+            Data += getN("safe_mode_wifi_password").value;
+
+            getI("nickname_status").innerHTML = StripHTML(getN("nickname").value);
+            getI("wifi_name_status").innerHTML = StripHTML(getN("wifi_name").value);
+
+            SendWS("o", [], Data);
+        }
+
+        GenerateSelections(0);
+        //DisplaySection("startup");
+
+        //enable the websocket now that things are mostly initialized
+        getI("bootbodytext").value = "Connecting to web socket " + window.location.hostname;
+        var ws = new WebSocket("ws://" + window.location.hostname + ":81/ws", ['arduino']);
+        
+        ws.binaryType = 'arraybuffer';
+        ws.onmessage = HandleWSMessage;
+
+        window.onload = ResizeDIVs;
+    </script>
+
+    <style> /* screen size footer control */
+        .footer {
+            position: fixed;
+            left: 0;
+            bottom: 0;
+            width: 100%;
+            text-align: center;
+        }
+        @media screen and (max-width: 700px) {
+        /* responsive shift of nav from left side to top based on screen px width */
+        .footer {
+            left: 0;
+            bottom: 0;
+            width: 100%;
+            text-align: center;
+            position: fixed;
+        }
+        .footer {float: left;}
+        div.content {margin-left: 0;}
+        }
+        @media screen and (max-width: 500px) {
+        /* responsive shift, turn off fixed footer style, make it at bottom of screen requiring scroll to see */
+        .footer {
+            left: 0;
+            bottom: 0;
+            width: 100%;
+            text-align: center;
+            position: relative;
+        }
+        }
+    </style>
+
+
+    <div class=" footer"> <!-- Contacts & Credits TODO: move to its own page later, will be at bottom of all pages for now -->
+            <!-- example for contact page ideas: https://www.w3schools.com/howto/howto_css_contact_section.asp -->
+            <div style="font-size: 12px;color: #CB6D51;text-align: center">
+                Wi-Fi INTERNET OF BATTERIES:
+        Concept by: <a href="https://twitter.com/aask42">Aask</a> | Design by: <a href="https://twitter.com/@WhiskeyHackers"
+        )>true</a> and <a href="https://twitter.com/aask42">Aask</a>
+        | Code by: <a href="https://twitter.com/aask42">Aask</a>
+        , <a href="https://blog.legitbs.net/2017/07/the-clemency-architecture.html">Lightning</a>, &
+        <a href="https://github.com/RaigaHomsar">rh</a>
+        </div>
+    </div>
+
+</body>
+</html>
