@@ -3,7 +3,6 @@
 <head>
     <title>🔋Internet of Batteries🔋</title>
     <meta charset='utf-8'>
-
 </head>
 <style>
     /* @viewport {
@@ -224,49 +223,76 @@
         font-weight: bold;
 
         -webkit-animation: colorchange 7s infinite alternate;
+        animation:  colorchange 7s infinite alternate; /* add to clear compatibility warning */
     }
 
     @-webkit-keyframes colorchange {
         0% {
             color: blue;
         }
-
         10% {
             color: #8e44ad;
         }
-
         20% {
             color: #1abc9c;
         }
-
         30% {
             color: #d35400;
         }
-
         40% {
             color: blue;
         }
-
         50% {
             color: #34495e;
         }
-
         60% {
             color: blue;
         }
-
         70% {
             color: #2980b9;
         }
-
         80% {
             color: #f1c40f;
         }
-
         90% {
             color: #2980b9;
         }
+        100% {
+            color: pink;
+        }
+    }
 
+    @keyframes colorchange {
+        0% {
+            color: blue;
+        }
+        10% {
+            color: #8e44ad;
+        }
+        20% {
+            color: #1abc9c;
+        }
+        30% {
+            color: #d35400;
+        }
+        40% {
+            color: blue;
+        }
+        50% {
+            color: #34495e;
+        }
+        60% {
+            color: blue;
+        }
+        70% {
+            color: #2980b9;
+        }
+        80% {
+            color: #f1c40f;
+        }
+        90% {
+            color: #2980b9;
+        }
         100% {
             color: pink;
         }
