@@ -26,6 +26,10 @@ Webpage Work
 <p align="center"> <img width="460" height="300" src="readme-images/website_ux.png">
 </p>
  - [ ] for dc29-bare-ESP32 version, what things will be available vs not in the website view? (see testing section to feed back to more TODO here if required)
+-------
+Webpage Message board Work
+ - [ ] timestamps
+ - [ ] clear separation from msgs
 
 To test
 -------
