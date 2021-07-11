@@ -1,25 +1,28 @@
 // DFIU
 version 2
 
-set led8 0
-set led7 0
-set led6 0
-set led5 0
-set led4 0
-set led3 0
-set led2 0
-set led1 0
-set led0 0
+SET led0 0x8CC8D6
+SET led1 0xA24DCD
+SET led2 0x8CC8D6
+SET led3 0xA24DCD
+SET led4 0x8CC8D6
+SET led5 0xA24DCD
+SET led6 0x8CC8D6
+SET led7 0xA24DCD
+SET led8 0x8CC8D6
 
 default:
-mul led8.b 255
-mul led7.b 255
-mul led6.b 255
-mul led5.b 255
-mul led4.b 255
-mul led3.b 255
-mul led2.b 255
-mul led1.b 255
-mul led0.b 255
+
+MOVE led0 * led1 242
+MOVE led1 * led2 242
+MOVE led2 * led3 242
+MOVE led3 * led4 242
+MOVE led8 * led7 242
+MOVE led7 * led6 242
+MOVE led6 * led5 242
+MOVE led5 * led4 242
+MOVE led4 * led0 242
+
+delay 242
 
 goto default

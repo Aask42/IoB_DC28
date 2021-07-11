@@ -1,9 +1,7 @@
 #include "messages_internal.h"
 
-void MessagesInternal::RegisterWebsocket()
-{
-    Serial.println("Registering websocket");
-
+void MessagesInternal::RegisterWebsocket() {
+    Serial.println("Registering websocket"); // DEBUG detail
     this->LastAccessTime = esp_timer_get_time();
     this->server = new AsyncWebServer(81);
     this->socket_server = new AsyncWebSocket("/ws");
@@ -12,93 +10,82 @@ void MessagesInternal::RegisterWebsocket()
     this->server->begin();
 }
 
-void MessagesInternal::DeregisterWebSocket()
-{
-    if(!this->server)
+void MessagesInternal::DeregisterWebSocket() {
+    if(!this->server) {
         return;
-
-    //remove the socket_server, this will force data to start queuing
-    this->server->removeHandler(this->socket_server);
+    }
+    this->server->removeHandler(this->socket_server); //remove the socket_server, this will force data to start queuing
     this->server->end();
-
     delete this->server;
-
     this->server = 0;
     this->socket_server = 0;
     this->connected = 0;
 }
 
-void static_handleWebSocket(AsyncWebSocket * server, AsyncWebSocketClient * client, AwsEventType type, void * arg, uint8_t *data, size_t len)
-{
-    if(_globalMessages)
+void static_handleWebSocket(AsyncWebSocket * server, AsyncWebSocketClient * client, AwsEventType type, void * arg, uint8_t *data, size_t len) {
+    if(_globalMessages) {
         _globalMessages->handleWebSocket(server, client, type, arg, data, len);
+    }
 }
 
-void MessagesInternal::handleWebSocket(AsyncWebSocket * server, AsyncWebSocketClient * client, AwsEventType type, void * arg, uint8_t *data, size_t len)
-{
+void MessagesInternal::handleWebSocket(AsyncWebSocket * server, AsyncWebSocketClient * client, AwsEventType type, void * arg, uint8_t *data, size_t len) {
     MessageEntryStruct *NewMessage;
-    if(type == WS_EVT_CONNECT)
-    {
+    if(type == WS_EVT_CONNECT) {
         Serial.println("websocket got connection");
         this->connected = 1;
         this->SendConnectedData();
     }
-    else if(type == WS_EVT_DISCONNECT)
-    {
+    else if(type == WS_EVT_DISCONNECT) {
         Serial.println("websocket disconnected");
         this->connected = 0;
     }
-    else if(type == WS_EVT_ERROR)
-    {
+    else if(type == WS_EVT_ERROR) {
         Serial.println("websocket had an error");
     }
-    else if(type == WS_EVT_DATA)
-    {
+    else if(type == WS_EVT_DATA) {
         AwsFrameInfo * info = (AwsFrameInfo*)arg;
-        if(info->final && info->index == 0 && info->len == len)
-        {
-            //Serial.printf("Received %s\n", data);
-            if(info->opcode == WS_BINARY)
-            {
-                //not configured don't do anything unless light test, factory reset, or brightness change
-                if(!this->Options.Configured && ((data[0] != 'o') && (data[0] != 'L') && (data[0] != 'R') && (data[0] != 'l')))
+        if(info->final && info->index == 0 && info->len == len) {
+            //Serial.printf("Received %s\n", data); // DEBUG detail
+            if(info->opcode == WS_BINARY) {
+                    //not configured don't do anything unless light test, factory reset, or brightness change
+                if(!this->Options.Configured && ((data[0] != 'o') && (data[0] != 'L') && (data[0] != 'R') && (data[0] != 'l'))) {
                     return;
+                }
 
-                //allocate a new entry and add it to the list to be parsed
+                    //allocate a new entry and add it to the list to be parsed
                 NewMessage = (MessageEntryStruct *)malloc(sizeof(MessageEntryStruct) + len);
                 NewMessage->next = 0;
                 NewMessage->Len = len;
                 memcpy(NewMessage->Message, data, len);
 
-                //add to the list
+                //add message to the list
                 pthread_mutex_lock(&message_lock);
-                if(this->MessagesTail)
+                if(this->MessagesTail) {
                     this->MessagesTail->next = NewMessage;
-                else
-                    this->MessagesBegin = NewMessage;       //no tail so no beginning, set it
+                }
+                else {
+                    this->MessagesBegin = NewMessage; //no tail, so no beginning, let's set a beginning
+                }
 
-                //set the tail
-                this->MessagesTail = NewMessage;
+                this->MessagesTail = NewMessage; //set the tail
                 pthread_mutex_unlock(&message_lock);
             }
         }
     }    
 }
 
-bool MessagesInternal::handleWebSocketData(uint8_t *data, size_t len)
-{
+bool MessagesInternal::handleWebSocketData(uint8_t *data, size_t len) {
     //process message where we aren't tying up the tcp stack
-    switch(data[0])
-    {
-        case 'b':
+    switch(data[0]) {
+        case 'b': //Broadcast
         {
             LEDHandler->StartScript(LED_BROADCAST_SEND, 1);
 
-            //broadcast message
+                //broadcast message
             uint16_t nicklen = strlen(this->Options.Nickname);
-            uint8_t *Message = (uint8_t *)malloc(len + nicklen + 1);      //remove b, add \x01 separator and add our message flag
+            uint8_t *Message = (uint8_t *)malloc(len + nicklen + 1); //remove b, add \x01 separator and add our message flag
 
-            //add nickname, seperator and message, flag \x01 at the beginning that it is a message
+                //add nickname, seperator and message, flag \x01 at the beginning that it is a message
             Message[0] = 0x01;
             memcpy(&Message[1], this->Options.Nickname, nicklen);
             Message[nicklen + 1] = 0x01;
@@ -110,8 +97,7 @@ bool MessagesInternal::handleWebSocketData(uint8_t *data, size_t len)
 
             break;
         }
-
-        case 'o':
+        case 'o': //Options
         {
             OptionsStruct NewOptions;
             const char *ErrorMsg = 0;
@@ -252,118 +238,98 @@ bool MessagesInternal::handleWebSocketData(uint8_t *data, size_t len)
                 Reload = 1;
 
 #if BOI_VERSION == 1
-            //update brightness if required
-            if(NewOptions.BrightnessValue != this->Options.BrightnessValue)
+            if(NewOptions.BrightnessValue != this->Options.BrightnessValue) { //update brightness if required
                 this->SetBrightness(NewOptions.BrightnessValue);
+            }
 #endif
 
-            //set new values
-            memcpy(&this->Options, &NewOptions, sizeof(NewOptions));
+            memcpy(&this->Options, &NewOptions, sizeof(NewOptions)); //set new values
 
-            //report no error
-            if(Reload)
-            {
+            if(Reload) { //report no error
                 this->socket_server->binaryAll("eSaved - Rebooting", 18);
-
-                //give the websocket 3 seconds to transmit and nvs to flush out
                 yield();
-                delay(3000);
+                delay(3000); //give the websocket 3 seconds to transmit and nvs to flush out
                 esp_restart();
             }
-            else
-            {
+            else {
                 this->socket_server->binaryAll("eSaved", 6);
-
-                //if not previously configured then configure
-                if(!WasConfigured)
+                if(!WasConfigured) //if not previously configured then configure
                     this->SendConnectedData();
             }
             break;
         }
-
-        case 'p':
-            //private message
+        case 'p': //Private Message to Send
             this->Mesh_SendPrivateMessage(&data[1], len - 1, 0);
             break;
-
-        case 'G':
-            //graffiti message
+        case 'G': //Graffiti Message to Send
             this->Mesh_SendPrivateMessage(&data[1], len - 1, 1);
             break;
-
-        case 'L':
-            //light show test
+        case 'L': //Do Light Show Test
             LEDHandler->StartScript(LED_TEST, 1);
             break;
-
-        case 'l':
+        case 'l': //Set brightness for VER_1 only, do nothing for VER_2
 #if BOI_VERSION == 1
             this->SetBrightness(data[1]);
 #endif
             break;
-
-        case 's':
-            //kick off a scan of the area
-            //this->DoScan();
+        case 's': // Area Scan Start TODO - not implemented yet
+            //this->DoScan(); //kick off a scan of the area
             break;
-
-        case 'c':
-            //establish a connection
+        case 'c': //Connect / Establish a connection
             this->ConnectToDevice(&data[1]);
             break;
-
         case 'd':
             Serial.printf("Sending disconnect for %02x:%02x:%02x:%02x:%02x:%02x\n", data[1], data[2], data[3], data[4], data[5], data[6]);
             if(this->Mesh->Disconnect(&data[1]) == MeshNetwork::MeshWriteErrors::ResettingConnection)
                 this->socket_server->binaryAll("eConnection Resetting, try again");
             break;
-
         case 'P':
             //ping-pong response, don't do anything for time
             return false;
-
         case 'F':
             //force disconnect a client
             this->ForceDisconnect(&data[1]);
             break;
-
-        default:
-            //unknown
+        default: //fall-through, unknown states
+            Serial.println("messages-websocket.cpp handleWebSocketData() switch statement fell through, case from data[0] is: " + data[0]); // unhandled error DEBUG detail spot
             return false;
     }
-
-    //indicate that time should be updated
-    return true;
+    return true; //true returned indicates that time should be updated - TODO: add named var for true vs false bools to give them a clear purpose
 }
 
-void MessagesInternal::SendConnectedData()
-{
+void MessagesInternal::SendConnectedData() {
     const char *msg;
-    if(!this->Options.Configured)
+    if(!this->Options.Configured) {
         msg = "Boptions";
-    else if(this->Options.DisplaySplash)
+    }
+    else if(this->Options.DisplaySplash) {
         msg = "Bsplash";
-    else
+    }
+    else {
         msg = "Bbroadcast";
-
+    }
     this->socket_server->binaryAll(msg, strlen(msg));
 
 #if BOI_VERSION == 2
     this->socket_server->binaryAll("L0", 2);
 #endif
 
-    //generate a string of options to send
+        //generate a string of options to send
     String OptionString;
     OptionString = "o";
-    if(this->Options.DisplaySplash)
+    if(this->Options.DisplaySplash) {
         OptionString += "1";
-    else
+        }
+    else {
         OptionString += "0";
+        }
 
-    if(this->Options.BrightnessButtons)
+    if(this->Options.BrightnessButtons) {
         OptionString += "1";
-    else
+        }
+    else {
         OptionString += "0";
+        }
 
     OptionString += this->Options.WifiTimeout;
     OptionString += '\x01';
@@ -380,132 +346,104 @@ void MessagesInternal::SendConnectedData()
     OptionString += this->Options.SafeModeWifiPassword;
     this->socket_server->binaryAll(OptionString.c_str(), OptionString.length());
 
-    if(this->Options.Configured)
-    {
+    if(this->Options.Configured) {
         this->SendKnownConnections();
         this->SendStoredBroadcastMessages();
         this->SendGraffiti();
         this->DoScan();
-
-        //we sent everything, reset our flag
-        this->NewMeshMessages = 0;
+        this->NewMeshMessages = 0; //all data has been sent, reset this flag; NewMeshMessages is set in messages-mesh.cpp and messages.cpp, then handled here
+        Serial.println("messages-websocket.cpp SendConnectedData(), all connection data has been sent, NewMeshMessages set back to 0"); // DEBUG detail
     }
 }
 
-void MessagesInternal::SendGraffiti()
-{
-    //cycle through the graffiti and send it all over the web socket
+void MessagesInternal::SendGraffiti() { //cycle through the graffiti and send it all over the web socket
     GraffitiMessageStruct *CurEntry;
     char *Msg;
-
     CurEntry = this->Graffiti;
-    while(CurEntry)
-    {
-        //create a message to send
+    while(CurEntry) { //if we have data, do stuff
+            //create a message to send
         Msg = (char *)malloc(CurEntry->MessageLen + MAC_SIZE + 1 + MAX_NICKNAME_LEN);
         Msg[0] = 'G';
         memcpy(&Msg[1], CurEntry->MAC, CurEntry->MessageLen + MAC_SIZE + MAX_NICKNAME_LEN);
         
-        //send it
+            //send message
         this->socket_server->binaryAll(Msg, CurEntry->MessageLen + MAC_SIZE + 1 + MAX_NICKNAME_LEN);
         free(Msg);
         CurEntry = CurEntry->next;
         yield();
+        Serial.println("SendGraffiti executed, message sent"); // DEBUG detail
     };
 }
 
-void MessagesInternal::SendKnownConnections()
-{
-    int i, j;
+void MessagesInternal::SendKnownConnections() { //TODO RH Question: this name seems bad, we're sending messages to connections, we're not 'sending connections'??
+    int currentDirectConnections;
+    int currentDirectMessages;
     char *Msg;
     int MsgLen;
-    for(i = 0; i < MAX_DIRECT_CONNECTS; i++)
-    {
-        //if we have a connection then send it
-        if(this->DirectConnections[i])
-        {
-            //craft our message
-            MsgLen = 2 + MAC_SIZE + strlen(this->DirectConnections[i]->Nickname);
+    for(currentDirectConnections = 0; currentDirectConnections < MAX_DIRECT_CONNECTS; currentDirectConnections++) { //1st loop - for eachConnection
+        if(this->DirectConnections[currentDirectConnections]) { //if we have a connection then send it
+                //Build the Message
+            MsgLen = 2 + MAC_SIZE + strlen(this->DirectConnections[currentDirectConnections]->Nickname);
             Msg = (char *)malloc(MsgLen);
             Msg[0] = 'c';
-            memcpy(&Msg[1], this->DirectConnections[i]->MAC, MAC_SIZE);
-            Msg[7] = this->DirectConnections[i]->GraffitiDone;
-            memcpy(&Msg[2 + MAC_SIZE], this->DirectConnections[i]->Nickname, strlen(this->DirectConnections[i]->Nickname));
+            memcpy(&Msg[1], this->DirectConnections[currentDirectConnections]->MAC, MAC_SIZE);
+            Msg[7] = this->DirectConnections[currentDirectConnections]->GraffitiDone;
+            memcpy(&Msg[2 + MAC_SIZE], this->DirectConnections[currentDirectConnections]->Nickname, strlen(this->DirectConnections[currentDirectConnections]->Nickname));
             this->socket_server->binaryAll(Msg, MsgLen);
             free(Msg);
 
-            //if graffiti is not done then don't show any messages for this connection
-            if(!this->DirectConnections[i]->GraffitiDone)
-                continue;
-
-            //send all messages we have
-            for(j = 0; j < MAX_DIRECT_MESSAGES; j++)
-            {
-                //if we have a message then send it
-                if(this->DirectConnections[i]->Messages[j])
-                {
-                    MsgLen = 1 + MAC_SIZE + *(uint16_t *)this->DirectConnections[i]->Messages[j];
+            if(!this->DirectConnections[currentDirectConnections]->GraffitiDone) { //if graffiti is not done then don't show any messages for this connection
+                continue; //TODO RH Question: - why does Graffiti impact this?
+            }
+            
+            for(currentDirectMessages = 0; currentDirectMessages < MAX_DIRECT_MESSAGES; currentDirectMessages++) { //2nd loop - send all messages we have for eachConnection
+                if(this->DirectConnections[currentDirectConnections]->Messages[currentDirectMessages]) { //if we have a message then send it
+                        //Build the Message
+                    MsgLen = 1 + MAC_SIZE + *(uint16_t *)this->DirectConnections[currentDirectConnections]->Messages[currentDirectMessages];
                     Msg = (char *)malloc(MsgLen);
                     Msg[0] = 'p';
-                    memcpy(&Msg[1], this->DirectConnections[i]->MAC, MAC_SIZE);
-                    memcpy(&Msg[1 + MAC_SIZE], &this->DirectConnections[i]->Messages[j][sizeof(uint16_t)], *(uint16_t *)this->DirectConnections[i]->Messages[j]);
+                    memcpy(&Msg[1], this->DirectConnections[currentDirectConnections]->MAC, MAC_SIZE);
+                    memcpy(&Msg[1 + MAC_SIZE], &this->DirectConnections[currentDirectConnections]->Messages[currentDirectMessages][sizeof(uint16_t)], *(uint16_t *)this->DirectConnections[currentDirectConnections]->Messages[currentDirectMessages]);
                     this->socket_server->binaryAll(Msg, MsgLen);
                     free(Msg);
                 }
                 yield();
             }
-
             yield();
         }
     }
 }
 
-void MessagesInternal::SendStoredBroadcastMessages()
-{
+void MessagesInternal::SendStoredBroadcastMessages() {
     int i;
     unsigned short DataLen;
-    for(i = 0; i < MAX_GLOBAL_MESSAGES; i++)
-    {
-        //if empty move on to the next one, we store at the end due to a rolling window
-        //of messages so the first few could be empty
-        if(!this->BroadcastMessages[i])
-            continue;
-
-        Serial.println("Found stored broadcast");
+    for(i = 0; i < MAX_GLOBAL_MESSAGES; i++) {
+        if(!this->BroadcastMessages[i]) {
+            continue; //if empty move on to the next one, we store at the end due to a rolling window of messages so the first few could be empty
+        }
+        Serial.println("Found stored broadcast"); // DEBUG detail
         DataLen = *(unsigned short *)&this->BroadcastMessages[i][0];
         char *NewMessage = (char *)malloc(DataLen + 1);
         NewMessage[0] = 'b';
 
-        //copy the original message
-        memcpy(&NewMessage[1], &this->BroadcastMessages[i][sizeof(unsigned short)], DataLen);
+        memcpy(&NewMessage[1], &this->BroadcastMessages[i][sizeof(unsigned short)], DataLen); //copy the original message
 
-        //send it
-        //Serial.println(NewMessage);
-        this->socket_server->binaryAll(NewMessage, DataLen + 1);
+        //Serial.println(NewMessage); // DEBUG detail
+        this->socket_server->binaryAll(NewMessage, DataLen + 1); //send it
         free(NewMessage);
         free(this->BroadcastMessages[i]);
         yield();
     }
-
-    //wipe them all out
-    memset(this->BroadcastMessages, 0, sizeof(this->BroadcastMessages));
+    memset(this->BroadcastMessages, 0, sizeof(this->BroadcastMessages)); //wipe them all out
 }
 
-void MessagesInternal::BrightnessModified()
-{
-    //get the new value then figure out what scale we need
-    this->Options.BrightnessValue = LEDHandler->GetLEDBrightness() * 200;
-
-    Serial.printf("Brightness modified to %d\n", this->Options.BrightnessValue);
-
-    //save it
+void MessagesInternal::BrightnessModified() {
+    this->Options.BrightnessValue = LEDHandler->GetLEDBrightness() * 200; //get the new value then figure out what scale we need
+    Serial.printf("Brightness modified to %d\n", this->Options.BrightnessValue); // DEBUG detail
     this->preferences.begin("config");
-    this->preferences.putBytes("options", &this->Options, sizeof(OptionsStruct));
+    this->preferences.putBytes("options", &this->Options, sizeof(OptionsStruct)); //save it
     this->preferences.end();
-
-    //if we have a connection then tell the web browser of the new value
-    if(this->socket_server)
-    {
+    if(this->socket_server) { //if we have a connection then tell the web browser of the new value
         char OutBuffer[2];
         OutBuffer[0] = 'l';
         OutBuffer[1] = this->Options.BrightnessValue;
@@ -513,26 +451,22 @@ void MessagesInternal::BrightnessModified()
     }
 }
 
-void MessagesInternal::HandleSensorData(struct SensorDataStruct *SensorData)
-{
-    //if we have a connected socket then send a blob of data about the sensors
-    if(!this->connected)
-        return;
-
-    //generate the data
-    char *NewMessage = (char *)malloc(sizeof(SensorDataStruct) + 1);
+void MessagesInternal::HandleSensorData(struct SensorDataStruct *SensorData) {
+    if(!this->connected) {
+        return; //if we have no connect sockets, then do nothing
+    }
+        //if we have a connected socket then send a blob of data about the sensors
+    char *NewMessage = (char *)malloc(sizeof(SensorDataStruct) + 1); //generate the data
     NewMessage[0] = 'S';
     memcpy(&NewMessage[1], SensorData, sizeof(SensorDataStruct));
-
     this->socket_server->binaryAll(NewMessage, sizeof(SensorDataStruct) + 1);
     free(NewMessage);
 }
 
-void MessagesInternal::DoScan()
-{
-    //kick off a scan, if the websocket is connected then tell it to reset it's display
-    if(this->socket_server && this->connected && this->Options.Configured)
+void MessagesInternal::DoScan() { //kick off a scan, if the websocket is connected then tell it to reset it's display
+    if(this->socket_server && this->connected && this->Options.Configured) {
         this->socket_server->binaryAll("s");
+    }
     this->PingCount = 0;
     this->Mesh->Ping();
 }

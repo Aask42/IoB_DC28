@@ -5,8 +5,7 @@
 #include "leds-data.h"
 
 #if BOI_VERSION == 1
-typedef enum LEDEnum
-{
+typedef enum LEDEnum {
     LED_LEV20,
     LED_LEV40,
     LED_LEV60,
@@ -23,8 +22,7 @@ typedef enum LEDEnum
 #define LED_Count_Battery 5
 
 #elif BOI_VERSION == 2
-typedef enum LEDEnum
-{
+typedef enum LEDEnum {
     LED_0,
     LED_1,
     LED_2,
@@ -59,8 +57,7 @@ typedef enum LEDEnum
 //is done running otherwise it is looping
 typedef void (*LEDCallbackFunc)(const uint16_t ID, bool Finished);
 
-class LEDs
-{
+class LEDs {
     public:
         virtual void AddScript(uint8_t ID, const char *name, const uint8_t *data, uint16_t len);
         virtual void StartScript(uint16_t ID, bool TempOverride);
