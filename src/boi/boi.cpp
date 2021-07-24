@@ -330,7 +330,7 @@ bool boi::button_pressed(Buttons button) { // Check to see if a button was press
         //we go based off a 5ms cycle to avoid situations where power glitches cause the button to randomly trip
         //we also limit to half a second so that pressed never reports if held is being triggered
     int64_t CurTime = esp_timer_get_time();
-    if(!btnState && this->ButtonState[button] && ((CurTime - this->ButtonState[button]) > 5000) && ((CurTime - this->ButtonState[button]) < 500000)) {
+    if(!btnState && this->ButtonState[button] && ((CurTime - this->ButtonState[button]) > 10000) && ((CurTime - this->ButtonState[button]) < 500000)) {
         ret = true;
     }
     else {
