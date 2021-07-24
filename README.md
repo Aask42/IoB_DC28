@@ -91,7 +91,7 @@ There are FIVE buttons on the DC28 version of the Internet of Batteries:
 
 ### Battery Modes
 
-Unless already configured for Safe Mode with Netwotking by default the DEF CELL QUANTUM will boot in to "Capacity" mode. See below for a list of the different modes and how to enable them!
+Unless already configured for Safe Mode with Networking, by default the DEF CELL QUANTUM will boot in to "Capacity" mode. See below for a list of the different modes and how to enable them!
 
 There are different modes you can put the battery in based on how many times you tap the DEF button
 
@@ -172,8 +172,8 @@ Back: (NOW WITH 100% MORE BEEEEEF COURTESY OF BOBO)
 |                   | |
 |       SHUNT       | |
 |_SAO____-_-____SAO_| |
-                  ---
-|--------~4.5cm--------|
+                     ---
+|-------~4.5cm--------|
 
 DC28 dimensions
 7.5 cm

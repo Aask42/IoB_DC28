@@ -1,7 +1,3 @@
-/*
- *
- */
-
 #include "boi.h"
 #include "app.h"
 #include <math.h>
@@ -9,10 +5,10 @@
 #include <Wire.h>
 
 #if BOI_VERSION == 2
-#include "SPI.h"
+    #include "SPI.h"
 #endif
 
-// Initialize ledc variables
+// Initialize ledc variables - TODO is this comment specific to anything here or just TD?
 int backpower_status = 1;
 int backpower_status_auto_off = 0;
 int curr_curr = 0;
@@ -25,22 +21,20 @@ pthread_mutex_t status_lock;
 int64_t last_tick_time = esp_timer_get_time();
 
 #if BOI_VERSION == 1
-float boi::adc_vref_vbat(){  
-    //Configure ADC
+float boi::adc_vref_vbat() {
+        //Configure ADC
     if (this->unit == ADC_UNIT_1) {
         adc1_config_width(ADC_WIDTH_BIT_12);
         adc1_config_channel_atten((adc1_channel_t)this->channel, this->atten);
     } else {
         adc2_config_channel_atten((adc2_channel_t)this->channel, this->atten);
     }
-
-    //Characterize ADC
+        //Characterize ADC
     memset(&this->adc_chars, 0, sizeof(esp_adc_cal_characteristics_t));
     esp_adc_cal_characterize(this->unit, this->atten, ADC_WIDTH_BIT_12, DEFAULT_VREF, &this->adc_chars);
-
-    //Sample ADC Channel
-    uint32_t adc_reading = 0;
-    //Multisampling
+        //Sample ADC Channel
+    uint32_t adc_reading = 0; 
+        //Multisampling
     for (int i = 0; i < NO_OF_SAMPLES; i++) {
         if (unit == ADC_UNIT_1) {
             adc_reading += adc1_get_raw((adc1_channel_t)this->channel);
@@ -51,17 +45,15 @@ float boi::adc_vref_vbat(){
         }
     }
     adc_reading /= NO_OF_SAMPLES;
-    // Read voltage and then use voltage divider equations to figure out actual voltage read
+        // Read voltage and then use voltage divider equations to figure out actual voltage read
     uint32_t v_out = esp_adc_cal_raw_to_voltage(adc_reading, &this->adc_chars);//divide by two per 
     float R1 = 1000000.0;
     float R2 = 249000.0;
     float v_source = ((v_out * R1/R2) + v_out)/1000;
-
     return v_source;
 }
 float boi::adc_vref_vgat(){
-  
-    //Configure ADC
+        //Configure ADC
     if (this->unit == ADC_UNIT_1) {
         adc1_config_width(ADC_WIDTH_BIT_12);
         adc1_config_channel_atten((adc1_channel_t)this->channel_gat, this->atten);
@@ -69,13 +61,13 @@ float boi::adc_vref_vgat(){
         adc2_config_channel_atten((adc2_channel_t)this->channel_gat, this->atten);
     }
 
-    //Characterize ADC
+        //Characterize ADC
     memset(&this->adc_chars_gat, 0, sizeof(esp_adc_cal_characteristics_t));
     esp_adc_cal_characterize(this->unit, this->atten, ADC_WIDTH_BIT_12, DEFAULT_VREF, &this->adc_chars_gat);
 
-    //Sample ADC Channel
+        //Sample ADC Channel
     uint32_t adc_reading_gat = 0;
-    //Multisampling
+        //Multisampling
     for (int i = 0; i < NO_OF_SAMPLES; i++) {
         if (unit == ADC_UNIT_1) {
             adc_reading_gat += adc1_get_raw((adc1_channel_t)this->channel_gat);
@@ -87,26 +79,22 @@ float boi::adc_vref_vgat(){
     }
     adc_reading_gat /= NO_OF_SAMPLES;
 
-    // Read voltage and then use voltage divider equations to figure out actual voltage read
+        // Read voltage and then use voltage divider equations to figure out actual voltage read
     uint32_t v_out = esp_adc_cal_raw_to_voltage(adc_reading_gat, &this->adc_chars_gat);
     float R1 = 1000000.0;
     float R2 = 249000.0;
     float v_source = ((v_out * R1/R2) + v_out)/1000;
-
     return v_source;
 }
 #endif
 
-void boi::get_joules(float *total_joules, float *average_joules, float watts){
-    // J = W * s
+void boi::get_joules(float *total_joules, float *average_joules, float watts) {
+        // J = W * s
     float joules_consumed_in_ms_since_update;
     int64_t current_tick_time = esp_timer_get_time();
 
-    //get milliseconds passed
-    u_long ms_passed = (current_tick_time - last_tick_time) / 1000;
-    if(!ms_passed)
-    {
-        //not a full millisecond since last check, just return last value
+    u_long ms_passed = (current_tick_time - last_tick_time) / 1000; //get milliseconds passed
+    if(!ms_passed) { //if not a full millisecond since last check, just return last value
         *total_joules = this->total_joules;
         *average_joules = this->average_joules;
         return;
@@ -114,24 +102,21 @@ void boi::get_joules(float *total_joules, float *average_joules, float watts){
 
     joules_consumed_in_ms_since_update = (watts * ms_passed) / 1000.0;
 
-    //we now have how many have been consumed since last tick, add it to our total
-    this->total_joules += joules_consumed_in_ms_since_update;
+    this->total_joules += joules_consumed_in_ms_since_update; //we now have how many have been consumed since last tick, add it to our total
     *total_joules = this->total_joules;
 
     //figure out an average over 5 seconds to return
 
-    //average_joules stores our value for 1ms of time
-    //so figure out how many total joules were used in that time window
+        //average_joules stores our value for 1ms of time
+        //so figure out how many total joules were used in that time window
     float total_joules_per_ms = this->average_joules * this->TotalMSForAverageJoules;
 
-    //now add in our consumed amount and how may ms it took
-    total_joules_per_ms += joules_consumed_in_ms_since_update;
+    total_joules_per_ms += joules_consumed_in_ms_since_update; //now add in our consumed amount and how may ms it took
     this->TotalMSForAverageJoules += ms_passed;
 
-    //if our total MS is > 5 seconds then remove from the average a proper amount before the
-    //new average is calculated
-    if(this->TotalMSForAverageJoules > 5000)
-    {
+        //if our total MS is > 5 seconds then remove from the average a proper amount before the
+        //new average is calculated
+    if(this->TotalMSForAverageJoules > 5000) {
         total_joules_per_ms -= (this->average_joules * (this->TotalMSForAverageJoules - 5000));
         this->TotalMSForAverageJoules = 5000;
     }
@@ -145,20 +130,16 @@ void boi::get_joules(float *total_joules, float *average_joules, float watts){
 
     last_tick_time = current_tick_time;
 
-    //if 5 seconds have passed then update the flash so we dont loose it if the device reboots
-    if((current_tick_time - LastJoulesSaveTime) > 5000000ULL)
-    {
+    if((current_tick_time - LastJoulesSaveTime) > 5000000ULL) { //if 5 seconds have passed then update the flash so we dont loose it if the device reboots
         this->preferences.begin("boi");
         this->preferences.putFloat("total_joules", this->total_joules);
         this->preferences.end();
-
         LastJoulesSaveTime = current_tick_time;
     }
 }
 
-boi::boi(){
-    Serial.println("Initializing boi class...");
-
+boi::boi() {
+    Serial.println("Initializing boi class..."); // DEBUG detail
     memset(this->ButtonPins, 0, sizeof(this->ButtonPins));
     memset(this->ButtonState, 0, sizeof(this->ButtonState));
     memset(this->CHGPins, 0, sizeof(this->CHGPins));
@@ -169,32 +150,26 @@ boi::boi(){
     this->average_joules = 0;
     this->LastJoulesSaveTime = 0;
     memset(&this->LastSensorData, 0, sizeof(SensorDataStruct));
-
     pthread_mutex_init(&status_lock, NULL);
 
 #if BOI_VERSION == 1
     this->ina219.begin();
     this->ina219.setCalibration_16V_500mA();
-
-    // Button assignment
+        // Button assignments
     this->set_button_pin(boi::BTN_PWR, BTN_PWR_PIN);
     this->set_button_pin(boi::BTN_ACT, BTN_ACT_PIN);
     this->set_button_pin(boi::BTN_BONUS, BTN_BONUS_PIN);
-
     pinMode(BACKPOWER_OUT_PIN, OUTPUT); // Set up BACKPOWER_OUT_PIN, defaults to "on"
-
     pinMode(VGAT_DIV_PIN,INPUT_PULLUP);        
     pinMode(VBAT_DIV_PIN,INPUT_PULLUP);
 #elif BOI_VERSION == 2
-    // Button assignment
+        // Button assignments
     this->set_button_pin(boi::BTN_PWR, 1);
     this->set_button_pin(boi::BTN_ACT, 0);
 #endif
-
     pinMode(RDY_4056_PIN,INPUT);
     pinMode(CHRG_4056_PIN,INPUT);
-
-    this->toggle_backpower();        // Toggle backpower off
+    this->toggle_backpower(); // Toggle backpower off
     this->initPreferences();
 }
 
@@ -205,34 +180,31 @@ int boi::read_current(){
     int current = SPIData.GATCurrent;
 #endif
 
-    if(prev_curr != curr_curr){
+    if(prev_curr != curr_curr) {
         prev_curr = curr_curr;
         curr_curr = current;
         int x = (curr_curr - prev_curr);
         Serial.printf("Change of Current being drawn: %d\n", x);
     }
-
     return current;
 }
 
-// Dump all stats from the battery
+    // Dump all stats from the battery
 void boi::get_sensor_data(SensorDataStruct *Sensor){
-    //if we got stats recently then just return them to avoid excessive hitting
-    if((this->LastSensorDataUpdate + 150000ULL) > esp_timer_get_time())
-    {
+        //if we got stats recently then just return them to avoid excessive hitting
+    if((this->LastSensorDataUpdate + 150000ULL) > esp_timer_get_time()) {
         memcpy(Sensor, &this->LastSensorData, sizeof(SensorDataStruct));
         return;
     }
 
-    //attempt to lock the mutex
-    if(pthread_mutex_trylock(&status_lock))
-    {
-        //we failed to lock, someone else snatched it, just return the original data
+        //attempt to lock the mutex
+    if(pthread_mutex_trylock(&status_lock)) {
+            //we failed to lock, someone else snatched it, just return the original data
         memcpy(Sensor, &this->LastSensorData, sizeof(SensorDataStruct));
         return;
     }
 
-    //force update so we can get new data
+    //force update so we can get new data - TODO where does this info best go, or how do we best code-doc the section that does this?
     this->LastSensorDataUpdate = esp_timer_get_time();
 
     //go get our values
@@ -260,12 +232,12 @@ void boi::get_sensor_data(SensorDataStruct *Sensor){
 #elif BOI_VERSION == 2
     Sensor->shunt_voltage = SPIData.GATVoltage;
 #endif
-    if((Sensor->shunt_voltage < -0.25) && backpower_status){
+    if((Sensor->shunt_voltage < -0.25) && backpower_status) {
         Serial.print("Power detected going the wrong way! Disbling Backpower!!!");
         this->toggle_backpower();
         backpower_status_auto_off = 1;
     }
-    if((Sensor->shunt_voltage >= 0) && backpower_status_auto_off){
+    if((Sensor->shunt_voltage >= 0) && backpower_status_auto_off) {
         Serial.print("Coast is clear! Re-enable backpower!");
         this->toggle_backpower();
         backpower_status_auto_off = 0;
@@ -279,18 +251,14 @@ void boi::get_sensor_data(SensorDataStruct *Sensor){
 
     Sensor->vbat_max = this->vbat_max_mv;
     Sensor->vbat_min = this->vbat_min_mv;
-
-    //copy our data and update our last time
-    memcpy(&this->LastSensorData, Sensor, sizeof(SensorDataStruct));
-
+    memcpy(&this->LastSensorData, Sensor, sizeof(SensorDataStruct)); //copy our data and update our last time
     pthread_mutex_unlock(&status_lock);
 }
 
-void boi::print_sensor_data()
-{
+void boi::print_sensor_data() {
     SensorDataStruct Data;
     this->get_sensor_data(&Data);
-    
+        // DEBUG detail block:
     Serial.print("=====InternetOfBatteries=====\n\n");
     Serial.print("By: Aask, Lightning, and true\n\n");
     Serial.printf(" ""\xE2\x96\xB2\xC2\xA0""=%s= ""\xC2\xA0\xE2\x96\xB2""\n", MessageHandler->GetOptions()->WifiName);
@@ -311,23 +279,18 @@ void boi::print_sensor_data()
     Serial.print("""\xC2\xA0\xE2\x96\xB2""\xC2\xA0""\xE2\x96\xB2""==""==============""==""\xE2\x96\xB2""\xC2\xA0""\xE2\x96\xB2""""\n\n");
 }
 
-// Check for current across VCC and ground pins, set switch
-void boi::toggle_backpower(){
+void boi::toggle_backpower(){ // Checks for current across VCC and ground pins, set switch
      int current_detected;
 #if BOI_VERSION == 1
     current_detected = ina219.getCurrent_mA();
 #elif BOI_VERSION == 2
     current_detected = SPIData.GATCurrent;
 #endif
-
-    // Check current power-draw through INA219, print if above zero
-    if(current_detected > 5.00){
+    if(current_detected > 5.00) { // Check current power-draw through INA219, print if above zero
         Serial.printf("Current Sensed: %dmAh\n", current_detected);
     }
-
     Serial.println("Toggling backpower...: ");
     Serial.printf("Initial Backpower Status: %d\n", backpower_status);
-
     switch(backpower_status){
         case 0:
 #if BOI_VERSION == 1
@@ -339,11 +302,8 @@ void boi::toggle_backpower(){
             Serial.println("BACKPOWER_OUT_PIN is now engaged!: 1");
             Serial.println("-. ..- -- -... . .-. _/̄ˉ ..... _/̄ˉ .. ... _/̄ˉ .- .-.. .. ...- . -.-.-- -.-.--");
             backpower_status = 1;
-
-            // Enable backpower ON LED
-            LEDHandler->StartScript(LED_POUT_ON, 1);
+            LEDHandler->StartScript(LED_POUT_ON, 1); // Enable backpower ON LED
             Serial.println("Backpower Enabled");
-            
             break;
         case 1:
             Serial.printf("Disabling backpower on pin %d!\n", BACKPOWER_OUT_PIN);     
@@ -356,78 +316,73 @@ void boi::toggle_backpower(){
 #endif
             Serial.println("BACKPOWER_OUT_PIN has been disengaged! : 0");
             backpower_status = 0;
-
-            // Disble backpower ON LED
-            LEDHandler->StartScript(LED_POUT_OFF, 1);
+            LEDHandler->StartScript(LED_POUT_OFF, 1); // Disble backpower ON LED
             Serial.println("Disabled backpower!");
             break;
     };
 }
 
-// Check to see if a button was pressed
-bool boi::button_pressed(Buttons button)
-{
+bool boi::button_pressed(Buttons button) { // Check to see if a button was pressed
     bool ret;
     int btnState;
     btnState = this->doDigitalRead(this->ButtonPins[button], true);
-
-    //if the button is not held and was held in the past then indicate it was pressed
-    //we go based off a 5ms cycle to avoid situations where power glitches cause the button to randomly trip
-    //we also limit to half a second so that pressed never reports if held is being triggered
+        //if the button is not held and was held in the past then indicate it was pressed
+        //we go based off a 5ms cycle to avoid situations where power glitches cause the button to randomly trip
+        //we also limit to half a second so that pressed never reports if held is being triggered
     int64_t CurTime = esp_timer_get_time();
-    if(!btnState && this->ButtonState[button] && ((CurTime - this->ButtonState[button]) > 5000) && ((CurTime - this->ButtonState[button]) < 500000))
+    if(!btnState && this->ButtonState[button] && ((CurTime - this->ButtonState[button]) > 10000) && ((CurTime - this->ButtonState[button]) < 500000)) {
         ret = true;
-    else
+    }
+    else {
         ret = false;
+    }
 
-    //if button is not held then set value to 0
-    //if button is pressed but we don't have a value then set the value
-    if(!btnState)
-        this->ButtonState[button] = 0;
-    else if(!this->ButtonState[button])
+    if(!btnState) {
+        this->ButtonState[button] = 0; //if button is not held then set value to 0
+    }
+    else if(!this->ButtonState[button]) { //if button is pressed but we don't have a value then set the value
         this->ButtonState[button] = CurTime;
-
+    }
     return ret;
 }
 
-//indicate how many milliseconds a button is held
-int64_t boi::button_held(Buttons button)
-{
+int64_t boi::button_held(Buttons button) { //indicate how many milliseconds a button is held
     uint32_t ret;
     int btnState;
     btnState = this->doDigitalRead(this->ButtonPins[button], true);
 
-    //if the button is held and was held in the past then indicate how long
+        //if the button is held and was held in the past then indicate how long
     int64_t CurTime = esp_timer_get_time();
-    if(btnState && this->ButtonState[button] && ((CurTime - this->ButtonState[button]) >= 500000))
+    if(btnState && this->ButtonState[button] && ((CurTime - this->ButtonState[button]) >= 500000)) {
         ret = (CurTime - this->ButtonState[button]) / 1000ULL;
-    else
+    }
+    else {
         ret = 0;
+    }
 
     //if button is not held then set value to 0
     //if button is pressed but we don't have a value then set the value
-    if(!btnState)
+    if(!btnState) {
         this->ButtonState[button] = 0;
-    else if(!this->ButtonState[button])
+    }
+    else if(!this->ButtonState[button]) {
         this->ButtonState[button] = CurTime;
-
+    }
     return ret;
 }
 
-void boi::set_button_pin(Buttons button, uint8_t pin)
-{
+void boi::set_button_pin(Buttons button, uint8_t pin) {
     this->ButtonPins[button] = pin;
 #if BOI_VERSION == 1
     pinMode(pin, INPUT_PULLUP);
 #endif
 }
 
-void boi::set_chg_pin(CHGPinEnum input, uint8_t pin)
-{
+void boi::set_chg_pin(CHGPinEnum input, uint8_t pin) {
     this->CHGPins[input] = pin;
 }
 
-void boi::initPreferences(){
+void boi::initPreferences() {
     this->preferences.begin("boi");
     this->boot_count = this->preferences.getUInt("counter", 0) + 1;
     this->preferences.putUInt("counter", this->boot_count);
@@ -435,18 +390,17 @@ void boi::initPreferences(){
     this->vbat_max_mv = this->preferences.getFloat("vbat_max", 0);
     this->vbat_min_mv = this->preferences.getFloat("vbat_min", 0);
     this->preferences.end();
-
-    Serial.printf("Battery has been booted %d times ^_^\n", boot_count);
+    Serial.printf("Battery has been booted %d times ^_^\n", boot_count); // DEBUG detail
 }
 
-void boi::calibrate_capacity_measure(float vbat){
-     if((vbat > this->vbat_max_mv) || (this->vbat_max_mv == 0)){
+void boi::calibrate_capacity_measure(float vbat) {
+     if((vbat > this->vbat_max_mv) || (this->vbat_max_mv == 0)) {
         this->preferences.begin("boi");
         this->preferences.putFloat("vbat_max", vbat);
         this->preferences.end();
         this->vbat_max_mv = vbat;
     }
-    if((vbat < this->vbat_min_mv) || (this->vbat_min_mv == 0)){
+    if((vbat < this->vbat_min_mv) || (this->vbat_min_mv == 0)) {
         this->preferences.begin("boi");
         this->preferences.putFloat("vbat_min", vbat);
         this->preferences.end();
@@ -455,23 +409,23 @@ void boi::calibrate_capacity_measure(float vbat){
     this->preferences.end();
 }
 
-void boi::get_charging_status(SensorDataStruct *Data){
+void boi::get_charging_status(SensorDataStruct *Data) {
     int charge_status = Data->charge_pin_detected;
     int ready_status = Data->ready_pin_detected;
-    if(charge_status == 0 && ready_status == 1){
-        if(charging == 0){
+    if(charge_status == 0 && ready_status == 1) {
+        if(charging == 0) {
             Serial.print("Charging! ");
             LEDHandler->StartScript(LED_CHARGING, 1);
             charging = 1;
         }
-    }else if(charge_status == 0 && ready_status == 0){
+    }else if(charge_status == 0 && ready_status == 0) {
         if(charged == 0){
             Serial.print("Charged!!!");
             LEDHandler->StopScript(LED_CHARGING);
             charged = 1;
         }
-    }else{
-        if(charging == 1){
+    }else {
+        if(charging == 1) {
             LEDHandler->StopScript(LED_CHARGING);
             charged = 0;
             charging = 0;
@@ -479,25 +433,20 @@ void boi::get_charging_status(SensorDataStruct *Data){
     }
 }
 
-int boi::doDigitalRead(uint8_t pin, bool Button)
-{
+int boi::doDigitalRead(uint8_t pin, bool Button) {
 #if BOI_VERSION == 1
-    if(Button)
+    if(Button) {
         return !digitalRead(pin);
-
+    }
     return digitalRead(pin);
 #elif BOI_VERSION == 2
-    //figure out which return to give
-    switch(pin)
-    {
+    switch(pin) { //figure out which return to give
         case 0:
         case 1:
             return SPIData.BtnPressed[pin];
-
         case RDY_4056_PIN:
         case CHRG_4056_PIN:
             return digitalRead(pin);
-
         default:
             return 0;
     };
