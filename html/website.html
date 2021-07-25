@@ -146,62 +146,61 @@
     </div>
     <!-- Configure page -->
     <div class="content">
-    <div class="old-style-iob-border">
-        <div class="sensor-data-section"> <!-- adding 'content' class causes sensor details to take up whole screen, must add content above old-style-iob-border -->
-        <!-- displays the battery stats -->
-        <!-- this sensor data table cannot handle anything under 300 Width, the Length/Y axis just scrolls, that is fine -->
-            <!-- will need to devise a different way to display the data on a screen less than 300px wide if we care, leaving the issue for now -->
-        <table border=0 cellspacing=2 cellpadding=0 width=100%>
-            <th>Sensor Stats:</th>
-            <tr>
-                <td class=tablecell>Current: 
-                    <div class="tablecell tabledata" id="status_current">0.00</div>
-                </td>
-                <td class=tablecell>BUS: 
-                    <div class="tablecell tabledata" id="status_bus">0.00</div>
-                </td>
-                <td class=tablecell colspan=2>Min: 
-                    <div class="tablecell tabledata" id="status_vbatmin">
-                    0.00
-                    </div>
-            </tr>
-            <tr>
-                <td class=tablecell>VBAT: 
-                    <div class="tablecell tabledata" id="status_vbat">0.00</div>
-                </td>
-                <td class=tablecell>Ambient: 
-                    <div class="tablecell tabledata" id="status_ambient">0.00</div>
-                </td>
-                <td class=tablecell colspan=2>Max: 
-                    <div class="tablecell tabledata" id="status_vbatmax">0.00</div>
-                </td>
-            </tr>
-            <tr>
-                <td class=tablecell>VGAT: 
-                    <div class="tablecell tabledata" id="status_vgat">0.00</div>
-                </td>
-                <td class=tablecell>SHUNT: 
-                    <div class="tablecell tabledata" id="status_shunt">0.00</div>
-                </td>
-                <!-- <td class=tablecell id="wifi_name_status"></td> -->
-                <td class=tablecell>Charging Status:
-                    <div class=tablecell id="status_ready"></div>
-                </td>
-            </tr>
-            <tr>
-                <td class=tablecell>Avg Joules: 
-                    <div class="tablecell tabledata" id="status_avg_joules">0.00</div>
-                </td>
-                <td class=tablecell>Total Joules: 
-                    <div class="tablecell tabledata" id="status_total_joules">0.00</div>
-                </td>
-                <!-- <td class=tablecell id="nickname_status"></td> -->
-            </tr>
-        </table>
+        <div class="old-style-iob-border">
+            <div class="sensor-data-section"> <!-- adding 'content' class causes sensor details to take up whole screen, must add content above old-style-iob-border -->
+            <!-- displays the battery stats -->
+            <!-- this sensor data table cannot handle anything under 300 Width, the Length/Y axis just scrolls, that is fine -->
+                <!-- will need to devise a different way to display the data on a screen less than 300px wide if we care, leaving the issue for now -->
+            <table border=0 cellspacing=2 cellpadding=0 width=100%>
+                <th>Sensor Stats:</th>
+                <tr>
+                    <td class=tablecell>Current: 
+                        <div class="tablecell tabledata" id="status_current">0.00</div>
+                    </td>
+                    <td class=tablecell>BUS: 
+                        <div class="tablecell tabledata" id="status_bus">0.00</div>
+                    </td>
+                    <td class=tablecell colspan=2>Min: 
+                        <div class="tablecell tabledata" id="status_vbatmin">
+                        0.00
+                        </div>
+                </tr>
+                <tr>
+                    <td class=tablecell>VBAT: 
+                        <div class="tablecell tabledata" id="status_vbat">0.00</div>
+                    </td>
+                    <td class=tablecell>Ambient: 
+                        <div class="tablecell tabledata" id="status_ambient">0.00</div>
+                    </td>
+                    <td class=tablecell colspan=2>Max: 
+                        <div class="tablecell tabledata" id="status_vbatmax">0.00</div>
+                    </td>
+                </tr>
+                <tr>
+                    <td class=tablecell>VGAT: 
+                        <div class="tablecell tabledata" id="status_vgat">0.00</div>
+                    </td>
+                    <td class=tablecell>SHUNT: 
+                        <div class="tablecell tabledata" id="status_shunt">0.00</div>
+                    </td>
+                    <!-- <td class=tablecell id="wifi_name_status"></td> -->
+                    <td class=tablecell>Charging Status:
+                        <div class=tablecell id="status_ready"></div>
+                    </td>
+                </tr>
+                <tr>
+                    <td class=tablecell>Avg Joules: 
+                        <div class="tablecell tabledata" id="status_avg_joules">0.00</div>
+                    </td>
+                    <td class=tablecell>Total Joules: 
+                        <div class="tablecell tabledata" id="status_total_joules">0.00</div>
+                    </td>
+                    <!-- <td class=tablecell id="nickname_status"></td> -->
+                </tr>
+            </table>
+            </div>
         </div>
     </div>
-    </div>
-    <!-- start of dumped shit -->
     <style>
         .configure {
             display: flex;
@@ -212,101 +211,78 @@
             width: 90%;
         }
     </style>
-    <!-- style="display: flex; flex-direction: column;align-items: stretch;justify-content: space-between;height: 98%;width:90%"> -->
-    <script>
-        //selectionbody - 
-        //messagebodytext 
-        //messagebodytextmsg - SendMessage
-        //optioncell - ApplyOptions
-                //mainbody - inside optioncell section?
-    </script>
-
     <div class="content"> 
-        <div class=tableborder>
     <div class=selectionbody></div> <!-- acts as a spacer right now between content and sensor stats -->
-
-        <style>
-            .msg-body {
-                
+        <style> /* simplified UX style choice */
+            /* Chat containers */
+            .container {
+            border: 2px solid #dedede;
+            background-color: #f1f1f1;
+            border-radius: 5px;
+            padding: 10px;
+            margin: 7px 0;
+            word-break: break-all;
             }
-            .msg-input {
-                font-weight: bold;
+            /* Darker chat container */
+            .darker {
+            border-color: #ccc;
+            background-color: #ddd;
+            }
+            .you-msg p {
+                float: right;
+            }
+            /* Clear floats */
+            .container::after {
+            content: "";
+            clear: both;
+            display: table;
+            }
+            /* Style images */
+            .container img {
+            float: left;
+            max-width: 60px;
+            width: 100%;
+            margin-right: 20px;
+            border-radius: 50%;
+            }
+            /* Style the right image */
+            .container img.right {
+            float: right;
+            margin-left: 20px;
+            margin-right:0;
+            }
+            /* Style time text */
+            .time-right {
+            float: right;
+            color: #aaa;
+            }
+            /* Style time text */
+            .time-left {
+            float: left;
+            color: #999;
             }
         </style>
-        <div class=body style="position: relative;">
-
-            <style> /* simplified UX style choice */
-                /* Chat containers */
-                .container {
-                border: 2px solid #dedede;
-                background-color: #f1f1f1;
-                border-radius: 5px;
-                padding: 10px;
-                margin: 7px 0;
-                word-break: break-all;
-                }
-                /* Darker chat container */
-                .darker {
-                border-color: #ccc;
-                background-color: #ddd;
-                }
-                .you-msg p {
-                 float: right;
-                }
-                /* Clear floats */
-                .container::after {
-                content: "";
-                clear: both;
-                display: table;
-                }
-                /* Style images */
-                .container img {
-                float: left;
-                max-width: 60px;
-                width: 100%;
-                margin-right: 20px;
-                border-radius: 50%;
-                }
-                /* Style the right image */
-                .container img.right {
-                float: right;
-                margin-left: 20px;
-                margin-right:0;
-                }
-                /* Style time text */
-                .time-right {
-                float: right;
-                color: #aaa;
-                }
-                /* Style time text */
-                .time-left {
-                float: left;
-                color: #999;
-                }
-            </style>
+        <!-- UX test msgs -->
+        <!-- <div class="container them-msg">
+            <span class="time-right">Them</span>
+            <p>Hello. How are you today?</p>
+            </div>
+            <div class="container darker you-msg">
+                <span class="time-left">You</span>
+            <p>Hey! I'm fine. Thanks for asking!</p>
+            </div>
             <div class="container them-msg">
                 <span class="time-right">Them</span>
-                <p>Hello. How are you today?</p>
-              </div>
-              <div class="container darker you-msg">
-                  <span class="time-left">You</span>
-                <p>Hey! I'm fine. Thanks for asking!</p>
-              </div>
-              <div class="container them-msg">
-                  <span class="time-right">Them</span>
-                <p>Sweet! So, what do you wanna do today?</p>
-              </div>
-              <div class="container darker you-msg">
-                  <span class="time-left">You</span>
-                <p>Nah, I dunno. Play soccer.. or learn more coding perhapsperhapsperhapsperhapsperhapsperhapsperhapsperhapsperhapsperhapsperhapsperhapsperhapsperhapsperhapsperhapsperhapsperhaps?</p>
-              </div>
-              <div class="container you-msg">
+            <p>Sweet! So, what do you wanna do today?</p>
+            </div>
+            <div class="container darker you-msg">
                 <span class="time-left">You</span>
-                <p>test?</p>
-              </div>
-
-
-
+            <p>Nah, I dunno. Play soccer.. or learn more coding?</p>
+            </div>
+            <div class="container you-msg">
+            <span class="time-left">You</span>
+            <p>test?</p>
+            </div> -->
             <div class="mainbody" id="messagebody">
                 <div class="messagebodytext" id="chatwindow">
                     <!-- HTML injected here eventually from calling SendMessage() w/ msg (or other bat msg received) -->
@@ -321,12 +297,9 @@
                     </div>
                 </div>
             </div> <!-- end message body section -->
-        </div> <!-- class=body style="position: relative; -->
 
             <div class=mainbody id=optionbody>
                 <form id=options>
-
-
                     <style>
                         .grid-container { /* https://www.w3schools.com/css/css_grid.asp */
                             display: grid;
@@ -440,51 +413,20 @@
                         </div>
                         <div class="grid-item"></div> <!--blank item to balance grid-->
                     </div> <!-- grid-container -->
-
-
                 </form>
             </div> <!-- class=mainbody id=optionbody -->
-                <div class=mainbody id=scanbody></div>
+                <div class=mainbody id=scanbody>
+                </div>
                 <div class=mainbody id=startupbody>
                     <div class=messagebodytext id=startupbodytext onscroll="CheckScroll();">
-                        <!-- <html>
-                        <head>
-                            <meta http-equiv="Content-type" content="text/html;charset=UTF-8">
-                            <title>Internet of Batteries: DEF CON 28 - "They don't support that"</title>
-                            <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/Microsoft/vscode/extensions/markdown-language-features/media/markdown.css">
-                            <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/Microsoft/vscode/extensions/markdown-language-features/media/highlight.css">
-                            <style>
-                                .task-list-item {
-                                    list-style-type: none;
-                                }
-                                .task-list-item-checkbox {
-                                    margin-left: -20px;
-                                    vertical-align: middle;
-                                }
-                            </style>
-                            <style>
-                                body {
-                                    font-family: -apple-system, BlinkMacSystemFont, 'Segoe WPC', 'Segoe UI', 'Ubuntu', 'Droid Sans', sans-serif;
-                                    font-size: 14px;
-                                    line-height: 1.6;
-                                }
-                            </style>
-                        </head> -->
-                        <!-- TODO: add LINK TO GitHub README for instructions -->
-                        <!-- <div class=mainbody id=bootbody style="visibility: visible;">
-                            <div class=messagebodytext id=bootbodytext>
-                                Waiting on websocket connection
-                            </div>
+                        <div class=messagebodytext id=bootbodytext>
+                            Waiting on websocket connection
                         </div>
-                        <div class=mainbody id=optionbody></div> -->
-                    </div> <!-- class=messagebodytext id=startupbodytext onscroll="CheckScroll(); -->
-                </div> <!-- class=mainbody id=startupbody -->
-        </div> <!-- class=tableborder -->
-    </div> <!-- class="content" -->
+                    </div>
+                </div>
+    </div> <!-- class="content" , content section next to leftnav -->
 
-    <!-- end of dumped shit -->
 
-    <!-- PrivateMessages page -->
         <!-- https://www.w3schools.com/howto/howto_css_chat.asp -->
     <div class="content"></div>
     <!-- GraffitiMessages page -->
@@ -542,7 +484,8 @@
                 var Data = Command.slice(1); //determine type of message based on the first value of the command
                 switch (Command[0]) {
                     case 'B': //boot startup, indicate what page to show
-                        getI("bootbody").style.visibility = "hidden";
+                        // getI("bootbody").style.visibility = "hidden";
+                        getI("bootbody").style.display = "none";
                         if (Data == "splash") {
                             GenerateSelections(1);
                             DisplaySection("startup");
@@ -579,8 +522,10 @@
                         break;
                     case 'L':
                         if (Command[1] == '0') {
-                            getI("brightnesstr1").style.visibility = "hidden";
-                            getI("brightnesstr2").style.visibility = "hidden";                        
+                            // getI("brightnesstr1").style.visibility = "hidden";
+                            getI("brightnesstr1").style.display = "none";
+                            // getI("brightnesstr2").style.visibility = "hidden";                        
+                            getI("brightnesstr2").style.display = "none";
                         }
                         break;
                     case 'p': //private message
@@ -714,7 +659,8 @@
                 } else {
                     obj.style.visibility = "visible";
                     window.setTimeout(function () {
-                        getI("errormsg").style.visibility = "hidden";
+                        // getI("errormsg").style.visibility = "hidden";
+                        getI("errormsg").style.display = "none";
                     }, 3000);
                 }
             }
@@ -929,11 +875,17 @@
             }
 
             function DisplaySection(name) {
-                getI("messagebody").style.visibility = "hidden";
-                getI("optionbody").style.visibility = "hidden";
-                getI("scanbody").style.visibility = "hidden";
-                getI("startupbody").style.visibility = "hidden";
-                getI(name + "body").style.visibility = "visible";
+                getI("messagebody").style.display = "none"; //hides both content AND space taken by elements
+                getI("optionbody").style.display = "none";
+                getI("scanbody").style.display = "none";
+                getI("startupbody").style.display = "none";
+                getI(name + "body").style.display = ""; //shows
+
+                // getI("messagebody").style.visibility = "hidden";
+                // getI("optionbody").style.visibility = "hidden";
+                // getI("scanbody").style.visibility = "hidden";
+                // getI("startupbody").style.visibility = "hidden";
+                // getI(name + "body").style.visibility = "visible";
                 if (name == "message") {
                     var bodyobj = getI("messagebody");
                     var bodytextobj = getC("messagebodytext");
@@ -965,7 +917,8 @@
                         msgbody.innerHTML += "<div class=selection onclick=\"Connect('" + MACHex + "');\">" + StripHTML(ScanData[i]["Name"]) + "</div>";
                     }
                 }
-                getI("messagebodytextmsg").style.visibility = "hidden";
+                // getI("messagebodytextmsg").style.visibility = "hidden";
+                getI("messagebodytextmsg").style.display = "none";
                 CurDisplay = "scan";
                 DisplaySection("message");
                 //SendWS("s");
@@ -974,23 +927,22 @@
             function DisplayBroadcast() { //Global Chat
                 //create & Inject the HTML used to display broadcast messages to/from battery friendlies
                 var msgbody = getC("messagebodytext");
+                var nickname = getN("nickname").value;
                 msgbody.innerHTML = "Global Chat:<br>";
                 for (var i = 0; i < BroadcastMessages.length; i++) {
-                    console.log("i:" + i + ", BroadcastMessages length: " + BroadcastMessages.length);
-                    // msgbody.innerHTML += StripHTML(BroadcastMessages[i]) + "<br>";
-                    msgbody.innerHTML += "<div class=msg-body>" + StripHTML(BroadcastMessages[i]) + "</div>";
-                    // this builds each message
-                    console.log("msg-body:" + msgbody.innerHTML); //border-radius
+                    //adds broadcast msg to screen
+                    msgbody.innerHTML += BroadcastMessages[i]; //broadcast will have html added to the msg from other battery
                 }
 
                 var msgboxobj = getN("message");
                 msgboxobj.nodeValue = "";
-                getI("messagebodytextmsg").style.visibility = "visible";
+                // getI("messagebodytextmsg").style.visibility = "visible";
+                getI("messagebodytextmsg").style.display = "";
                 CurDisplay = "broadcast";
                 DisplaySection("message");
             }
 
-            function DisplayGraffiti() {
+            function DisplayGraffiti() { //does not use the new msg UX
                 //create & Inject the HTML used to display broadcast messages to/from battery friendlies
                 var msgbody = getC("messagebodytext");
                 msgbody.innerHTML = "Graffiti:<br>";
@@ -1002,7 +954,8 @@
 
                 var msgboxobj = getN("message");
                 msgboxobj.nodeValue = "";
-                getI("messagebodytextmsg").style.visibility = "hidden";
+                // getI("messagebodytextmsg").style.visibility = "hidden";
+                getI("messagebodytextmsg").style.display = "none";
                 CurDisplay = "graffiti";
                 DisplaySection("message");
             }
@@ -1019,7 +972,8 @@
 
                 var msgboxobj = getN("message");
                 msgboxobj.nodeValue = "";
-                getI("messagebodytextmsg").style.visibility = "hidden";
+                // getI("messagebodytextmsg").style.visibility = "hidden";
+                getI("messagebodytextmsg").style.display = "none";
                 CurDisplay = "scoreboard";
                 DisplaySection("message");
             }
@@ -1057,7 +1011,8 @@
                 msgbody.innerHTML += "</font>";
                 var msgboxobj = getN("message");
                 msgboxobj.nodeValue = "";
-                getI("messagebodytextmsg").style.visibility = "hidden";
+                // getI("messagebodytextmsg").style.visibility = "hidden";
+                getI("messagebodytextmsg").style.display = "none";
                 CurDisplay = "forcedisconn:" + Entry;
                 DisplaySection("message");
             }
@@ -1076,7 +1031,8 @@
                 }
                 var msgboxobj = getN("message");
                 msgboxobj.nodeValue = "";
-                getI("messagebodytextmsg").style.visibility = "visible";
+                // getI("messagebodytextmsg").style.visibility = "visible";
+                getI("messagebodytextmsg").style.display = "";
                 CurDisplay = "private:" + Entry;
                 DisplaySection("message");
             }
@@ -1108,20 +1064,9 @@
                 var msgbody = getC("messagebodytext");
                 var nickname = getN("nickname").value;
                 // var finalmsg = nickname + ": " + msgobj.value;
-
+                var finalmsg = "<div class=\"container you-msg\">" + "<span class=\"time-left\">" + nickname + "</span> <p>" + StripHTML(msgobj.value) + "</p></div>"
                     // Global Chat send msg button populate
-                msgbody.innerHTML += "<div class=\"container you-msg\">" + "<span class=\"time-left\">" + nickname + "</span> <p>" + StripHTML(msgobj.value) + "</p></div>";
-
-
-
-            //     <div class="container them-msg">
-            //     <span class="time-right">Them</span>
-            //     <p>Hello. How are you today?</p>
-            //   </div>
-            //   <div class="container darker you-msg">
-            //       <span class="time-left">You</span>
-            //     <p>Hey! I'm fine. Thanks for asking!</p>
-            //   </div>
+                msgbody.innerHTML += finalmsg;
 
                 //send a message out, first determine if it is a broadcast or private
                 var Data;
@@ -1209,6 +1154,7 @@
                 bottom: 0;
                 width: 100%;
                 text-align: center;
+                margin-left: 100px;
             }
             @media screen and (max-width: 700px) {
             /* responsive shift of nav from left side to top based on screen px width */
@@ -1219,7 +1165,7 @@
                 text-align: center;
                 position: fixed;
             }
-            .footer {float: left;}
+            .footer {float: left; margin-left: 0;}
             div.content {margin-left: 0;}
             }
             @media screen and (max-width: 500px) {
@@ -1231,16 +1177,19 @@
                     text-align: center;
                     position: relative;
                 }
+                .footer {float: left; margin-left: 0;}
             }
         </style>
-        <div class=" footer"> <!-- Contacts & Credits TODO: move to its own page later, will be at bottom of all pages for now -->
+        <div class="footer"> <!-- Contacts & Credits TODO: move to its own page later, will be at bottom of all pages for now -->
                 <!-- example for contact page ideas: https://www.w3schools.com/howto/howto_css_contact_section.asp -->
-                <div style="font-size: 12px;color: #CB6D51;text-align: center">
+                <div style="font-size: 11px;color: #CB6D51;text-align: center">
                     Wi-Fi INTERNET OF BATTERIES:
-            Concept by: <a href="https://twitter.com/aask42">Aask</a> | Design by: <a href="https://twitter.com/@WhiskeyHackers"
-            )>true</a> and <a href="https://twitter.com/aask42">Aask</a>
-            | Code by: <a href="https://twitter.com/aask42">Aask</a>
-            , <a href="https://blog.legitbs.net/2017/07/the-clemency-architecture.html">Lightning</a>
+                    Concept by: <a target="_blank" href="https://twitter.com/aask42">Aask</a> | Design by: 
+                    <a target="_blank" href="https://twitter.com/@WhiskeyHackers")>true</a> and 
+                    <a target="_blank" href="https://twitter.com/aask42">Aask</a>
+                    | Code by: <a href="https://twitter.com/aask42">Aask</a>, 
+                    <a target="_blank" href="https://blog.legitbs.net/2017/07/the-clemency-architecture.html">Lightning</a>, and 
+                    <a target="_blank" href="https://github.com/RaigaHomsar">RH</a>
             </div>
         </div>
     </body>
