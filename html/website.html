@@ -292,7 +292,7 @@
                     <!-- This section is static and stays underneath the populated messages -->
 
                     <!-- Chat section requires WebSockets for communication, and DB for stored msg retrieval -->
-                    <div class="msg-input">Message: <input type=text autocomplete="on" placeholder="Type a message" name="message" onkeydown="return processKey(event);" style="width:70%">
+                    <div id=msg-input class="msg-input" style="display:none;" >Message: <input type=text autocomplete="on" placeholder="Type a message" name="message" onkeydown="return processKey(event);" style="width:70%">
                         <input type=button value="Send" name="button" onclick="SendMessage();">
                     </div>
                 </div>
@@ -926,6 +926,7 @@
 
             function DisplayBroadcast() { //Global Chat
                 //create & Inject the HTML used to display broadcast messages to/from battery friendlies
+                getI("msg-input").style.display = ""; //display msg input in global chat screen 
                 var msgbody = getC("messagebodytext");
                 var nickname = getN("nickname").value;
                 msgbody.innerHTML = "Global Chat:<br>";
