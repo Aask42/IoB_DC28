@@ -234,120 +234,8 @@
             }
         </style>
         <div class=body style="position: relative;">
-            <!-- example static UX -->
 
-                <!-- alt style choice -->
-            <!-- <style>
-                /* .msg-remote {
-                    left out of style, so it's invalid, it just indicates we will use only the default msg-box styling vs msg-self.msg-box styling
-                } */
-                /* for testing static msgs remote/self */
-                .msg-container {
-                    position: relative;
-                    display: inline-block;
-                    /* width: 40%; */
-                    margin: 0 0 2px 0; /* N E S W, spacing at bottom of div, gives space between msgs */
-                    padding: 0;
-                }
-                .msg-box {
-                    display: flex;
-                    background: #5b5e6c;
-                    padding: 5px 10px 5px 10px;
-                    border-radius: 0 6px 6px 0;
-                    max-width: 50%;
-                    width: auto;
-                    float: left;
-                    box-shadow: 0 0 2px rgba(0,0,0,.12),0 2px 4px rgba(0,0,0,.24);
-                }
-                /* .msg-self .msg-box {
-                    border-radius: 6px 0 0 6px;
-                    background: #2671ff;
-                    float: right;
-                } */
-                /* .msg-self .msg {
-                   text-align: right;
-                } */
-                .username {
-                    line-height: 13pt;
-                    margin-right: 5px;
-                    color: rgb(0, 0, 0);
-                    font-weight: bold;
-                }
-                .msg {
-                    display: inline-block;
-                    font-size: 11pt;
-                    line-height: 13pt;
-                    color: rgba(255, 255, 255, 1);
-                    margin: 0 0 4px 0; /* adds spacing underneath msg */
-                    /* border-radius: 10px; */
-                }
-                /* .msg:first-of-type { */
-                    /* margin-top: 8px; */
-                /* } */
-                .allmsg-grid-container { /* https://www.w3schools.com/css/css_grid.asp */
-                    display: grid; /* this is what keeps the msgs together in their section */
-                    grid-template-columns: auto;
-                    background-color: #2196F3;
-                    padding: 10px;
-                }
-                .grid-item-remote { /* https://www.w3schools.com/css/css_grid.asp */
-                    background-color: rgba(255, 255, 255, 0.8);
-                    border: 1px solid rgba(0, 0, 0, 0.5);
-                    padding: 3px;
-                    font-size: 15px;
-                    text-align: left;
-
-                    /* used to be msg-box */
-                    display: flex; /* keeps name element on left of msg */
-                    padding: 5px 10px 5px 10px;
-                        /* https://developer.mozilla.org/en-US/docs/Web/CSS/border-radius */
-                    border-radius: 0 6px 6px 0; /* gives the box its rounded feature on the top/bottom Right side */
-                    max-width: 50%;
-                    width: auto;
-                    float: left;
-                    box-shadow: 0 0 2px rgba(0,0,0,.12),0 2px 4px rgba(0,0,0,.24);
-                }
-                .grid-item-self { /* https://www.w3schools.com/css/css_grid.asp */
-                    background-color: rgba(255, 255, 255, 0.8);
-                    border: 1px solid rgba(0, 0, 0, 0.5);
-                    padding: 3px;
-                    font-size: 15px;
-                    text-align: left;
-
-                    /* used to be msg-box */
-                    display: flex; /* keeps name element on left of msg */
-                    padding: 5px 10px 5px 10px; /* top,right,bottom,left -> N/E/S/W like a compass*/
-                    border-radius: 6px 0px 0px 6px; /* gives the box its rounded feature on the top/bottom Left side */
-                    max-width: 50%;
-                    width: auto;
-                    float: right;
-                    box-shadow: 0 0 2px rgba(0,0,0,.12),0 2px 4px rgba(0,0,0,.24);
-                }
-            </style>
-
-
-            <div class=allmsg-grid-container>
-                <article class="msg-container grid-item-remote">
-                    <div class=msg-box>
-                        <span class=username>Name</span>
-                        <div class=msg>
-                            testing msg from remote
-                        </div>
-                    </div>
-                </article>
-
-                <article class="msg-container grid-item-self">
-                    <div class=msg-box>
-                        <span class=username>Me</span>
-                        <div class="msg msg-self">
-                            testing msg from self
-                        </div>
-                    </div>
-                </article>
-            </div> -->
-
-                <!-- simplified UX style choice -->
-            <style>
+            <style> /* simplified UX style choice */
                 /* Chat containers */
                 .container {
                 border: 2px solid #dedede;
@@ -355,13 +243,14 @@
                 border-radius: 5px;
                 padding: 10px;
                 margin: 7px 0;
+                word-break: break-all;
                 }
                 /* Darker chat container */
                 .darker {
                 border-color: #ccc;
                 background-color: #ddd;
                 }
-                .darker p {
+                .you-msg p {
                  float: right;
                 }
                 /* Clear floats */
@@ -395,25 +284,28 @@
                 color: #999;
                 }
             </style>
-            <div class="container">
+            <div class="container them-msg">
                 <span class="time-right">Them</span>
                 <p>Hello. How are you today?</p>
               </div>
-              <div class="container darker">
+              <div class="container darker you-msg">
                   <span class="time-left">You</span>
                 <p>Hey! I'm fine. Thanks for asking!</p>
               </div>
-              <div class="container">
+              <div class="container them-msg">
                   <span class="time-right">Them</span>
                 <p>Sweet! So, what do you wanna do today?</p>
               </div>
-              <div class="container darker">
+              <div class="container darker you-msg">
                   <span class="time-left">You</span>
-                <p>Nah, I dunno. Play soccer.. or learn more coding perhaps?</p>
+                <p>Nah, I dunno. Play soccer.. or learn more coding perhapsperhapsperhapsperhapsperhapsperhapsperhapsperhapsperhapsperhapsperhapsperhapsperhapsperhapsperhapsperhapsperhapsperhaps?</p>
+              </div>
+              <div class="container you-msg">
+                <span class="time-left">You</span>
+                <p>test?</p>
               </div>
 
 
-              
 
             <div class="mainbody" id="messagebody">
                 <div class="messagebodytext" id="chatwindow">
@@ -1215,10 +1107,21 @@
                 //add to our chat
                 var msgbody = getC("messagebodytext");
                 var nickname = getN("nickname").value;
+                // var finalmsg = nickname + ": " + msgobj.value;
 
-                var finalmsg = nickname + ": " + msgobj.value;
                     // Global Chat send msg button populate
-                msgbody.innerHTML += "<div class=msg-body>" + StripHTML(finalmsg) + "</div>";
+                msgbody.innerHTML += "<div class=\"container you-msg\">" + "<span class=\"time-left\">" + nickname + "</span> <p>" + StripHTML(msgobj.value) + "</p></div>";
+
+
+
+            //     <div class="container them-msg">
+            //     <span class="time-right">Them</span>
+            //     <p>Hello. How are you today?</p>
+            //   </div>
+            //   <div class="container darker you-msg">
+            //       <span class="time-left">You</span>
+            //     <p>Hey! I'm fine. Thanks for asking!</p>
+            //   </div>
 
                 //send a message out, first determine if it is a broadcast or private
                 var Data;
