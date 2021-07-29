@@ -252,35 +252,35 @@
             margin-right:0;
             }
             /* Style time text */
-            .time-right {
+            .name-right {
             float: right;
             color: #aaa;
             }
             /* Style time text */
-            .time-left {
+            .name-left {
             float: left;
             color: #999;
             }
         </style>
         <!-- UX test msgs -->
         <!-- <div class="container them-msg">
-            <span class="time-right">Them</span>
+            <span class="name-right">Them</span>
             <p>Hello. How are you today?</p>
             </div>
             <div class="container darker you-msg">
-                <span class="time-left">You</span>
+                <span class="name-left">You</span>
             <p>Hey! I'm fine. Thanks for asking!</p>
             </div>
             <div class="container them-msg">
-                <span class="time-right">Them</span>
+                <span class="name-right">Them</span>
             <p>Sweet! So, what do you wanna do today?</p>
             </div>
             <div class="container darker you-msg">
-                <span class="time-left">You</span>
+                <span class="name-left">You</span>
             <p>Nah, I dunno. Play soccer.. or learn more coding?</p>
             </div>
             <div class="container you-msg">
-            <span class="time-left">You</span>
+            <span class="name-left">You</span>
             <p>test?</p>
             </div> -->
             <div class="mainbody" id="messagebody">
@@ -932,7 +932,15 @@
                 msgbody.innerHTML = "Global Chat:<br>";
                 for (var i = 0; i < BroadcastMessages.length; i++) {
                     //adds broadcast msg to screen
-                    msgbody.innerHTML += BroadcastMessages[i]; //broadcast will have html added to the msg from other battery
+                    if(BroadcastMessages[i].split("name-left").length == 0){ //Tech Debt, this is for msgs not containing html already until db purged of such msgs
+                        var splitVal = BroadcastMessages[i].split(":");
+                        console.log("val 1: " + splitVal[0] + " val 2: " + splitVal[1]);
+                        var nickname = splitVal[0];
+                        var msgbody = splitVal[1];
+                        var finalmsg = "<div class=\"container you-msg\">" + "<span class=\"name-left\">" + StripHTML(nickname) + "</span> <p>" + StripHTML(msgbody) + "</p></div>";
+                    } else {
+                        msgbody.innerHTML += BroadcastMessages[i]; //broadcast will have html added to the msg from other battery
+                    }
                 }
 
                 var msgboxobj = getN("message");
@@ -1065,7 +1073,7 @@
                 var msgbody = getC("messagebodytext");
                 var nickname = getN("nickname").value;
                 // var finalmsg = nickname + ": " + msgobj.value;
-                var finalmsg = "<div class=\"container you-msg\">" + "<span class=\"time-left\">" + nickname + "</span> <p>" + StripHTML(msgobj.value) + "</p></div>"
+                var finalmsg = "<div class=\"container you-msg\">" + "<span class=\"name-left\">" + nickname + "</span> <p>" + StripHTML(msgobj.value) + "</p></div>";
                     // Global Chat send msg button populate
                 msgbody.innerHTML += finalmsg;
 
