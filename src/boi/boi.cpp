@@ -259,24 +259,25 @@ void boi::print_sensor_data() {
     SensorDataStruct Data;
     this->get_sensor_data(&Data);
         // DEBUG detail block:
-    Serial.print("=====InternetOfBatteries=====\n\n");
-    Serial.print("By: Aask, Lightning, and true\n\n");
-    Serial.printf(" ""\xE2\x96\xB2\xC2\xA0""=%s= ""\xC2\xA0\xE2\x96\xB2""\n", MessageHandler->GetOptions()->WifiName);
-    Serial.print("""\xE2\x96\xB2""\xC2\xA0""\xE2\x96\xB2""===""\xC2\xAF\x20\x5C\x20\x5F\x20\x28\xE3\x83\x84\x29\x20\x5F\x20\x2F\x20\xC2\xAF""===""\xE2\x96\xB2""\xC2\xA0""\xE2\x96\xB2""\n");
-    Serial.printf("Current Current Detected: %dmW\n", Data.current);
-    Serial.printf("BUS Voltage Detected: %0.2f\n", Data.bus_voltage);
-    Serial.printf("SHUNT Voltage Detected: %02.fV\n", Data.shunt_voltage);
-    Serial.printf("VBAT Voltage Detected: %0.2fV u\n",  Data.bat_voltage_detected);
-    Serial.printf("VBAT Min/Max: %0.2f / %0.2f\n", Data.vbat_min, Data.vbat_max);
-    Serial.printf("VGAT Voltage Detected: %0.2fV\n", Data.gat_voltage_detected);
-    Serial.printf("Average Joules consumed in 5 seconds: %0.2fμJ\n", Data.joules_average);
-    Serial.printf("Joules consumed since factory reset: %0.2fμJ\n", Data.joules);
-    //Ret += "Ambient Voltage Detected: "+String(ambient_voltage_detected)+"\n");
-    Serial.printf("Battery RDY PIN Detected: %d\n", Data.ready_pin_detected);
-    Serial.printf("Battery CHRG PIN Detected: %d\n", Data.charge_pin_detected);
-    Serial.printf("Total number of reboots: %d\n", this->boot_count);
-    Serial.print("  ""\xE2\x96\xB2""\xC2\xA0\xC2\xA0""@BatteryInternet""""\xC2\xA0\xC2\xA0\xE2\x96\xB2""\n");
-    Serial.print("""\xC2\xA0\xE2\x96\xB2""\xC2\xA0""\xE2\x96\xB2""==""==============""==""\xE2\x96\xB2""\xC2\xA0""\xE2\x96\xB2""""\n\n");
+    Serial.printf("Current: %d mw BUS Voltage: %02.fV SHUNT Voltage: %0.2fV VBAT Voltage: %0.2fV VGAT Voltage: %0.2fV\r\n",Data.current, Data.bus_voltage,Data.shunt_voltage,Data.bat_voltage_detected,Data.gat_voltage_detected);
+    //Serial.println("=====InternetOfBatteries=====\r\n\r\n");
+    //Serial.println("By: Aask, Lightning, and true\r\n\r\n");
+    //Serial.printf(" ""\xE2\x96\xB2\xC2\xA0""=%s= ""\xC2\xA0\xE2\x96\xB2""\r\n", MessageHandler->GetOptions()->WifiName);
+    //Serial.println("""\xE2\x96\xB2""\xC2\xA0""\xE2\x96\xB2""===""\xC2\xAF\x20\x5C\x20\x5F\x20\x28\xE3\x83\x84\x29\x20\x5F\x20\x2F\x20\xC2\xAF""===""\xE2\x96\xB2""\xC2\xA0""\xE2\x96\xB2""\r\n");
+    //Serial.printf("Current Current Detected: %dmW\r\n", Data.current);
+    //Serial.printf("BUS Voltage Detected: %0.2f\r\n", Data.bus_voltage);
+    //Serial.printf("SHUNT Voltage Detected: %02.fV\r\n", Data.shunt_voltage);
+    //Serial.printf("VBAT Voltage Detected: %0.2fV u\r\n",  Data.bat_voltage_detected);
+    //Serial.printf("VBAT Min/Max: %0.2f / %0.2f\r\n", Data.vbat_min, Data.vbat_max);
+    //Serial.printf("VGAT Voltage Detected: %0.2fV\r\n", Data.gat_voltage_detected);
+    //Serial.printf("Average Joules consumed in 5 seconds: %0.2fμJ\r\n", Data.joules_average);
+    //Serial.printf("Joules consumed since factory reset: %0.2fμJ\r\n", Data.joules);
+    //Ret += "Ambient Voltage Detected: "+String(ambient_voltage_detected)+"\r\n");
+    //Serial.printf("Battery RDY PIN Detected: %d\r\n", Data.ready_pin_detected);
+    //Serial.printf("Battery CHRG PIN Detected: %d\r\n", Data.charge_pin_detected);
+    //Serial.printf("Total number of reboots: %d\r\n", this->boot_count);
+    //Serial.print("  ""\xE2\x96\xB2""\xC2\xA0\xC2\xA0""@BatteryInternet""""\xC2\xA0\xC2\xA0\xE2\x96\xB2""\r\n");
+    //Serial.print("""\xC2\xA0\xE2\x96\xB2""\xC2\xA0""\xE2\x96\xB2""==""==============""==""\xE2\x96\xB2""\xC2\xA0""\xE2\x96\xB2""""\r\n\r\n");
 }
 
 void boi::toggle_backpower(){ // Checks for current across VCC and ground pins, set switch
@@ -330,7 +331,7 @@ bool boi::button_pressed(Buttons button) { // Check to see if a button was press
         //we go based off a 5ms cycle to avoid situations where power glitches cause the button to randomly trip
         //we also limit to half a second so that pressed never reports if held is being triggered
     int64_t CurTime = esp_timer_get_time();
-    if(!btnState && this->ButtonState[button] && ((CurTime - this->ButtonState[button]) > 5000) && ((CurTime - this->ButtonState[button]) < 500000)) {
+    if(!btnState && this->ButtonState[button] && ((CurTime - this->ButtonState[button]) > 10000) && ((CurTime - this->ButtonState[button]) < 500000)) {
         ret = true;
     }
     else {

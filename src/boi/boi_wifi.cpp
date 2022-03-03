@@ -162,7 +162,8 @@ void boi_wifi::Reconfigure(const OptionsStruct *Options) {
     char WifiName[20 + 1 + 10];
     // uint8_t BatterySymbol[] = " \xF0\x9F\x94\x8B "; // Standard edition, but who wants that?
     // uint8_t BatterySymbol[] = " \xF0\x9F\x8E\x83 "; // SPOOKY EDITION OOOOOOOOOoOOOoOooooooooo.............
-    uint8_t BatterySymbol[] = " \xF0\x9F\x8E\x83 \xF0\x9F\x98\xB7 \xF0\x9F\x8E\x83 "; // SAFE MODE WITH NETWORKING EDITION - WASH YOUR HANDS!!!!!
+    // uint8_t BatterySymbol[] = "\xF0\x9F\x98\xB7"; // SAFE MODE WITH NETWORKING EDITION - WASH YOUR HANDS!!!!!
+    uint8_t BatterySymbol[] = " \xF0\x9F\x93\xB6 "; // SAFE MODE WITH NETWORKING EDITION - WASH YOUR HANDS!!!!!
     memcpy(WifiName, &BatterySymbol[1], 5);
 
         //reconfigure the wifi with batteries around it
@@ -246,6 +247,7 @@ void boi_wifi::enter_safe_mode_with_networking(const OptionsStruct *Options){
     WiFi.enableSTA(true);
     if(!WiFi.mode(WIFI_STA)) {
         Serial.println("Failed to set wifi mode");
+        LEDHandler->StartScript(LED_SMWN_ACTIVE, 1);
     }
 
     yield();
@@ -260,16 +262,19 @@ void boi_wifi::enter_safe_mode_with_networking(const OptionsStruct *Options){
         delay(100);
         status = WiFi.status();
         if(status == WL_CONNECTED) {
+            LEDHandler->StartScript(LED_SMWN_ACTIVE, 1);
+
             break;
         }
         //if 60 seconds then then activate AP - TODO what's the 60 seconds? not seeing that being tracked anywhere here
-        if(counter > 300) {
+        if(counter > 50) {
             Serial.printf("Unable to connect to WiFi Safe Mode with Networking :(... %d\n", WiFi.status());
             this->ActivateNormal();
             LEDHandler->StopScript(LED_ENABLE_SMWN);
+            LEDHandler->StartScript(LED_SMWN_ACTIVE, 1);
             return;
         }
-        else if((counter % 100) == 0) {
+        else if((counter % 25) == 0) {
             Serial.printf("Connecting to WiFi Safe Mode with Networking... %d\n", WiFi.status());
             WiFi.disconnect();
             yield();

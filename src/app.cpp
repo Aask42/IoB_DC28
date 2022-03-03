@@ -165,22 +165,31 @@ void setup(void) {
 }
 
 #if BOI_VERSION == 1
-  esp_adc_cal_characterize(ADC_UNIT_1, ADC_ATTEN_DB_0, ADC_WIDTH_BIT_12, DEFAULT_VREF, &adc_chars);
+  float safeboot_voltage() {
+    esp_adc_cal_characteristics_t adc_chars;
 
-  uint32_t adc_reading = 0; //Sample ADC Channel
-  
-  for (int i = 0; i < NO_OF_SAMPLES; i++) { //Multisampling
-    adc_reading += adc1_get_raw((adc1_channel_t)ADC_CHANNEL_0);
+    //Configure ADC
+    adc1_config_width(ADC_WIDTH_BIT_12);
+    adc1_config_channel_atten((adc1_channel_t)ADC_CHANNEL_0, ADC_ATTEN_DB_0);
+
+    //Characterize ADC
+    memset(&adc_chars, 0, sizeof(esp_adc_cal_characteristics_t));
+    esp_adc_cal_characterize(ADC_UNIT_1, ADC_ATTEN_DB_0, ADC_WIDTH_BIT_12, DEFAULT_VREF, &adc_chars);
+    
+    uint32_t adc_reading = 0; //Sample ADC Channel
+    
+    for (int i = 0; i < NO_OF_SAMPLES; i++) { //Multisampling
+      adc_reading += adc1_get_raw((adc1_channel_t)ADC_CHANNEL_0);
+    }
+    adc_reading /= NO_OF_SAMPLES;
+    
+    uint32_t v_out = esp_adc_cal_raw_to_voltage(adc_reading, &adc_chars); //divide by two per
+    float R1 = 1000000.0;
+    float R2 = 249000.0;
+    float v_source = ((v_out * R1/R2) + v_out)/1000; // Read voltage and then use voltage divider equations to figure out actual voltage read
+
+    return v_source;
   }
-  adc_reading /= NO_OF_SAMPLES;
-  
-  uint32_t v_out = esp_adc_cal_raw_to_voltage(adc_reading, &adc_chars); //divide by two per
-  float R1 = 1000000.0;
-  float R2 = 249000.0;
-  float v_source = ((v_out * R1/R2) + v_out)/1000; // Read voltage and then use voltage divider equations to figure out actual voltage read
-
-  return v_source;
-}
 #elif BOI_VERSION == 2
   float safeboot_voltage() {
     SPIHandler->Communicate(&SPIData);
@@ -231,10 +240,10 @@ void loop() {
     
  
   int64_t CurTime = esp_timer_get_time();
-  //if(((CurTime - LastSensorPrintTime) / 1000000ULL) >= 3) { // set print sensor data cadence to every 3 seconds
-    //LastSensorPrintTime = CurTime;
-    //Battery->print_sensor_data();
-  //}
+  if(((CurTime - LastSensorPrintTime) / 1000000ULL) >= 1) { // set print sensor data cadence to every 3 seconds
+    LastSensorPrintTime = CurTime;
+    Battery->print_sensor_data();
+  }
 
     // Check to see if a button was pressed or other event triggered
   if(Battery->button_pressed(boi::BTN_ACT)) {
@@ -414,7 +423,7 @@ void loop() {
     if((CurTime - LastScanTime) >= 5000000ULL) { //if we are in nodecount or wifi is active then do a scan every 5 seconds
       LastScanTime = CurTime;
       MessageHandler->DoScan();
-      Serial.println("app.cpp, Scanning for Nodes with MessageHandler->DoScan()");
+      //Serial.println("app.cpp, Scanning for Nodes with MessageHandler->DoScan()");
     }
   }
   
