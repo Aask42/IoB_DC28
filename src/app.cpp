@@ -429,7 +429,7 @@ void loop() {
   
   if(CurrentMode == NodeCountMode) { //if our mode is NodeCount then see if we have a new count to set
     uint8_t CurNodeCount = MessageHandler->GetPingCount();
-    Serial.printf("counting Nodes, CurNodeCount %d:", CurNodeCount);
+    //Serial.printf("counting Nodes, CurNodeCount %d:", CurNodeCount);
     if(LastNodeCount != CurNodeCount) {
       LastNodeCount = CurNodeCount;
       if(CurNodeCount > LED_Count_Battery) {

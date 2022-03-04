@@ -195,8 +195,10 @@ float boi::read_current(){
 
 // Dump all stats from the battery
 void boi::get_sensor_data(SensorDataStruct *Sensor){
-    //if we got stats recently then just return them to avoid excessive hitting
-    //this is where we can set how fast we read data from the chip 
+    // if we got stats recently then just return them to avoid excessive hitting
+    // this is where we can set how fast we read data from the chip 
+    // the unsigned long long is microseconds: 
+    // https://docs.espressif.com/projects/esp-idf/en/latest/esp32/api-reference/system/esp_timer.html#_CPPv418esp_timer_get_timev
     if((this->LastSensorDataUpdate + 10000ULL) > esp_timer_get_time()) {
         memcpy(Sensor, &this->LastSensorData, sizeof(SensorDataStruct));
         return;
