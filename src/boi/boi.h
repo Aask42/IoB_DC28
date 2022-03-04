@@ -47,7 +47,7 @@
 //the website expects each entry to be 4 bytes in size (int/uint32_t)
 typedef struct SensorDataStruct
 {
-  int current;
+  float current;
   float bat_voltage_detected;
   float gat_voltage_detected;
   int ready_pin_detected;
@@ -89,7 +89,7 @@ class boi // Battery of Internet class
     float sense_battery_level();
 
     int read_ambient_sensor();
-    int read_current();
+    float read_current();
 
     // get all sensor data
     void get_sensor_data(SensorDataStruct *Sensor);

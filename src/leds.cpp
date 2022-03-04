@@ -972,7 +972,7 @@ void LEDsInternal::StopScript(uint16_t ID) { //stop a specific script
     } 
     else {
         Serial.printf("Stopping LED script %s\n", this->LEDScriptIDToStr(ID));
-        Serial.println("RH: Oh wow, hey there! I invade your serial out ~");
+        //Serial.println("RH: Oh wow, hey there! I invade your serial out ~");
         while(cur_script && (cur_script->ID != ID)) {
             cur_script = cur_script->next;
         }

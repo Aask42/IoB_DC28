@@ -173,9 +173,9 @@ boi::boi() {
     this->initPreferences();
 }
 
-int boi::read_current(){
+float boi::read_current(){
 #if BOI_VERSION == 1
-    int current = ina219.getCurrent_mA();
+    float current = ina219.getCurrent_mA();
 #elif BOI_VERSION == 2
     int current = SPIData.GATCurrent;
 #endif
@@ -183,8 +183,8 @@ int boi::read_current(){
     if(prev_curr != curr_curr) {
         prev_curr = curr_curr;
         curr_curr = current;
-        int x = (curr_curr - prev_curr);
-        Serial.printf("Change of Current being drawn: %d\n", x);
+        float x = (curr_curr - prev_curr);
+        Serial.printf("Change of Current being drawn: %0.2f\n", x);
     }
     return current;
 }
@@ -259,7 +259,7 @@ void boi::print_sensor_data() {
     SensorDataStruct Data;
     this->get_sensor_data(&Data);
         // DEBUG detail block:
-    Serial.printf("Current: %d mA    BUS: %02.fV    SHUNT: %0.2fmV    VBAT: %0.2fV    VGAT: %0.2fV\r\n",Data.current, Data.bus_voltage,Data.shunt_voltage,Data.bat_voltage_detected,Data.gat_voltage_detected);
+    Serial.printf("Current: %0.2fmA    BUS: %0.2fV    SHUNT: %0.2fmV    VBAT: %0.2fV    VGAT: %0.2fV\r\n",Data.current, Data.bus_voltage,Data.shunt_voltage,Data.bat_voltage_detected,Data.gat_voltage_detected);
     //Serial.println("=====InternetOfBatteries=====\r\n\r\n");
     //Serial.println("By: Aask, Lightning, and true\r\n\r\n");
     //Serial.printf(" ""\xE2\x96\xB2\xC2\xA0""=%s= ""\xC2\xA0\xE2\x96\xB2""\r\n", MessageHandler->GetOptions()->WifiName);
@@ -281,14 +281,14 @@ void boi::print_sensor_data() {
 }
 
 void boi::toggle_backpower(){ // Checks for current across VCC and ground pins, set switch
-     int current_detected;
+    float current_detected;
 #if BOI_VERSION == 1
     current_detected = ina219.getCurrent_mA();
 #elif BOI_VERSION == 2
     current_detected = SPIData.GATCurrent;
 #endif
     if(current_detected > 5.00) { // Check current power-draw through INA219, print if above zero
-        Serial.printf("Current Sensed: %dmAh\n", current_detected);
+        Serial.printf("Current Sensed: %0.2fmAh\n", current_detected);
     }
     Serial.println("Toggling backpower...: ");
     Serial.printf("Initial Backpower Status: %d\n", backpower_status);

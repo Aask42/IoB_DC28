@@ -141,7 +141,7 @@ void setup(void) {
   Battery = new boi(); // another birth of a boi !!
 
   // Current Sensing Operation - Check to see if we have anything on the pins 
-  Serial.printf("Current Sensed: %d\n", Battery->read_current());
+  Serial.printf("Current Sensed: %0.2f\n", Battery->read_current());
   LastTouchCheckTime = esp_timer_get_time();
   LastSensorPrintTime = LastTouchCheckTime;
   MessageHandler = NewMessagesHandler();
