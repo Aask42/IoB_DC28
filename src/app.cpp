@@ -232,7 +232,7 @@ void loop() {
     }
     
     if((NewLEDCap != CurrentLEDCap) && (CurrentMode == BatteryMode)) { //set the led limit based on battery voltage
-      Serial.printf("Voltage: %0.3f, cap: %d\n", SensorData.bat_voltage_detected, NewLEDCap);
+      //Serial.printf("Voltage: %0.3f, cap: %d\n", SensorData.bat_voltage_detected, NewLEDCap);
       LEDHandler->SetLEDCap(NewLEDCap);
       CurrentLEDCap = NewLEDCap;
     }
@@ -240,7 +240,7 @@ void loop() {
     
  
   int64_t CurTime = esp_timer_get_time();
-  if(((CurTime - LastSensorPrintTime) / 1000000ULL) >= 1) { // set print sensor data cadence to every 3 seconds
+  if(((CurTime - LastSensorPrintTime) / 100000ULL) >= 1) { // set print sensor data cadence to every .1 seconds
     LastSensorPrintTime = CurTime;
     Battery->print_sensor_data();
   }
@@ -441,7 +441,7 @@ void loop() {
     }
   }
   yield();
-  delay(50);
+  //delay(1);
 } // end loop()
 
 void SwitchMode() {

@@ -20,6 +20,10 @@ bool charged = 0;
 pthread_mutex_t status_lock;
 int64_t last_tick_time = esp_timer_get_time();
 
+// need to average out the current, bus, shunt, vbat, and vgat items
+int num_sensor_reads = 0;
+std::vector<std::vector<int>> historic_sensor_data(5, std::vector<int>(100));
+
 #if BOI_VERSION == 1
 float boi::adc_vref_vbat() {
         //Configure ADC
@@ -89,7 +93,7 @@ float boi::adc_vref_vgat(){
 #endif
 
 void boi::get_joules(float *total_joules, float *average_joules, float watts) {
-        // J = W * s
+    // J = W * s
     float joules_consumed_in_ms_since_update;
     int64_t current_tick_time = esp_timer_get_time();
 
@@ -114,8 +118,8 @@ void boi::get_joules(float *total_joules, float *average_joules, float watts) {
     total_joules_per_ms += joules_consumed_in_ms_since_update; //now add in our consumed amount and how may ms it took
     this->TotalMSForAverageJoules += ms_passed;
 
-        //if our total MS is > 5 seconds then remove from the average a proper amount before the
-        //new average is calculated
+    //if our total MS is > 5 seconds then remove from the average a proper amount before the
+    //new average is calculated
     if(this->TotalMSForAverageJoules > 5000) {
         total_joules_per_ms -= (this->average_joules * (this->TotalMSForAverageJoules - 5000));
         this->TotalMSForAverageJoules = 5000;
@@ -189,17 +193,18 @@ float boi::read_current(){
     return current;
 }
 
-    // Dump all stats from the battery
+// Dump all stats from the battery
 void boi::get_sensor_data(SensorDataStruct *Sensor){
-        //if we got stats recently then just return them to avoid excessive hitting
-    if((this->LastSensorDataUpdate + 150000ULL) > esp_timer_get_time()) {
+    //if we got stats recently then just return them to avoid excessive hitting
+    //this is where we can set how fast we read data from the chip 
+    if((this->LastSensorDataUpdate + 10000ULL) > esp_timer_get_time()) {
         memcpy(Sensor, &this->LastSensorData, sizeof(SensorDataStruct));
         return;
     }
 
-        //attempt to lock the mutex
+    //attempt to lock the mutex
     if(pthread_mutex_trylock(&status_lock)) {
-            //we failed to lock, someone else snatched it, just return the original data
+        //we failed to lock, someone else snatched it, just return the original data
         memcpy(Sensor, &this->LastSensorData, sizeof(SensorDataStruct));
         return;
     }
@@ -209,48 +214,67 @@ void boi::get_sensor_data(SensorDataStruct *Sensor){
 
     //go get our values
 #if BOI_VERSION == 1
-    Sensor->bat_voltage_detected = this->adc_vref_vbat();
-    Sensor->gat_voltage_detected = this->adc_vref_vgat();
+    float bat_voltage_detected = this->adc_vref_vbat();
+    float gat_voltage_detected = this->adc_vref_vgat();
 #elif BOI_VERSION == 2
     SPIHandler->Communicate(&SPIData);
-    Sensor->bat_voltage_detected = SPIData.BatteryVoltage;
-    Sensor->gat_voltage_detected = SPIData.GATVoltage;
+    float bat_voltage_detected = SPIData.BatteryVoltage;
+    float gat_voltage_detected = SPIData.GATVoltage;
 #endif
     this->calibrate_capacity_measure(Sensor->bat_voltage_detected);
     yield();
 
     Sensor->ready_pin_detected = this->doDigitalRead(RDY_4056_PIN, false);
     Sensor->charge_pin_detected = this->doDigitalRead(CHRG_4056_PIN, false);
+
     this->get_charging_status(Sensor);
 
-    Sensor->current = this->read_current();
+    float current = this->read_current();
     
     this->get_joules(&Sensor->joules, &Sensor->joules_average, Sensor->current);
 
 #if BOI_VERSION == 1
-    Sensor->shunt_voltage = ina219.getShuntVoltage_mV();//20.0;
+    float shunt_voltage = ina219.getShuntVoltage_mV();
 #elif BOI_VERSION == 2
-    Sensor->shunt_voltage = SPIData.GATVoltage;
+    float shunt_voltage = SPIData.GATVoltage;
 #endif
-    if((Sensor->shunt_voltage < -0.25) && backpower_status) {
+    if((shunt_voltage < -0.25) && backpower_status) {
         Serial.print("Power detected going the wrong way! Disbling Backpower!!!");
         this->toggle_backpower();
         backpower_status_auto_off = 1;
     }
-    if((Sensor->shunt_voltage >= 0) && backpower_status_auto_off) {
+    if((shunt_voltage >= 0) && backpower_status_auto_off) {
         Serial.print("Coast is clear! Re-enable backpower!");
         this->toggle_backpower();
         backpower_status_auto_off = 0;
     }
     yield();
 #if BOI_VERSION == 1
-    Sensor->bus_voltage = ina219.getBusVoltage_V();
+    float bus_voltage = ina219.getBusVoltage_V();
 #elif BOI_VERSION == 2
-    Sensor->bus_voltage = 0;
+    float bus_voltage = 0;
 #endif
 
     Sensor->vbat_max = this->vbat_max_mv;
     Sensor->vbat_min = this->vbat_min_mv;
+
+    // Need to calc averages from the last 100 runs
+    // loop through all the items in our average array
+    if(num_sensor_reads == 99){num_sensor_reads = 0;}
+
+    historic_sensor_data[0][num_sensor_reads] = bat_voltage_detected;
+    historic_sensor_data[1][num_sensor_reads] = gat_voltage_detected;
+    historic_sensor_data[2][num_sensor_reads] = current;
+    historic_sensor_data[3][num_sensor_reads] = shunt_voltage;
+    historic_sensor_data[4][num_sensor_reads] = bus_voltage;
+    
+    Sensor->bat_voltage_detected = std::accumulate(historic_sensor_data[0].begin(), historic_sensor_data[0].end(), 0.0) / historic_sensor_data[0].size();
+    Sensor->gat_voltage_detected = std::accumulate(historic_sensor_data[1].begin(), historic_sensor_data[1].end(), 0.0) / historic_sensor_data[1].size();
+    Sensor->current = std::accumulate(historic_sensor_data[2].begin(), historic_sensor_data[2].end(), 0.0) / historic_sensor_data[2].size();
+    Sensor->shunt_voltage = std::accumulate(historic_sensor_data[3].begin(), historic_sensor_data[3].end(), 0.0) / historic_sensor_data[3].size();
+    Sensor->bus_voltage = std::accumulate(historic_sensor_data[4].begin(), historic_sensor_data[4].end(), 0.0) / historic_sensor_data[4].size();
+    num_sensor_reads += 1;
+
     memcpy(&this->LastSensorData, Sensor, sizeof(SensorDataStruct)); //copy our data and update our last time
     pthread_mutex_unlock(&status_lock);
 }
