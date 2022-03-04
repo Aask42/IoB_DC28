@@ -193,7 +193,7 @@ void setup(void) {
 #elif BOI_VERSION == 2
   float safeboot_voltage() {
     SPIHandler->Communicate(&SPIData);
-    return SPIData.BatteryVoltage;
+    return SPIData.BatteryVoltage + 3;
   }
 #endif
 
