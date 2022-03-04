@@ -175,7 +175,7 @@ boi::boi() {
 
 float boi::read_current(){
 #if BOI_VERSION == 1
-    float current = ina219.getCurrent_mA();
+    float current = (ina219.getCurrent_mA() * 5) / 2;
 #elif BOI_VERSION == 2
     int current = SPIData.GATCurrent;
 #endif
@@ -258,8 +258,8 @@ void boi::get_sensor_data(SensorDataStruct *Sensor){
 void boi::print_sensor_data() {
     SensorDataStruct Data;
     this->get_sensor_data(&Data);
-        // DEBUG detail block:
-    Serial.printf("Current: %0.2fmA    BUS: %0.2fV    SHUNT: %0.2fmV    VBAT: %0.2fV    VGAT: %0.2fV\r\n",Data.current, Data.bus_voltage,Data.shunt_voltage,Data.bat_voltage_detected,Data.gat_voltage_detected);
+    // DEBUG detail block:
+    Serial.printf("Current: %+0.2f mA    BUS: %+0.2f V    SHUNT: %+0.2f mV    VBAT: %+0.2f V    VGAT: %+0.2f V\r\n",Data.current, Data.bus_voltage,Data.shunt_voltage,Data.bat_voltage_detected,Data.gat_voltage_detected);
     //Serial.println("=====InternetOfBatteries=====\r\n\r\n");
     //Serial.println("By: Aask, Lightning, and true\r\n\r\n");
     //Serial.printf(" ""\xE2\x96\xB2\xC2\xA0""=%s= ""\xC2\xA0\xE2\x96\xB2""\r\n", MessageHandler->GetOptions()->WifiName);

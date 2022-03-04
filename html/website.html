@@ -1264,9 +1264,9 @@
             var fv = new Float32Array(ab);
 
             //split up the data and fill in fields with it
-            getI("status_current").innerHTML = dv[0];
-            getI("status_vbat").innerHTML = fv[1].toFixed(2) + "V";
-            getI("status_vgat").innerHTML = fv[2].toFixed(2) + "V";
+            getI("status_current").innerHTML = fv[0].toFixed(2) + " mA";
+            getI("status_vbat").innerHTML = fv[1].toFixed(2) + " V";
+            getI("status_vgat").innerHTML = fv[2].toFixed(2) + " V";
 
             //indicate if we are charging or charged based on get_charging_status() in boi.cpp
             if (dv[3] && !dv[4])

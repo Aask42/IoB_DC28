@@ -376,7 +376,7 @@ void loop() {
     LastTouchCheckTime = CurTime;
     byte touch = touchRead(BTN_DEFLOCK_PIN);
     if(touch < 61) {
-      Serial.print(touch);
+      //Serial.print(touch);
       if(TouchCount >= 6) { //if held for 3 seconds then indicate we are selecting a led mode
         if(!SelectingLED) { //flash briefly that we are setting the default for this mode
           SelectingLED = 1;
