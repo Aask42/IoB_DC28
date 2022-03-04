@@ -29,7 +29,7 @@ float boi::adc_vref_vbat() {
     } else {
         adc2_config_channel_atten((adc2_channel_t)this->channel, this->atten);
     }
-        //Characterize ADC
+    //Characterize ADC
     memset(&this->adc_chars, 0, sizeof(esp_adc_cal_characteristics_t));
     esp_adc_cal_characterize(this->unit, this->atten, ADC_WIDTH_BIT_12, DEFAULT_VREF, &this->adc_chars);
         //Sample ADC Channel
@@ -228,7 +228,7 @@ void boi::get_sensor_data(SensorDataStruct *Sensor){
     this->get_joules(&Sensor->joules, &Sensor->joules_average, Sensor->current);
 
 #if BOI_VERSION == 1
-    Sensor->shunt_voltage = ina219.getShuntVoltage_mV()/20.0;
+    Sensor->shunt_voltage = ina219.getShuntVoltage_mV();//20.0;
 #elif BOI_VERSION == 2
     Sensor->shunt_voltage = SPIData.GATVoltage;
 #endif
@@ -259,12 +259,12 @@ void boi::print_sensor_data() {
     SensorDataStruct Data;
     this->get_sensor_data(&Data);
         // DEBUG detail block:
-    Serial.printf("Current: %d mw BUS Voltage: %02.fV SHUNT Voltage: %0.2fV VBAT Voltage: %0.2fV VGAT Voltage: %0.2fV\r\n",Data.current, Data.bus_voltage,Data.shunt_voltage,Data.bat_voltage_detected,Data.gat_voltage_detected);
+    Serial.printf("Current: %d mA    BUS: %02.fV    SHUNT: %0.2fmV    VBAT: %0.2fV    VGAT: %0.2fV\r\n",Data.current, Data.bus_voltage,Data.shunt_voltage,Data.bat_voltage_detected,Data.gat_voltage_detected);
     //Serial.println("=====InternetOfBatteries=====\r\n\r\n");
     //Serial.println("By: Aask, Lightning, and true\r\n\r\n");
     //Serial.printf(" ""\xE2\x96\xB2\xC2\xA0""=%s= ""\xC2\xA0\xE2\x96\xB2""\r\n", MessageHandler->GetOptions()->WifiName);
     //Serial.println("""\xE2\x96\xB2""\xC2\xA0""\xE2\x96\xB2""===""\xC2\xAF\x20\x5C\x20\x5F\x20\x28\xE3\x83\x84\x29\x20\x5F\x20\x2F\x20\xC2\xAF""===""\xE2\x96\xB2""\xC2\xA0""\xE2\x96\xB2""\r\n");
-    //Serial.printf("Current Current Detected: %dmW\r\n", Data.current);
+    //Serial.printf("Current Current Detected: %dmA\r\n", Data.current);
     //Serial.printf("BUS Voltage Detected: %0.2f\r\n", Data.bus_voltage);
     //Serial.printf("SHUNT Voltage Detected: %02.fV\r\n", Data.shunt_voltage);
     //Serial.printf("VBAT Voltage Detected: %0.2fV u\r\n",  Data.bat_voltage_detected);
@@ -301,14 +301,14 @@ void boi::toggle_backpower(){ // Checks for current across VCC and ground pins, 
             SPIHandler->Communicate(&SPIData);
 #endif
             Serial.println("BACKPOWER_OUT_PIN is now engaged!: 1");
-            Serial.println("-. ..- -- -... . .-. _/̄ˉ ..... _/̄ˉ .. ... _/̄ˉ .- .-.. .. ...- . -.-.-- -.-.--");
+            //Serial.println("-. ..- -- -... . .-. _/̄ˉ ..... _/̄ˉ .. ... _/̄ˉ .- .-.. .. ...- . -.-.-- -.-.--");
             backpower_status = 1;
             LEDHandler->StartScript(LED_POUT_ON, 1); // Enable backpower ON LED
             Serial.println("Backpower Enabled");
             break;
         case 1:
             Serial.printf("Disabling backpower on pin %d!\n", BACKPOWER_OUT_PIN);     
-            Serial.println("-. --- _/̄ˉ -.. .. ... .- ... ... . -- -... .-.. . -.-.-- -.-.-- -.-.--");
+            //Serial.println("-. --- _/̄ˉ -.. .. ... .- ... ... . -- -... .-.. . -.-.-- -.-.-- -.-.--");
 #if BOI_VERSION == 1
             digitalWrite(BACKPOWER_OUT_PIN, 1);
 #elif BOI_VERSION == 2

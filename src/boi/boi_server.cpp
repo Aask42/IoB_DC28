@@ -161,7 +161,7 @@ void boi_wifi::ActivateSafeModeWithNetworking() {
 }
 
 void RequestHandler::GuestCounter(){
-    Serial.println("Oh, a visitor!");   
+    //Serial.println("Oh, a visitor!");   
     this->preferences.begin("options");
     this->CurrentGuestCount = this->preferences.getUInt("guest_counter", 0) + 1; // Increase guest counter by one 
     this->preferences.putUInt("guest_counter", this->CurrentGuestCount);
