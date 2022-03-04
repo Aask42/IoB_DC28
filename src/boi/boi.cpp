@@ -20,9 +20,10 @@ bool charged = 0;
 pthread_mutex_t status_lock;
 int64_t last_tick_time = esp_timer_get_time();
 
-// need to average out the current, bus, shunt, vbat, and vgat items
-int num_sensor_reads = 0;
-std::vector<std::vector<int>> historic_sensor_data(5, std::vector<int>(100));
+
+float ina219_data[3];
+float ina219_read[3][INA219_AVG];
+
 
 #if BOI_VERSION == 1
 float boi::adc_vref_vbat() {
@@ -159,31 +160,33 @@ boi::boi() {
 #if BOI_VERSION == 1
     this->ina219.begin();
     this->ina219.setCalibration_16V_500mA();
-        // Button assignments
+    
+    // Button assignments
     this->set_button_pin(boi::BTN_PWR, BTN_PWR_PIN);
     this->set_button_pin(boi::BTN_ACT, BTN_ACT_PIN);
     this->set_button_pin(boi::BTN_BONUS, BTN_BONUS_PIN);
     pinMode(BACKPOWER_OUT_PIN, OUTPUT); // Set up BACKPOWER_OUT_PIN, defaults to "on"
-    pinMode(VGAT_DIV_PIN,INPUT_PULLUP);        
-    pinMode(VBAT_DIV_PIN,INPUT_PULLUP);
+    pinMode(VGAT_DIV_PIN, INPUT_PULLUP);        
+    pinMode(VBAT_DIV_PIN, INPUT_PULLUP);
 #elif BOI_VERSION == 2
         // Button assignments
     this->set_button_pin(boi::BTN_PWR, 1);
     this->set_button_pin(boi::BTN_ACT, 0);
 #endif
-    pinMode(RDY_4056_PIN,INPUT);
-    pinMode(CHRG_4056_PIN,INPUT);
+    pinMode(RDY_4056_PIN, INPUT);
+    pinMode(CHRG_4056_PIN, INPUT);
     this->toggle_backpower(); // Toggle backpower off
     this->initPreferences();
 }
 
 float boi::read_current(){
 #if BOI_VERSION == 1
-    float current = (ina219.getCurrent_mA() * 5) / 2;
+    return ina219_data[INA219_CURRENT];
 #elif BOI_VERSION == 2
-    int current = SPIData.GATCurrent;
+    return SPIData.GATCurrent;
 #endif
 
+    /*
     if(prev_curr != curr_curr) {
         prev_curr = curr_curr;
         curr_curr = current;
@@ -191,7 +194,47 @@ float boi::read_current(){
         Serial.printf("Change of Current being drawn: %0.2f\n", x);
     }
     return current;
+    */
 }
+
+float boi::read_shunt_mv()
+{
+#if BOI_VERSION == 1
+    return ina219_data[INA219_SHUNT];
+#elif BOI_VERSION == 2
+    float shunt_voltage = SPIData.GATVoltage;
+#endif
+}
+
+float boi::read_bus_voltage()
+{
+#if BOI_VERSION == 1
+    return ina219_data[INA219_BUSV];
+#endif
+    return 0.0;
+}
+
+#if BOI_VERSION == 1
+void IRAM_ATTR boi::ina219_update(uint8_t a)
+{
+    if (!this->ina219_idx) {
+        for (int j = 0; j < 3; j++) {
+            ina219_data[j] = 0;
+            for (int i = 0; i < INA219_AVG; i++) {
+                ina219_data[j] += ina219_read[j][i];
+            }
+            ina219_data[j] /= INA219_AVG;
+        }
+    }
+
+    ina219_read[INA219_CURRENT][this->ina219_idx] = (ina219.getCurrent_mA() * 5) / 2;
+    ina219_read[INA219_SHUNT][this->ina219_idx]   =  ina219.getShuntVoltage_mV();
+    ina219_read[INA219_BUSV][this->ina219_idx]    =  ina219.getBusVoltage_V();
+
+    this->ina219_idx++;
+    this->ina219_idx %= INA219_AVG;
+}
+#endif
 
 // Dump all stats from the battery
 void boi::get_sensor_data(SensorDataStruct *Sensor){
@@ -216,8 +259,8 @@ void boi::get_sensor_data(SensorDataStruct *Sensor){
 
     //go get our values
 #if BOI_VERSION == 1
-    float bat_voltage_detected = this->adc_vref_vbat();
-    float gat_voltage_detected = this->adc_vref_vgat();
+    Sensor->bat_voltage_detected = this->adc_vref_vbat();
+    Sensor->gat_voltage_detected = this->adc_vref_vgat();
 #elif BOI_VERSION == 2
     SPIHandler->Communicate(&SPIData);
     float bat_voltage_detected = SPIData.BatteryVoltage;
@@ -231,51 +274,28 @@ void boi::get_sensor_data(SensorDataStruct *Sensor){
 
     this->get_charging_status(Sensor);
 
-    float current = this->read_current();
+    Sensor->current = this->read_current();
     
     this->get_joules(&Sensor->joules, &Sensor->joules_average, Sensor->current);
 
-#if BOI_VERSION == 1
-    float shunt_voltage = ina219.getShuntVoltage_mV();
-#elif BOI_VERSION == 2
-    float shunt_voltage = SPIData.GATVoltage;
-#endif
-    if((shunt_voltage < -0.25) && backpower_status) {
+    Sensor->shunt_voltage = this->read_shunt_mv();
+
+    if((Sensor->shunt_voltage < -0.1) && backpower_status) {
         Serial.print("Power detected going the wrong way! Disbling Backpower!!!");
         this->toggle_backpower();
         backpower_status_auto_off = 1;
     }
-    if((shunt_voltage >= 0) && backpower_status_auto_off) {
+    if((Sensor->shunt_voltage >= 0) && backpower_status_auto_off) {
         Serial.print("Coast is clear! Re-enable backpower!");
         this->toggle_backpower();
         backpower_status_auto_off = 0;
     }
     yield();
-#if BOI_VERSION == 1
-    float bus_voltage = ina219.getBusVoltage_V();
-#elif BOI_VERSION == 2
-    float bus_voltage = 0;
-#endif
+
+    Sensor->bus_voltage = this->read_bus_voltage();
 
     Sensor->vbat_max = this->vbat_max_mv;
     Sensor->vbat_min = this->vbat_min_mv;
-
-    // Need to calc averages from the last 100 runs
-    // loop through all the items in our average array
-    if(num_sensor_reads == 99){num_sensor_reads = 0;}
-
-    historic_sensor_data[0][num_sensor_reads] = bat_voltage_detected;
-    historic_sensor_data[1][num_sensor_reads] = gat_voltage_detected;
-    historic_sensor_data[2][num_sensor_reads] = current;
-    historic_sensor_data[3][num_sensor_reads] = shunt_voltage;
-    historic_sensor_data[4][num_sensor_reads] = bus_voltage;
-    
-    Sensor->bat_voltage_detected = std::accumulate(historic_sensor_data[0].begin(), historic_sensor_data[0].end(), 0.0) / historic_sensor_data[0].size();
-    Sensor->gat_voltage_detected = std::accumulate(historic_sensor_data[1].begin(), historic_sensor_data[1].end(), 0.0) / historic_sensor_data[1].size();
-    Sensor->current = std::accumulate(historic_sensor_data[2].begin(), historic_sensor_data[2].end(), 0.0) / historic_sensor_data[2].size();
-    Sensor->shunt_voltage = std::accumulate(historic_sensor_data[3].begin(), historic_sensor_data[3].end(), 0.0) / historic_sensor_data[3].size();
-    Sensor->bus_voltage = std::accumulate(historic_sensor_data[4].begin(), historic_sensor_data[4].end(), 0.0) / historic_sensor_data[4].size();
-    num_sensor_reads += 1;
 
     memcpy(&this->LastSensorData, Sensor, sizeof(SensorDataStruct)); //copy our data and update our last time
     pthread_mutex_unlock(&status_lock);
@@ -308,8 +328,9 @@ void boi::print_sensor_data() {
 
 void boi::toggle_backpower(){ // Checks for current across VCC and ground pins, set switch
     float current_detected;
+
 #if BOI_VERSION == 1
-    current_detected = ina219.getCurrent_mA();
+    current_detected = ina219_data[INA219_CURRENT];
 #elif BOI_VERSION == 2
     current_detected = SPIData.GATCurrent;
 #endif
