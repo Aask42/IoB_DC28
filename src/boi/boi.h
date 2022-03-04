@@ -43,8 +43,15 @@
 #define DEFAULT_VREF    1100        //Use adc2_vref_to_gpio() to obtain a better estimate
 #define NO_OF_SAMPLES   64          //Multisampling
 
-//can't nest this as we can't forward declare it for messages.h if it is in the class per C++ spec
-//the website expects each entry to be 4 bytes in size (int/uint32_t)
+
+// ina-related shit
+#define INA219_CURRENT      0
+#define INA219_SHUNT        1
+#define INA219_BUSV         2
+#define INA219_AVG          16
+
+// can't nest this as we can't forward declare it for messages.h if it is in the class per C++ spec
+// the website expects each entry to be 4 bytes in size (int/uint32_t)
 typedef struct SensorDataStruct
 {
   float current;
@@ -90,6 +97,13 @@ class boi // Battery of Internet class
 
     int read_ambient_sensor();
     float read_current();
+    float read_shunt_mv();
+    float read_bus_voltage();
+
+#if BOI_VERSION == 1
+    uint8_t ina219_idx = 0;
+    void ina219_update(uint8_t a);
+#endif
 
     // get all sensor data
     void get_sensor_data(SensorDataStruct *Sensor);

@@ -55,6 +55,9 @@ int64_t LastButtonBonusHeldTime = 0;
 int64_t LastScanTime = 0;
 uint8_t CurrentLEDCap = 0;
 
+hw_timer_t *timer = NULL;
+portMUX_TYPE timerMux = portMUX_INITIALIZER_UNLOCKED;
+
 void SwitchMode();
 float safeboot_voltage();
 
@@ -65,6 +68,16 @@ void LEDCallback(const uint16_t ID, bool Finished) {
   }
 }
 
+#if BOI_VERSION == 1
+uint8_t boi_v1_ina219_update = 0;
+void IRAM_ATTR boi_v1_ina219_update_cb()
+{
+  portENTER_CRITICAL(&timerMux);
+  boi_v1_ina219_update = 3;
+  portEXIT_CRITICAL(&timerMux);
+}
+#endif
+
 void setup(void) {
   uint8_t WifiState;
   float BatteryPower;
@@ -73,7 +86,13 @@ void setup(void) {
   Serial.begin(115200); // init system debug output
   Serial.println("Beginning BoI Setup!"); // DEBUG detail
 
-#if BOI_VERSION == 2
+#if BOI_VERSION == 1
+  // set up timer to update ina on regular basis
+  timer = timerBegin(0, 80, true);    // 1MHz
+  timerAttachInterrupt(timer, &boi_v1_ina219_update_cb, true);
+  timerAlarmWrite(timer, 6250, true);  // 160Hz
+  timerAlarmEnable(timer);
+#elif BOI_VERSION == 2
   SPIHandler = new SPIParser();
   delay(500); // give time to make sure the other board inits
   SPIHandler->Communicate(&SPIData);
@@ -161,40 +180,40 @@ void setup(void) {
     BatteryWifi = 0;
     Serial.printf("WifiState: %d\n", WifiState);
     BatteryWifi = new boi_wifi(Battery, MessageHandler, (boi_wifi::WifiModeEnum)WifiState); // Set previous wifi state from last boot
-  } 
+  }
 }
 
 #if BOI_VERSION == 1
-  float safeboot_voltage() {
-    esp_adc_cal_characteristics_t adc_chars;
+float safeboot_voltage() {
+  esp_adc_cal_characteristics_t adc_chars;
 
-    //Configure ADC
-    adc1_config_width(ADC_WIDTH_BIT_12);
-    adc1_config_channel_atten((adc1_channel_t)ADC_CHANNEL_0, ADC_ATTEN_DB_0);
+  //Configure ADC
+  adc1_config_width(ADC_WIDTH_BIT_12);
+  adc1_config_channel_atten((adc1_channel_t)ADC_CHANNEL_0, ADC_ATTEN_DB_0);
 
-    //Characterize ADC
-    memset(&adc_chars, 0, sizeof(esp_adc_cal_characteristics_t));
-    esp_adc_cal_characterize(ADC_UNIT_1, ADC_ATTEN_DB_0, ADC_WIDTH_BIT_12, DEFAULT_VREF, &adc_chars);
-    
-    uint32_t adc_reading = 0; //Sample ADC Channel
-    
-    for (int i = 0; i < NO_OF_SAMPLES; i++) { //Multisampling
-      adc_reading += adc1_get_raw((adc1_channel_t)ADC_CHANNEL_0);
-    }
-    adc_reading /= NO_OF_SAMPLES;
-    
-    uint32_t v_out = esp_adc_cal_raw_to_voltage(adc_reading, &adc_chars); //divide by two per
-    float R1 = 1000000.0;
-    float R2 = 249000.0;
-    float v_source = ((v_out * R1/R2) + v_out)/1000; // Read voltage and then use voltage divider equations to figure out actual voltage read
-
-    return v_source;
+  //Characterize ADC
+  memset(&adc_chars, 0, sizeof(esp_adc_cal_characteristics_t));
+  esp_adc_cal_characterize(ADC_UNIT_1, ADC_ATTEN_DB_0, ADC_WIDTH_BIT_12, DEFAULT_VREF, &adc_chars);
+  
+  uint32_t adc_reading = 0; //Sample ADC Channel
+  
+  for (int i = 0; i < NO_OF_SAMPLES; i++) { //Multisampling
+    adc_reading += adc1_get_raw((adc1_channel_t)ADC_CHANNEL_0);
   }
+  adc_reading /= NO_OF_SAMPLES;
+  
+  uint32_t v_out = esp_adc_cal_raw_to_voltage(adc_reading, &adc_chars); //divide by two per
+  float R1 = 1000000.0;
+  float R2 = 249000.0;
+  float v_source = ((v_out * R1/R2) + v_out)/1000; // Read voltage and then use voltage divider equations to figure out actual voltage read
+
+  return v_source;
+}
 #elif BOI_VERSION == 2
-  float safeboot_voltage() {
-    SPIHandler->Communicate(&SPIData);
-    return SPIData.BatteryVoltage + 3;
-  }
+float safeboot_voltage() {
+  SPIHandler->Communicate(&SPIData);
+  return SPIData.BatteryVoltage;
+}
 #endif
 
 // do the Loopty Loop ... and your shoes are looking cool ~ !!!
@@ -245,7 +264,7 @@ void loop() {
     Battery->print_sensor_data();
   }
 
-    // Check to see if a button was pressed or other event triggered
+  // Check to see if a button was pressed or other event triggered
   if(Battery->button_pressed(boi::BTN_ACT)) {
     Serial.println("Saw button BTN_ACT"); // DEBUG detail
       //determine if this was a double click
@@ -255,11 +274,11 @@ void loop() {
     LastButtonPressTime = CurTime;
   }
 
-    //if ACTION button double pressed then swap the captive portal otherwise swap led options
-  if(DoublePress_ACT && (CurTime - LastButtonPressTime) > 500000ULL) {
+  // if ACTION button double pressed then swap the captive portal otherwise swap led options
+  if (DoublePress_ACT && (CurTime - LastButtonPressTime) > 500000ULL) {
     printf("DoublePress: %d\n", DoublePress_ACT);
     if(BatteryWifi) {
-        if(BatteryWifi->  SafeModeWithNetworking) {
+        if (BatteryWifi->SafeModeWithNetworking) {
           LEDHandler->StopScript(LED_SMWN_ACTIVE);
           LEDHandler->StartScript(LED_SMWN_DEACTIVATE,1);
           LEDHandler->StartScript(LED_TWINKLE,1);
@@ -271,10 +290,10 @@ void loop() {
         Prefs->putBool("wifi", false); //indicate wifi is off 
         Prefs->end();
       }
-    else if(DoublePress_ACT == 2) {
+    else if (DoublePress_ACT == 2) {
       BatteryWifi = new boi_wifi(Battery, MessageHandler, boi_wifi::BusinessCardMode);
     }
-    else if(DoublePress_ACT == 3) {
+    else if (DoublePress_ACT == 3) {
       BatteryWifi = new boi_wifi(Battery, MessageHandler, boi_wifi::SafeModeWithNetworking);
     }
     else {
@@ -283,7 +302,7 @@ void loop() {
     LastButtonPressTime = 0;
     DoublePress_ACT = 0;
   }
-  else if(LastButtonPressTime && ((CurTime - LastButtonPressTime) > 500000ULL)) { //button was pressed in the past and was more than a half a second ago, do a light entry
+  else if (LastButtonPressTime && ((CurTime - LastButtonPressTime) > 500000ULL)) { //button was pressed in the past and was more than a half a second ago, do a light entry
     LastButtonPressTime = 0;
     DoublePress_ACT = 0;
     
@@ -294,15 +313,23 @@ void loop() {
 
     SwitchMode(); //flash briefly that we are selecting a mode
   }
-  else if(Battery->button_pressed(boi::BTN_PWR)) {
+  else if (Battery->button_pressed(boi::BTN_PWR)) {
     Serial.println("Toggling Backpower if possible!");
     Battery->toggle_backpower(); // Attempt to toggle backpower
   }
 #if BOI_VERSION == 1
-  else if(Battery->button_pressed(boi::BTN_BONUS)) {
+  else if (Battery->button_pressed(boi::BTN_BONUS)) {
     // Only trigger on the first time around
     Serial.println("BONUS button pressed!"); // DEBUG detail
     LastButtonPressTime = 0;
+  }
+
+  // update sensors
+  if (boi_v1_ina219_update) {
+    portENTER_CRITICAL(&timerMux);
+    boi_v1_ina219_update = 0;
+    portEXIT_CRITICAL(&timerMux);
+    Battery->ina219_update(0);
   }
 
   //check for LED brightness increase
